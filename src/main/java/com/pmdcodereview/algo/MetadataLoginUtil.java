@@ -5,6 +5,8 @@ import com.sforce.soap.metadata.MetadataConnection;
 import com.sforce.soap.partner.LoginResult;
 import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.soap.partner.QueryResult;
+import com.sforce.soap.tooling.DeployDetails;
+import com.sforce.soap.tooling.DeployMessage;
 import com.sforce.soap.tooling.ToolingConnection;
 import com.sforce.soap.tooling.sobject.ApexClassMember;
 import com.sforce.soap.tooling.sobject.ContainerAsyncRequest;
@@ -15,6 +17,10 @@ import org.apache.coyote.http2.ConnectionException;
 import com.sforce.soap.partner.*;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -38,7 +44,7 @@ public class MetadataLoginUtil {
             try {
                 partnerConnection = Connector.newConnection(config);
                 metadataConnection = com.sforce.soap.metadata.Connector.newConnection(config);
-            }catch (Exception e){
+            } catch (Exception e) {
                 throw new com.sforce.ws.ConnectionException("Cannot connect to Org");
             }
 
@@ -93,6 +99,10 @@ public class MetadataLoginUtil {
             apexClassMember.setContentEntityId(apexClassWrapper.getId());
             apexClassMember.setMetadataContainerId(containerId);
 
+            List<String> lines = Arrays.asList(apexClassWrapper.getBody());
+            Path file = Paths.get(apexClassWrapper.getName() + ".cls");
+            Files.write(file, lines, Charset.forName("UTF-8"));
+
             con = new SObject[]{apexClassMember};
             com.sforce.soap.tooling.SaveResult[] saveMember = toolingConnection.create(con);
 
@@ -103,9 +113,40 @@ public class MetadataLoginUtil {
             con = new SObject[]{containerAsyncRequest};
 
 
-
             com.sforce.soap.tooling.SaveResult[] asyncResultMember = toolingConnection.create(con);
 
+            String id = asyncResultMember[0].getId();
+            Map<Integer, List<String>> lineNumberError = new HashMap<>();
+
+            while (true) {
+                com.sforce.soap.tooling.QueryResult containerSyncRequestCompile = toolingConnection.query("SELECT Id,State, DeployDetails, ErrorMsg FROM ContainerAsyncRequest where id = '" + id + "'");
+                ContainerAsyncRequest sObject1 = (ContainerAsyncRequest) containerSyncRequestCompile.getRecords()[0];
+                if ("Queued".equals(sObject1.getState())) {
+                    Thread.sleep(5000);
+                    continue;
+                } else {
+                    if ("Failed".equals(sObject1.getState())) {
+                        DeployDetails deployDetails = sObject1.getDeployDetails();
+                        if (deployDetails != null && deployDetails.getComponentFailures() != null) {
+                            if (deployDetails.getComponentFailures().length > 0) {
+                                for (DeployMessage deployMessage : deployDetails.getComponentFailures()) {
+                                    if(lineNumberError.containsKey(deployMessage.getLineNumber())){
+                                        List<String> strings = lineNumberError.get(deployMessage.getLineNumber());
+                                        strings.add(deployMessage.getProblem());
+                                    }else {
+                                        List<String> problemList = new ArrayList<>();
+                                        problemList.add(deployMessage.getProblem());
+                                        lineNumberError.put(deployMessage.getLineNumber(), problemList);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+
+            apexClassWrapper.setLineNumberError(lineNumberError);
 
 
             return apexClassWrapper;
@@ -117,7 +158,6 @@ public class MetadataLoginUtil {
     }
 
 
-
     private static void createMapOfProperties(FileReader fileReader, Map<String, String> propertiesMap) throws IOException {
         BufferedReader bufferedReader = null;
         String sCurrentLine;
@@ -125,7 +165,7 @@ public class MetadataLoginUtil {
         bufferedReader = new BufferedReader(fileReader);
 
         while ((sCurrentLine = bufferedReader.readLine()) != null) {
-            sCurrentLine= sCurrentLine.replaceAll("\\s+","");
+            sCurrentLine = sCurrentLine.replaceAll("\\s+", "");
             String[] split = sCurrentLine.split("=");
             propertiesMap.put(split[0], split[1]);
 

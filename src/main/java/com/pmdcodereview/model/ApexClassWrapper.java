@@ -1,5 +1,9 @@
 package com.pmdcodereview.model;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class ApexClassWrapper {
 
     public String name;
@@ -7,6 +11,8 @@ public class ApexClassWrapper {
     public String body;
 
     public String id;
+
+    public Map<Integer, List<String>> lineNumberError = new HashMap<>();
 
     public Integer lineNumber;
 
@@ -50,5 +56,13 @@ public class ApexClassWrapper {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public Map<Integer, List<String>> getLineNumberError() {
+        return lineNumberError;
+    }
+
+    public void setLineNumberError(Map<Integer, List<String>> lineNumberError) {
+        this.lineNumberError = lineNumberError;
     }
 }
