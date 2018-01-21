@@ -1,6 +1,6 @@
 function OrderFormController($scope, $http) {
 
-    $http.get("http://localhost:8989/getApexBody").then(function (response) {
+    $http.get("http://USBLRNAGESINGH1:8989/getApexBody").then(function (response) {
         $scope.apexClassWrapper = response.data;
     });
 
@@ -14,7 +14,7 @@ function OrderFormController($scope, $http) {
             id: apexClassWrapper.id
         };
 
-        $http.post("http://localhost:8989/modifyApexBody", dataObj)
+        $http.post("http://USBLRNAGESINGH1:8989/modifyApexBody", dataObj)
             .success(function (data) {
                 $scope.message = data;
             })
