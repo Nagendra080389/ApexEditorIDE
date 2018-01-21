@@ -16,7 +16,7 @@ public class ApexClassWrapper {
 
     public Integer lineNumber;
 
-    public String errorMessage;
+    public boolean isCompilationError;
 
     public String getId() {
         return id;
@@ -50,12 +50,12 @@ public class ApexClassWrapper {
         this.lineNumber = lineNumber;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public boolean isCompilationError() {
+        return isCompilationError;
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public void setCompilationError(boolean compilationError) {
+        isCompilationError = compilationError;
     }
 
     public Map<Integer, List<String>> getLineNumberError() {

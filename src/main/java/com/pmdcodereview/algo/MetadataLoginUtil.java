@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MetadataLoginUtil {
-    public static final String FILE_NAME = "C:\\JenkinsPOC\\Jenkins\\ConfigurationFile.txt";
+    public static final String FILE_NAME = "C:\\JenkinsPOC\\Jenkins\\ConfigurationFileForIDE.txt";
 
 
     static PartnerConnection partnerConnection;
@@ -129,6 +129,7 @@ public class MetadataLoginUtil {
                         DeployDetails deployDetails = sObject1.getDeployDetails();
                         if (deployDetails != null && deployDetails.getComponentFailures() != null) {
                             if (deployDetails.getComponentFailures().length > 0) {
+                                apexClassWrapper.setCompilationError(true);
                                 for (DeployMessage deployMessage : deployDetails.getComponentFailures()) {
                                     if(lineNumberError.containsKey(deployMessage.getLineNumber())){
                                         List<String> strings = lineNumberError.get(deployMessage.getLineNumber());

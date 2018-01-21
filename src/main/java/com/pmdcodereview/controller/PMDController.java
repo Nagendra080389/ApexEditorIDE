@@ -3,6 +3,7 @@ package com.pmdcodereview.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.pmdcodereview.algo.MetadataLoginUtil;
+import com.pmdcodereview.exception.DeploymentException;
 import com.pmdcodereview.model.ApexClassWrapper;
 import com.sforce.soap.metadata.MetadataConnection;
 import org.springframework.web.bind.annotation.*;
@@ -31,18 +32,22 @@ public class PMDController {
     }
 
     @RequestMapping(value = "/modifyApexBody", method = RequestMethod.POST)
-    public String modifyApexBody(@RequestBody ApexClassWrapper apexClassWrapper) throws IOException {
+    public String modifyApexBody(@RequestBody ApexClassWrapper apexClassWrapper) throws Exception {
 
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         try {
             if(apexClassWrapper == null) return null;
-            ApexClassWrapper main = MetadataLoginUtil.modifyApexBody(apexClassWrapper);
-            Gson gson = new GsonBuilder().create();
-            return gson.toJson(main);
+            ApexClassWrapper modifiedClass = MetadataLoginUtil.modifyApexBody(apexClassWrapper);
+            if(modifiedClass.isCompilationError()){
+                String errorMessage = gson.toJson(modifiedClass.getLineNumberError());
+                throw new DeploymentException(errorMessage);
+            }
+            return gson.toJson(modifiedClass);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DeploymentException e) {
+            throw e;
         }
-        return null;
+
     }
 
 

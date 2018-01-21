@@ -16,10 +16,14 @@ function OrderFormController($scope, $http) {
 
         $http.post("http://USBLRNAGESINGH1:8989/modifyApexBody", dataObj)
             .success(function (data) {
-                $scope.message = data;
+                $scope.apexClassWrapper = data;
+                $('#error').show();
+                $('#error').html("Deployed Successfully");
             })
             .error(function (data) {
-                alert("failure message: " + JSON.stringify({data: data}));
+                $scope.apexClassWrapperError = data;
+                $('#error').show();
+                $('#error').html(data.message);
             });
 
     };
