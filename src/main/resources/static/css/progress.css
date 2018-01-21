@@ -1,0 +1,341 @@
+.progress{
+    width: 150px;
+    height: 150px;
+    line-height: 150px;
+    background: none;
+    margin: 0 auto;
+    box-shadow: none;
+    position: relative;
+}
+.progress:after{
+    content: "";
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 12px solid #fff;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.progress > span{
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+}
+.progress .progress-left{
+    left: 0;
+}
+.progress .progress-bar{
+    width: 100%;
+    height: 100%;
+    background: none;
+    border-width: 12px;
+    border-style: solid;
+    position: absolute;
+    top: 0;
+}
+.progress .progress-left .progress-bar{
+    left: 100%;
+    border-top-right-radius: 80px;
+    border-bottom-right-radius: 80px;
+    border-left: 0;
+    -webkit-transform-origin: center left;
+    transform-origin: center left;
+}
+.progress .progress-right{
+    right: 0;
+}
+.progress .progress-right .progress-bar{
+    left: -100%;
+    border-top-left-radius: 80px;
+    border-bottom-left-radius: 80px;
+    border-right: 0;
+    -webkit-transform-origin: center right;
+    transform-origin: center right;
+    animation: loading-1 1.8s linear forwards;
+}
+.progress .progress-value{
+    width: 90%;
+    height: 90%;
+    border-radius: 50%;
+    background: #44484b;
+    font-size: 14px;
+    color: #fff;
+    line-height: 135px;
+    text-align: center;
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    word-wrap: break-word;
+}
+.progress.blue .progress-bar{
+    border-color: #049dff;
+}
+.progress.blue .progress-left .progress-bar{
+    animation: loading-2 1.5s linear forwards 1.8s;
+}
+.progress.yellow .progress-bar{
+    border-color: #fdba04;
+}
+.progress.yellow .progress-left .progress-bar{
+    animation: loading-3 1s linear forwards 1.8s;
+}
+.progress.pink .progress-bar{
+    border-color: #ed687c;
+}
+.progress.pink .progress-left .progress-bar{
+    animation: loading-4 0.4s linear forwards 1.8s;
+}
+.progress.green .progress-bar{
+    border-color: #1abc9c;
+}
+.progress.green .progress-left .progress-bar{
+    animation: loading-5 1.2s linear forwards 1.8s;
+}
+
+.progress.red .progress-bar{
+    border-color: #d51818;
+}
+.progress.red .progress-left .progress-bar{
+    animation: loading-5 1.2s linear forwards 1.8s;
+}
+
+@keyframes loading-1{
+    0%{
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100%{
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+}
+@keyframes loading-2{
+    0%{
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100%{
+        -webkit-transform: rotate(144deg);
+        transform: rotate(144deg);
+    }
+}
+@keyframes loading-3{
+    0%{
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100%{
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+}
+@keyframes loading-4{
+    0%{
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100%{
+        -webkit-transform: rotate(36deg);
+        transform: rotate(36deg);
+    }
+}
+@keyframes loading-5{
+    0%{
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100%{
+        -webkit-transform: rotate(126deg);
+        transform: rotate(126deg);
+    }
+}
+@media only screen and (max-width: 990px){
+    .progress{ margin-bottom: 20px; }
+}
+
+
+/*-------------------------
+	Simple reset
+--------------------------*/
+
+
+*{
+    margin:0;
+    padding:0;
+}
+
+
+/*-------------------------
+	General Styles
+--------------------------*/
+
+
+body{
+    font:15px/1.3 'Open Sans', sans-serif;
+    color: #5e5b64;
+    text-align:center;
+}
+
+a, a:visited {
+    outline:none;
+    color:#389dc1;
+}
+
+a:hover{
+    text-decoration:none;
+}
+
+section, footer, header, aside, nav{
+    display: block;
+}
+
+
+/*-------------------------
+	The order form
+--------------------------*/
+
+
+form{
+    background-color: #61a1bc;
+    border-radius: 2px;
+    box-shadow: 0 1px 1px #ccc;
+    /*	width: 400px;*/
+    /*
+        padding: 35px 60px;
+        margin: 80px auto;
+    */
+}
+
+.errorHeader{
+    color:#fff;
+    font-size:64px;
+    font-family:'Cookie', cursive;
+    font-weight: normal;
+    line-height:1;
+    text-shadow:0 3px 0 rgba(0,0,0,0.1);
+    margin-top: 0;
+    background-color: #464242
+}
+
+form ul{
+    list-style:none;
+    color:#fff;
+    font-size:20px;
+    font-weight:bold;
+    text-align: left;
+    /*	margin:20px 35px 15px;*/
+}
+
+form ul li{
+    padding:20px 30px;
+    background-color:#9c8787;
+    margin-bottom:8px;
+    box-shadow:0 1px 1px rgba(0,0,0,0.1);
+    cursor:pointer;
+}
+
+form ul li span{
+    float:right;
+}
+
+form ul .eachClassCell {
+    max-width: 30%;
+}
+form ul li.active{
+    background-color:#8ec16d;
+}
+
+div.total{
+    border-top:1px solid rgba(255,255,255,0.5);
+    padding:15px 30px;
+    font-size:20px;
+    font-weight:bold;
+    text-align: left;
+    color:#fff;
+}
+
+div.total span{
+    float:right;
+}
+.eachClassCell{
+    margin-right: 20px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+.classNameLabel{
+    width: 320px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.errorMeter{
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    color: red;
+    background-color: #d51818;
+}
+.errorContainer{
+    float: left;
+    position: relative;
+}
+.errorCount{
+    position: absolute;
+    left: 10px;
+}
+.errorDetailPannel{
+    color: #ca3939;
+    font-size: 15px;
+}
+
+.errorDetailPannel thead{
+    color: #393939;
+}
+#accordion{
+    clear: both;
+}
+#accordion .panel-heading { padding: 0;}
+#accordion .panel-title > a {
+    display: block;
+    /*	padding: 0.4em 0.6em;*/
+    outline: none;
+    font-weight:bold;
+    text-decoration: none;
+    text-align: center;
+}
+
+#accordion .panel-title > a.accordion-toggle::before, #accordion a[data-toggle="collapse"]::before  {
+    /*    content:"\e113";*/
+    /*    float: left;*/
+    font-family: 'Glyphicons Halflings';
+    /*	margin-right :1em;*/
+}
+#accordion .panel-title > a.accordion-toggle.collapsed::before, #accordion a.collapsed[data-toggle="collapse"]::before  {
+    /*    content:"\e114";*/
+}
+
+.modal-header {
+    background-color: #656161;
+    color: #fff;
+    font-weight: bold;
+}
+.modal-dialog {
+    width: 750px;
+    margin: 64px auto;
+}
+.modal-header .close {
+    margin-top: -2px;
+    color: #fff;
+    opacity: 1;
+}
+tr th{
+    text-align: center;
+}
+
+nav {
+    padding-bottom: 2%;
+}
