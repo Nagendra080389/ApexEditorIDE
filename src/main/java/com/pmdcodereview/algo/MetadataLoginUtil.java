@@ -2,7 +2,6 @@ package com.pmdcodereview.algo;
 
 import com.pmdcodereview.model.ApexClassWrapper;
 import com.sforce.soap.metadata.MetadataConnection;
-import com.sforce.soap.partner.LoginResult;
 import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.soap.partner.QueryResult;
 import com.sforce.soap.tooling.DeployDetails;
@@ -12,8 +11,8 @@ import com.sforce.soap.tooling.sobject.ApexClassMember;
 import com.sforce.soap.tooling.sobject.ContainerAsyncRequest;
 import com.sforce.soap.tooling.sobject.MetadataContainer;
 import com.sforce.soap.tooling.sobject.SObject;
+import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
-import org.apache.coyote.http2.ConnectionException;
 import com.sforce.soap.partner.*;
 
 import java.io.*;
@@ -21,7 +20,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MetadataLoginUtil {
@@ -181,4 +179,42 @@ public class MetadataLoginUtil {
         fwOb.close();
     }
 
+    public static List<ApexClassWrapper> getAllApexClasses() throws IOException, ConnectionException {
+        Map<String, String> propertiesMap = new HashMap<String, String>();
+        FileReader fileReader = new FileReader(FILE_NAME);
+        createMapOfProperties(fileReader, propertiesMap);
+
+        ConnectorConfig config = new ConnectorConfig();
+        config.setUsername(propertiesMap.get("username"));
+        config.setPassword(propertiesMap.get("password"));
+        config.setAuthEndpoint(propertiesMap.get("partnerURL"));
+
+        try {
+            partnerConnection = Connector.newConnection(config);
+            metadataConnection = com.sforce.soap.metadata.Connector.newConnection(config);
+        } catch (Exception e) {
+            throw new com.sforce.ws.ConnectionException("Cannot connect to Org");
+        }
+
+        String apexClassBody = "SELECT Id, Name, Body FROM APEXCLASS";
+
+
+        QueryResult query = partnerConnection.query(apexClassBody);
+
+        ApexClassWrapper apexClassWrapper = null;
+
+        List<ApexClassWrapper> apexClassWrappers = new ArrayList<>();
+        for (com.sforce.soap.partner.sobject.SObject sObject : query.getRecords()) {
+            Object name = sObject.getField("Name");
+            Object id = sObject.getField("Id");
+
+            apexClassWrapper = new ApexClassWrapper();
+            apexClassWrapper.setName(name.toString());
+            apexClassWrapper.setId(id.toString());
+            apexClassWrappers.add(apexClassWrapper);
+        }
+
+
+        return apexClassWrappers;
+    }
 }

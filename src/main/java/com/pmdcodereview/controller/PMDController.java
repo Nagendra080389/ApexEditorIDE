@@ -8,7 +8,10 @@ import com.pmdcodereview.model.ApexClassWrapper;
 import com.sforce.soap.metadata.MetadataConnection;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Nagendra on 18-06-2017.
@@ -16,6 +19,35 @@ import java.io.*;
 @RestController
 public class PMDController {
 
+
+    private String apexClassesJSON;
+
+    @PostConstruct
+    @RequestMapping(value = "/getAllApexClasses", method = RequestMethod.GET)
+    public String getAllApexClasses() throws IOException {
+
+        try {
+            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses();
+            List<String> allClassesInString = new ArrayList<>();
+            for (ApexClassWrapper allApexClass : allApexClasses) {
+                allClassesInString.add(allApexClass.getName());
+            }
+
+            Gson gson = new GsonBuilder().create();
+            apexClassesJSON = gson.toJson(allClassesInString);
+            return gson.toJson(allApexClasses);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @RequestMapping(value = "/getSuggestion", method = RequestMethod.GET)
+    public String getSuggestion() throws IOException {
+
+        return apexClassesJSON;
+    }
 
     @RequestMapping(value = "/getApexBody", method = RequestMethod.GET)
     public String getApexBody() throws IOException {
