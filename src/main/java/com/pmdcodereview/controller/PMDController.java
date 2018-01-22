@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Nagendra on 18-06-2017.
@@ -20,7 +19,7 @@ import java.util.List;
 public class PMDController {
 
 
-    private String apexClassesJSON;
+    private Map<String, List<String>> stringListHashMap = new HashMap<>();
 
     @PostConstruct
     @RequestMapping(value = "/getAllApexClasses", method = RequestMethod.GET)
@@ -29,12 +28,15 @@ public class PMDController {
         try {
             List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses();
             List<String> allClassesInString = new ArrayList<>();
+
             for (ApexClassWrapper allApexClass : allApexClasses) {
                 allClassesInString.add(allApexClass.getName());
             }
 
+            stringListHashMap.put("suggestions",allClassesInString);
+
             Gson gson = new GsonBuilder().create();
-            apexClassesJSON = gson.toJson(allClassesInString);
+            //apexClassesJSON = gson.toJson(stringListHashMap);
             return gson.toJson(allApexClasses);
 
         } catch (Exception e) {
@@ -43,10 +45,22 @@ public class PMDController {
         return null;
     }
 
-    @RequestMapping(value = "/getSuggestion", method = RequestMethod.GET)
-    public String getSuggestion() throws IOException {
-
-        return apexClassesJSON;
+    @RequestMapping(value = "/getSuggestion", method = RequestMethod.POST)
+    public String getSuggestion(String query) throws IOException {
+        Gson gson = new GsonBuilder().create();
+        List<String> strings = stringListHashMap.get("suggestions");
+        List<String> newStrings = new ArrayList<>();
+        newStrings = strings;
+        Iterator itr = newStrings.iterator();
+        while (itr.hasNext())
+        {
+            String x = (String)itr.next();
+            if (!x.contains(query))
+                itr.remove();
+        }
+        Map<String, List<String>> listMap = new HashMap<>();
+        listMap.put("suggestions", strings);
+        return gson.toJson(listMap);
     }
 
     @RequestMapping(value = "/getApexBody", method = RequestMethod.GET)
