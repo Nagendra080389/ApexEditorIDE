@@ -23,7 +23,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class MetadataLoginUtil {
-    public static final String FILE_NAME = "C:\\JenkinsPOC\\Jenkins\\ConfigurationFile.txt";
+    public static final String FILE_NAME = "C:\\JenkinsPOC\\Jenkins\\ConfigurationFileForIDE.txt";
 
 
     static PartnerConnection partnerConnection;
@@ -103,7 +103,7 @@ public class MetadataLoginUtil {
 
             ContainerAsyncRequest containerAsyncRequest = new ContainerAsyncRequest();
             containerAsyncRequest.setMetadataContainerId(containerId);
-            containerAsyncRequest.setIsCheckOnly(false);
+            containerAsyncRequest.setIsCheckOnly(true);
 
             con = new SObject[]{containerAsyncRequest};
 

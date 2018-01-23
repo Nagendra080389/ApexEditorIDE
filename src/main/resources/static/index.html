@@ -49,7 +49,7 @@
             <div>
                 <input type="text" name="apexClass" id="autocomplete" placeholder="Type the name of the Apex class you want to edit"/>
             </div>
-            <div class="btn-group-vertical">
+            <div class="btn-group-vertical" style="padding: 1%">
                 <button type="button" class="btn btn-primary" id="editBtn">Edit</button>
                 </button>
             </div>
@@ -60,7 +60,7 @@
                 <div>{{apexClassWrapper.name}}</div>
                 <pre class="prettyprint">
                     <code class="language-java">
-                        <textarea ng-model="apexClassWrapper.body" id="apexBody">{{apexClassWrapper.body}}</textarea>
+                        <textarea ng-model="apexClassWrapper.body" id="apexBody" readonly="true">{{apexClassWrapper.body}}</textarea>
                     </code>
                 </pre>
             </div>

@@ -1,15 +1,11 @@
 var editBtn = document.getElementById('editBtn');
 var saveBtn = document.getElementById('saveBtn');
-var editables = document.querySelectorAll(".tab-content");
+var textAreaHtml = document.getElementsByTagName("textarea");
 
 editBtn.addEventListener('click', function (e) {
-    if (!editables[0].isContentEditable) {
-        editables[0].contentEditable = 'true';
-    }
+    textAreaHtml[0].removeAttribute('readonly');
 });
 
 saveBtn.addEventListener('click', function (e) {
-    if (editables[0].isContentEditable) {
-        editables[0].contentEditable = 'false';
-    }
+    textAreaHtml[0].setAttribute('readonly', true);
 });
