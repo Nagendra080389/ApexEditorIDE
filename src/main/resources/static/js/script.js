@@ -14,8 +14,10 @@ function OrderFormController($scope, $http) {
                 params: data
             };
 
+            $('#loaderImage').show();
             $http.get("http://USBLRNAGESINGH1:8989/getApexBody",config).then(function (response) {
                 $scope.apexClassWrapper = response.data;
+                 $('#loaderImage').hide();
             });
         }
     });
@@ -30,14 +32,23 @@ function OrderFormController($scope, $http) {
             id: apexClassWrapper.id
         };
 
+        $('#loaderImage').show();
         $http.post("http://USBLRNAGESINGH1:8989/modifyApexBody", dataObj)
             .success(function (data) {
                 $scope.apexClassWrapper = data;
+                $('#loaderImage').hide();
                 $('#error').show();
                 $('#error').html("Compiled Successfully");
+                var value;
+                Object.keys(data.lineNumberError).forEach(function(key) {
+                    value = data.lineNumberError[key];
+                    $('#error').append('<br>'+' '+key +': -> '+value);
+                });
+
             })
             .error(function (data) {
                 $scope.apexClassWrapperError = data;
+                $('#loaderImage').hide();
                 $('#error').show();
                 $('#error').css("color","red")
                 $('#error').html(data.message);

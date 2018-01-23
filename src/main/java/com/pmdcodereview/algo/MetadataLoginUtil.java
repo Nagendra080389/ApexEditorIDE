@@ -82,6 +82,7 @@ public class MetadataLoginUtil {
 
 
         ToolingConnection toolingConnection = new ToolingConnection(toolConfig);
+        BufferedReader bufferedReader= null;
         try {
             // Create a MetaData Container, this is like a bucket for ur modified member
             MetadataContainer container = new MetadataContainer();
@@ -165,7 +166,7 @@ public class MetadataLoginUtil {
                 System.out.println("PMD ruleset Done");
 
                 FileReader fileReader1 = new FileReader(log);
-                BufferedReader bufferedReader = new BufferedReader(fileReader1);
+                bufferedReader = new BufferedReader(fileReader1);
                 String sCurrentLine;
 
                 while ((sCurrentLine = bufferedReader.readLine()) != null) {
@@ -194,6 +195,11 @@ public class MetadataLoginUtil {
 
         } catch (com.sforce.ws.ConnectionException e) {
             throw new com.sforce.ws.ConnectionException(e.getMessage());
+
+        }finally {
+            if (bufferedReader != null) {
+                bufferedReader.close();
+            }
         }
 
     }

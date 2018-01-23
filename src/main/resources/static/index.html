@@ -20,7 +20,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="../js/jquery.preloader.min.js"></script>
 <script src="../js/script.js"></script>
 <script src="../js/jquery-linedtextarea.js"></script>
 <script src="../js/jquery.autocomplete.min.js"></script>
@@ -58,9 +57,10 @@
                 <div id='error' style='display:none'>{{apexClassWrapperError.message}}</div>
 
                 <div>{{apexClassWrapper.name}}</div>
+                <img src="../img/ajax-loader.gif" id="loaderImage" style='display:none'>
                 <pre class="prettyprint">
                     <code class="language-java">
-                        <textarea ng-model="apexClassWrapper.body" id="apexBody" readonly="true">{{apexClassWrapper.body}}</textarea>
+                        <textarea ng-model="apexClassWrapper.body" id="apexBody" readonly="true" >{{apexClassWrapper.body}}</textarea>
                     </code>
                 </pre>
             </div>
@@ -77,6 +77,7 @@
 
     });
 </script>
+
 
 <footer>
     <p>Web based Apex Editor</p>

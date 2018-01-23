@@ -6,6 +6,7 @@ import com.pmdcodereview.algo.MetadataLoginUtil;
 import com.pmdcodereview.exception.DeploymentException;
 import com.pmdcodereview.model.ApexClassWrapper;
 import com.sforce.soap.metadata.MetadataConnection;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -83,6 +84,9 @@ public class PMDController {
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         try {
             if(apexClassWrapper == null) return null;
+            ProcessBuilder processBuilder = new ProcessBuilder(new ClassPathResource("deleteFiles.bat").getFile().getAbsolutePath());
+            Process process = processBuilder.start();
+            process.waitFor();
             ApexClassWrapper modifiedClass = MetadataLoginUtil.modifyApexBody(apexClassWrapper);
             if(modifiedClass.isCompilationError()){
                 String errorMessage = gson.toJson(modifiedClass.getLineNumberError());
