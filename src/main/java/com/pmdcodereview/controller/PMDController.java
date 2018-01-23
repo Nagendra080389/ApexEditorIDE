@@ -49,25 +49,25 @@ public class PMDController {
     public String getSuggestion(String query) throws IOException {
         Gson gson = new GsonBuilder().create();
         List<String> strings = stringListHashMap.get("suggestions");
-        List<String> newStrings = new ArrayList<>();
-        newStrings = strings;
-        Iterator itr = newStrings.iterator();
+        Map<String, List<String>> newMapReturn = new HashMap<>();
+        List<String> newListToBeAdded = new ArrayList<>();
+        Iterator itr = strings.iterator();
         while (itr.hasNext())
         {
             String x = (String)itr.next();
-            if (!x.contains(query))
-                itr.remove();
+            if (x.toLowerCase().contains(query.toLowerCase()))
+                newListToBeAdded.add(x);
         }
-        Map<String, List<String>> listMap = new HashMap<>();
-        listMap.put("suggestions", strings);
-        return gson.toJson(listMap);
+
+        newMapReturn.put("suggestions", newListToBeAdded);
+        return gson.toJson(newMapReturn);
     }
 
     @RequestMapping(value = "/getApexBody", method = RequestMethod.GET)
-    public String getApexBody() throws IOException {
+    public String getApexBody(@RequestParam String apexClassName) throws IOException {
 
         try {
-            ApexClassWrapper main = MetadataLoginUtil.getApexBody();
+            ApexClassWrapper main = MetadataLoginUtil.getApexBody(apexClassName);
             Gson gson = new GsonBuilder().create();
             return gson.toJson(main);
 

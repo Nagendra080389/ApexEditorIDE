@@ -23,13 +23,13 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class MetadataLoginUtil {
-    public static final String FILE_NAME = "C:\\JenkinsPOC\\Jenkins\\ConfigurationFileForIDE.txt";
+    public static final String FILE_NAME = "C:\\JenkinsPOC\\Jenkins\\ConfigurationFile.txt";
 
 
     static PartnerConnection partnerConnection;
     static MetadataConnection metadataConnection;
 
-    public static ApexClassWrapper getApexBody() throws Exception {
+    public static ApexClassWrapper getApexBody(String apexClassName) throws Exception {
         Map<String, String> propertiesMap = new HashMap<String, String>();
         FileReader fileReader = new FileReader(FILE_NAME);
         createMapOfProperties(fileReader, propertiesMap);
@@ -46,11 +46,8 @@ public class MetadataLoginUtil {
                 throw new com.sforce.ws.ConnectionException("Cannot connect to Org");
             }
 
-            String apexClassBody = "SELECT Id,Body, Name FROM APEXCLASS Where Name = 'TST_BatchUpdateAASPInOpportunity'";
-
-
+            String apexClassBody = "SELECT Id,Body, Name FROM APEXCLASS Where Name = '"+apexClassName+"'";
             QueryResult query = partnerConnection.query(apexClassBody);
-
 
             Object body = query.getRecords()[0].getField("Body");
             Object name = query.getRecords()[0].getField("Name");
@@ -196,7 +193,7 @@ public class MetadataLoginUtil {
             throw new com.sforce.ws.ConnectionException("Cannot connect to Org");
         }
 
-        String apexClassBody = "SELECT Id, Name, Body FROM APEXCLASS";
+        String apexClassBody = "SELECT Id, Name FROM APEXCLASS";
 
 
         QueryResult query = partnerConnection.query(apexClassBody);

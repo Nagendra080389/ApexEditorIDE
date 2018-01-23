@@ -1,15 +1,23 @@
 function OrderFormController($scope, $http) {
 
     $('#autocomplete').autocomplete({
-        type:'POST',
+        type: 'POST',
         serviceUrl: 'http://USBLRNAGESINGH1:8989/getSuggestion',
         onSelect: function (suggestion) {
-            alert('You selected: ' + suggestion.value);
-        }
-    });
+            console.log('suggestion.value -> '+suggestion.value);
 
-    $http.get("http://USBLRNAGESINGH1:8989/getApexBody").then(function (response) {
-        $scope.apexClassWrapper = response.data;
+            var data = {
+                apexClassName:suggestion.value
+            };
+
+            var config = {
+                params: data
+            };
+
+            $http.get("http://USBLRNAGESINGH1:8989/getApexBody",config).then(function (response) {
+                $scope.apexClassWrapper = response.data;
+            });
+        }
     });
 
 
