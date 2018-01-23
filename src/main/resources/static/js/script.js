@@ -34,11 +34,12 @@ function OrderFormController($scope, $http) {
             .success(function (data) {
                 $scope.apexClassWrapper = data;
                 $('#error').show();
-                $('#error').html("Deployed Successfully");
+                $('#error').html("Compiled Successfully");
             })
             .error(function (data) {
                 $scope.apexClassWrapperError = data;
                 $('#error').show();
+                $('#error').css("color","red")
                 $('#error').html(data.message);
             });
 
