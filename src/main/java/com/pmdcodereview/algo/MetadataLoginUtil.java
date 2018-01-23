@@ -2,6 +2,7 @@ package com.pmdcodereview.algo;
 
 import com.pmdcodereview.model.ApexClassWrapper;
 import com.sforce.soap.metadata.MetadataConnection;
+import com.sforce.soap.partner.LoginResult;
 import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.soap.partner.QueryResult;
 import com.sforce.soap.tooling.DeployDetails;
@@ -11,8 +12,9 @@ import com.sforce.soap.tooling.sobject.ApexClassMember;
 import com.sforce.soap.tooling.sobject.ContainerAsyncRequest;
 import com.sforce.soap.tooling.sobject.MetadataContainer;
 import com.sforce.soap.tooling.sobject.SObject;
-import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
+import org.apache.commons.io.FileUtils;
+import org.apache.coyote.http2.ConnectionException;
 import com.sforce.soap.partner.*;
 
 import java.io.*;
@@ -20,6 +22,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MetadataLoginUtil {
@@ -95,8 +98,12 @@ public class MetadataLoginUtil {
             apexClassMember.setMetadataContainerId(containerId);
 
             List<String> lines = Arrays.asList(apexClassWrapper.getBody());
-            Path file = Paths.get(apexClassWrapper.getName() + ".cls");
-            Files.write(file, lines, Charset.forName("UTF-8"));
+            File file = new File("C:\\Users\\nagesingh\\IdeaProjects\\ApexEditorIDE\\apexClass\\"+apexClassWrapper.getName()+".cls");
+            for (String line : lines) {
+                FileUtils.writeStringToFile(file, line);
+            }
+            Map<Integer, List<String>> lineNumberError = new HashMap<>();
+
 
             con = new SObject[]{apexClassMember};
             com.sforce.soap.tooling.SaveResult[] saveMember = toolingConnection.create(con);
@@ -111,7 +118,7 @@ public class MetadataLoginUtil {
             com.sforce.soap.tooling.SaveResult[] asyncResultMember = toolingConnection.create(con);
 
             String id = asyncResultMember[0].getId();
-            Map<Integer, List<String>> lineNumberError = new HashMap<>();
+
 
             while (true) {
                 com.sforce.soap.tooling.QueryResult containerSyncRequestCompile = toolingConnection.query("SELECT Id,State, DeployDetails, ErrorMsg FROM ContainerAsyncRequest where id = '" + id + "'");
@@ -145,6 +152,44 @@ public class MetadataLoginUtil {
             apexClassWrapper.setLineNumberError(lineNumberError);
 
 
+            if(!apexClassWrapper.isCompilationError()) {
+                ProcessBuilder processBuilder = new ProcessBuilder(propertiesMap.get("PmdBatFile"));
+                File log = new File(propertiesMap.get("apexClassReviewResult") + "\\" + apexClassWrapper.getName() + "_result" + ".txt");
+                if (log.exists()) {
+                    log.delete();
+                }
+                processBuilder.redirectErrorStream(true);
+                processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(log));
+                Process process = processBuilder.start();
+                process.waitFor();
+                System.out.println("PMD ruleset Done");
+
+                FileReader fileReader1 = new FileReader(log);
+                BufferedReader bufferedReader = new BufferedReader(fileReader1);
+                String sCurrentLine;
+
+                while ((sCurrentLine = bufferedReader.readLine()) != null) {
+                    if (sCurrentLine.contains(apexClassWrapper.getName())) {
+                        String[] split = sCurrentLine.split("\\\\");
+                        String lastElement = split[split.length - 1];
+                        String[] lastTwoDetails = lastElement.split("\\t");
+                        String[] nameAndNumber = lastTwoDetails[0].split(":");
+                        Integer lineNumber = Integer.valueOf(nameAndNumber[1]);
+                        String errorMessage = lastTwoDetails[1];
+
+                        if (lineNumberError.containsKey(lineNumber)) {
+                            List<String> strings = lineNumberError.get(lineNumber);
+                            strings.add(errorMessage);
+                        } else {
+                            List<String> problemList = new ArrayList<>();
+                            problemList.add(errorMessage);
+                            lineNumberError.put(lineNumber, problemList);
+                        }
+                    }
+                }
+            }
+
+
             return apexClassWrapper;
 
         } catch (com.sforce.ws.ConnectionException e) {
@@ -176,7 +221,7 @@ public class MetadataLoginUtil {
         fwOb.close();
     }
 
-    public static List<ApexClassWrapper> getAllApexClasses() throws IOException, ConnectionException {
+    public static List<ApexClassWrapper> getAllApexClasses() throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
         Map<String, String> propertiesMap = new HashMap<String, String>();
         FileReader fileReader = new FileReader(FILE_NAME);
         createMapOfProperties(fileReader, propertiesMap);
