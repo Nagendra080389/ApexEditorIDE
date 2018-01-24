@@ -1,13 +1,14 @@
+var globalEditor = null;
 function OrderFormController($scope, $http) {
 
     $('#autocomplete').autocomplete({
         type: 'POST',
         serviceUrl: 'http://USBLRNAGESINGH1:8989/getSuggestion',
         onSelect: function (suggestion) {
-            console.log('suggestion.value -> '+suggestion.value);
+            console.log('suggestion.value -> ' + suggestion.value);
 
             var data = {
-                apexClassName:suggestion.value
+                apexClassName: suggestion.value
             };
 
             var config = {
@@ -15,10 +16,24 @@ function OrderFormController($scope, $http) {
             };
 
             $('#loaderImage').show();
-            $http.get("http://USBLRNAGESINGH1:8989/getApexBody",config).then(function (response) {
+            $http.get("http://USBLRNAGESINGH1:8989/getApexBody", config).then(function (response) {
                 $scope.apexClassWrapper = response.data;
-                 $('#loaderImage').hide();
+                $('#loaderImage').hide();
+                if(globalEditor) {
+                    globalEditor.toTextArea();
+                }
+                setTimeout(function (test) {
+                    var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
+                        lineNumbers: true,
+                        matchBrackets: true,
+                        mode: "text/x-apex"
+                    });
+
+                    globalEditor =  $('.CodeMirror')[0].CodeMirror;
+                }), 2000
             });
+
+
         }
     });
 
@@ -40,9 +55,9 @@ function OrderFormController($scope, $http) {
                 $('#error').show();
                 $('#error').html("Compiled Successfully");
                 var value;
-                Object.keys(data.lineNumberError).forEach(function(key) {
+                Object.keys(data.lineNumberError).forEach(function (key) {
                     value = data.lineNumberError[key];
-                    $('#error').append('<br>'+' '+key +': -> '+value);
+                    $('#error').append('<br>' + ' ' + key + ': -> ' + value);
                 });
 
             })
@@ -50,7 +65,7 @@ function OrderFormController($scope, $http) {
                 $scope.apexClassWrapperError = data;
                 $('#loaderImage').hide();
                 $('#error').show();
-                $('#error').css("color","red")
+                $('#error').css("color", "red")
                 $('#error').html(data.message);
             });
 

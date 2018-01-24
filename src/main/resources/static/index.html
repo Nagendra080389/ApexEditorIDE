@@ -61,9 +61,7 @@
                 <div>{{apexClassWrapper.name}}</div>
                 <img src="../img/ajax-loader.gif" id="loaderImage" style='display:none'>
                 <article>
-                <form>
                     <textarea ng-model="apexClassWrapper.body" id="apexBody" name="apexBody" readonly="true" >{{apexClassWrapper.body}}</textarea>
-                </form>
                 </article>
             </div>
             <button type="button" class="btn btn-primary" id="saveBtn" ng-click="postdata(apexClassWrapper)">Save</button>
@@ -72,11 +70,7 @@
 </div>
 <script src="../js/makeEditable.js"></script>
 <script>
-      var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
-        lineNumbers: true,
-        matchBrackets: true,
-        mode: "text/x-apex"
-      });
+
 </script>
 
 
