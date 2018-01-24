@@ -23,9 +23,13 @@ function OrderFormController($scope, $http) {
                     globalEditor.toTextArea();
                 }
                 setTimeout(function (test) {
+                    CodeMirror.commands.autocomplete = function(cm) {
+                            CodeMirror.showHint(cm, CodeMirror.hint.anyword);
+                          }
                     var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
                         lineNumbers: true,
                         matchBrackets: true,
+                        extraKeys: {"Ctrl-Space": "autocomplete"},
                         mode: "text/x-apex"
                     });
 

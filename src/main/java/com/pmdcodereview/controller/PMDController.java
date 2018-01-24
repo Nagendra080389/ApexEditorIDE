@@ -6,6 +6,8 @@ import com.pmdcodereview.algo.MetadataLoginUtil;
 import com.pmdcodereview.exception.DeploymentException;
 import com.pmdcodereview.model.ApexClassWrapper;
 import com.sforce.soap.metadata.MetadataConnection;
+import com.sforce.soap.tooling.SymbolTable;
+import org.apache.coyote.http2.ConnectionException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +64,16 @@ public class PMDController {
 
         newMapReturn.put("suggestions", newListToBeAdded);
         return gson.toJson(newMapReturn);
+    }
+
+
+    @RequestMapping(value = "/generateSymbolTable", method = RequestMethod.GET)
+    public String generateSymbolTable() throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
+        System.out.println("Start Time -> "+new Date());
+        Gson gson = new GsonBuilder().create();
+        Map<String, SymbolTable> stringSymbolTableMap = MetadataLoginUtil.generateSymbolTable();
+        System.out.println("End Time -> "+new Date());
+        return gson.toJson(stringSymbolTableMap);
     }
 
     @RequestMapping(value = "/getApexBody", method = RequestMethod.GET)

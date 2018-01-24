@@ -2,16 +2,12 @@ package com.pmdcodereview.algo;
 
 import com.pmdcodereview.model.ApexClassWrapper;
 import com.sforce.soap.metadata.MetadataConnection;
+import com.sforce.soap.partner.Connector;
 import com.sforce.soap.partner.LoginResult;
 import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.soap.partner.QueryResult;
-import com.sforce.soap.tooling.DeployDetails;
-import com.sforce.soap.tooling.DeployMessage;
-import com.sforce.soap.tooling.ToolingConnection;
-import com.sforce.soap.tooling.sobject.ApexClassMember;
-import com.sforce.soap.tooling.sobject.ContainerAsyncRequest;
-import com.sforce.soap.tooling.sobject.MetadataContainer;
-import com.sforce.soap.tooling.sobject.SObject;
+import com.sforce.soap.tooling.*;
+import com.sforce.soap.tooling.sobject.*;
 import com.sforce.ws.ConnectorConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.coyote.http2.ConnectionException;
@@ -264,5 +260,61 @@ public class MetadataLoginUtil {
 
 
         return apexClassWrappers;
+    }
+
+    public static Map<String, SymbolTable> generateSymbolTable() throws IOException, ConnectionException, com.sforce.ws.ConnectionException{
+
+        Map<String, String> propertiesMap = new HashMap<String, String>();
+        FileReader fileReader = new FileReader(FILE_NAME);
+        createMapOfProperties(fileReader, propertiesMap);
+
+        Map<String, SymbolTable> stringSymbolTableMap = new HashMap<>();
+
+        ConnectorConfig toolConfig = new ConnectorConfig();
+        ConnectorConfig config = new ConnectorConfig();
+        toolConfig.setUsername(propertiesMap.get("username"));
+        toolConfig.setPassword(propertiesMap.get("password"));
+        toolConfig.setAuthEndpoint(propertiesMap.get("toolingURL"));
+
+        ToolingConnection toolingConnection = new ToolingConnection(toolConfig);
+
+        config.setUsername(propertiesMap.get("username"));
+        config.setPassword(propertiesMap.get("password"));
+        config.setAuthEndpoint(propertiesMap.get("partnerURL"));
+        partnerConnection = Connector.newConnection(config);
+
+
+        String apexClassBody = "SELECT Id, Name FROM APEXCLASS";
+        List<String> idList  = new ArrayList<>();
+
+        QueryResult className = partnerConnection.query(apexClassBody);
+        for (com.sforce.soap.partner.sobject.SObject sObject : className.getRecords()) {
+            String Id = (String) sObject.getField("Id");
+            idList.add(Id);
+        }
+
+        String[] classArray = new String[idList.size()];
+        classArray = idList.toArray(classArray);
+
+        SObject[] apexClasses = toolingConnection.retrieve("SymbolTable, Id, Name", "ApexClass", classArray);
+
+        for(SObject sObjects : apexClasses) {
+            ApexClass apexClass = (ApexClass) sObjects;
+            SymbolTable symbolTable = apexClass.getSymbolTable();
+            if(symbolTable==null) { // No symbol table, then class likely is invalid
+                continue;
+            }
+
+            idList.parallelStream().forEach(id -> setValues(id, apexClass, stringSymbolTableMap, symbolTable));
+        }
+
+
+        return stringSymbolTableMap;
+    }
+
+    private static void setValues(String id, ApexClass apexClass,Map<String, SymbolTable> stringSymbolTableMap,SymbolTable symbolTable){
+        if(id.equals(apexClass.getId())){
+            stringSymbolTableMap.put(apexClass.getName(), symbolTable);
+        }
     }
 }
