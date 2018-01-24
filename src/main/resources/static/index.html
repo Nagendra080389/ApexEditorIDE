@@ -6,12 +6,12 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.29/angular.min.js"></script>
-<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 <link href="https://fonts.googleapis.com/css?family=Cookie|Open+Sans:400,700" rel="stylesheet"/>
 <!-- The main CSS file -->
 <link href="../css/style.css" rel="stylesheet"/>
 <link href="../css/codeReview.css" rel="stylesheet"/>
-<link href="../css/jquery-linedtextarea.css" rel="stylesheet"/>
+<link href="../css/codemirror/codemirror.css" rel="stylesheet"/>
+
 <link rel="stylesheet prefetch" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 <link rel="stylesheet prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.1/animate.min.css">
 <!--[if lt IE 9]>
@@ -21,7 +21,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="../js/script.js"></script>
-<script src="../js/jquery-linedtextarea.js"></script>
+<script src="../js/codemirror/codemirror.js"></script>
+<script src="../js/codemirror/apex.js"></script>
+<script src="../js/codemirror/addon/edit/matchbrackets.js"></script>
 <script src="../js/jquery.autocomplete.min.js"></script>
 <!--Default theme-->
 </head>
@@ -58,11 +60,11 @@
 
                 <div>{{apexClassWrapper.name}}</div>
                 <img src="../img/ajax-loader.gif" id="loaderImage" style='display:none'>
-                <pre class="prettyprint">
-                    <code class="language-java">
-                        <textarea ng-model="apexClassWrapper.body" id="apexBody" readonly="true" >{{apexClassWrapper.body}}</textarea>
-                    </code>
-                </pre>
+                <article>
+                <form>
+                    <textarea ng-model="apexClassWrapper.body" id="apexBody" name="apexBody" readonly="true" >{{apexClassWrapper.body}}</textarea>
+                </form>
+                </article>
             </div>
             <button type="button" class="btn btn-primary" id="saveBtn" ng-click="postdata(apexClassWrapper)">Save</button>
         </div>
@@ -70,12 +72,11 @@
 </div>
 <script src="../js/makeEditable.js"></script>
 <script>
-
-    $(function() {
-        // Target a single one
-        $("#apexBody").linedtextarea();
-
-    });
+      var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
+        lineNumbers: true,
+        matchBrackets: true,
+        mode: "text/x-apex"
+      });
 </script>
 
 
