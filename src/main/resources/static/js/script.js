@@ -19,13 +19,13 @@ function OrderFormController($scope, $http) {
             $http.get("http://USBLRNAGESINGH1:8989/getApexBody", config).then(function (response) {
                 $scope.apexClassWrapper = response.data;
                 $('#loaderImage').hide();
-                if(globalEditor) {
+                if (globalEditor) {
                     globalEditor.toTextArea();
                 }
                 setTimeout(function (test) {
-                    CodeMirror.commands.autocomplete = function(cm) {
-                            CodeMirror.showHint(cm, CodeMirror.hint.anyword);
-                          }
+                    CodeMirror.commands.autocomplete = function (cm) {
+                        cm.showHint({hint: CodeMirror.hint.anyword});
+                    };
                     var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
                         lineNumbers: true,
                         matchBrackets: true,
@@ -33,7 +33,7 @@ function OrderFormController($scope, $http) {
                         mode: "text/x-apex"
                     });
 
-                    globalEditor =  $('.CodeMirror')[0].CodeMirror;
+                    globalEditor = $('.CodeMirror')[0].CodeMirror;
                 }), 2000
             });
 
