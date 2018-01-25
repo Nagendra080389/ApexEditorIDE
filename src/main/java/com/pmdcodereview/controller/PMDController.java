@@ -6,6 +6,7 @@ import com.pmdcodereview.algo.MetadataLoginUtil;
 import com.pmdcodereview.exception.DeploymentException;
 import com.pmdcodereview.model.ApexClassWrapper;
 import com.sforce.soap.metadata.MetadataConnection;
+import com.sforce.soap.tooling.Method;
 import com.sforce.soap.tooling.SymbolTable;
 import org.apache.coyote.http2.ConnectionException;
 import org.springframework.core.io.ClassPathResource;
@@ -23,12 +24,14 @@ public class PMDController {
 
 
     private Map<String, List<String>> stringListHashMap = new HashMap<>();
+    private volatile Map<String, SymbolTable> symbolTableMap = new HashMap<>();
 
     @PostConstruct
     @RequestMapping(value = "/getAllApexClasses", method = RequestMethod.GET)
     public String getAllApexClasses() throws IOException {
 
         try {
+            generateSymbolTable();
             List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses();
             List<String> allClassesInString = new ArrayList<>();
 
@@ -66,14 +69,42 @@ public class PMDController {
         return gson.toJson(newMapReturn);
     }
 
-
-    @RequestMapping(value = "/generateSymbolTable", method = RequestMethod.GET)
-    public String generateSymbolTable() throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
-        System.out.println("Start Time -> "+new Date());
+    @RequestMapping(value = "/getMethodSuggestion", method = RequestMethod.POST)
+    public String getMethodSuggestion(String query) throws IOException {
         Gson gson = new GsonBuilder().create();
-        Map<String, SymbolTable> stringSymbolTableMap = MetadataLoginUtil.generateSymbolTable();
-        System.out.println("End Time -> "+new Date());
-        return gson.toJson(stringSymbolTableMap);
+        SymbolTable symbolTable = symbolTableMap.get(query);
+        Map<String, List<String>> newMapReturn = new HashMap<>();
+        List<String> newListToBeAdded = new ArrayList<>();
+
+        if(symbolTable != null) {
+            for (Method method : symbolTable.getMethods()) {
+                String name = method.getName();
+                newListToBeAdded.add(name);
+            }
+        }
+
+        newMapReturn.put("hints", newListToBeAdded);
+        return gson.toJson(newMapReturn);
+    }
+
+
+    public void generateSymbolTable() throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    symbolTableMap = MetadataLoginUtil.generateSymbolTable();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ConnectionException e) {
+                    e.printStackTrace();
+                } catch (com.sforce.ws.ConnectionException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread.start();
     }
 
     @RequestMapping(value = "/getApexBody", method = RequestMethod.GET)
