@@ -1,4 +1,4 @@
-package com.pmdcodereview;
+package com.forceFilesEditor;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

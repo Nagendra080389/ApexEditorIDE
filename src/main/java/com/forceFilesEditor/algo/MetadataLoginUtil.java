@@ -1,9 +1,8 @@
-package com.pmdcodereview.algo;
+package com.forceFilesEditor.algo;
 
-import com.pmdcodereview.model.ApexClassWrapper;
+import com.forceFilesEditor.model.ApexClassWrapper;
 import com.sforce.soap.metadata.MetadataConnection;
 import com.sforce.soap.partner.Connector;
-import com.sforce.soap.partner.LoginResult;
 import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.soap.partner.QueryResult;
 import com.sforce.soap.tooling.*;
@@ -11,14 +10,8 @@ import com.sforce.soap.tooling.sobject.*;
 import com.sforce.ws.ConnectorConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.coyote.http2.ConnectionException;
-import com.sforce.soap.partner.*;
 
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MetadataLoginUtil {

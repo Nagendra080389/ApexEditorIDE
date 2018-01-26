@@ -1,4 +1,4 @@
-package com.pmdcodereview.model;
+package com.forceFilesEditor.model;
 
 import java.util.HashMap;
 import java.util.List;

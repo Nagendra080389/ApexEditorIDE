@@ -3,13 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.PMDCodeReview</groupId>
-	<artifactId>pmdreview</artifactId>
+	<groupId>com.forceFilesEditor</groupId>
+	<artifactId>forceFilesEditor</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>pmdreview</name>
-	<description>Code Review in HTML format</description>
+	<name>forceFilesEditor</name>
+	<description>Force Files editor with inbuilt code review</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -126,8 +126,6 @@
 			<groupId>com.force.toolingAPI</groupId>
 			<artifactId>toolingAPI</artifactId>
 			<version>4.0.2</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/resources/tooling-force.com-0.4.0.2.jar</systemPath>
 		</dependency>
 
 
