@@ -3,7 +3,7 @@ function OrderFormController($scope, $http) {
 
     $('#autocomplete').autocomplete({
         type: 'POST',
-        serviceUrl: 'http://USBLRNAGESINGH1:8989/getSuggestion',
+        serviceUrl: '/getSuggestion',
         onSelect: function (suggestion) {
             console.log('suggestion.value -> ' + suggestion.value);
 
@@ -16,7 +16,7 @@ function OrderFormController($scope, $http) {
             };
 
             $('#loaderImage').show();
-            $http.get("http://USBLRNAGESINGH1:8989/getApexBody", config).then(function (response) {
+            $http.get("/getApexBody", config).then(function (response) {
                 $scope.apexClassWrapper = response.data;
                 $('#loaderImage').hide();
                 if (globalEditor) {
@@ -53,7 +53,7 @@ function OrderFormController($scope, $http) {
         };
 
         $('#loaderImage').show();
-        $http.post("http://USBLRNAGESINGH1:8989/modifyApexBody", dataObj)
+        $http.post("/modifyApexBody", dataObj)
             .success(function (data) {
                 $scope.apexClassWrapper = data;
                 $('#loaderImage').hide();
