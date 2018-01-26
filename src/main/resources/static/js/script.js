@@ -45,6 +45,7 @@ function OrderFormController($scope, $http) {
     $scope.postdata = function (apexClassWrapper) {
         console.log(apexClassWrapper);
 
+        apexClassWrapper.body = globalEditor.getValue();
         var dataObj = {
             name: apexClassWrapper.name,
             body: apexClassWrapper.body,
