@@ -10,18 +10,21 @@ import com.sforce.soap.tooling.sobject.*;
 import com.sforce.ws.ConnectorConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.coyote.http2.ConnectionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 
 import java.io.*;
 import java.util.*;
 
 public class MetadataLoginUtil {
-    public static final String FILE_NAME = "C:\\JenkinsPOC\\Jenkins\\ConfigurationFileForIDE.txt";
+    public static final String FILE_NAME = "C:\\JenkinsPOC\\Jenkins\\ConfigurationFile.txt";
 
 
     static PartnerConnection partnerConnection;
     static MetadataConnection metadataConnection;
 
-    public static ApexClassWrapper getApexBody(String apexClassName) throws Exception {
+    public static ApexClassWrapper getApexBody(String className, String partnerURL, String apexClassName) throws Exception {
         Map<String, String> propertiesMap = new HashMap<String, String>();
         FileReader fileReader = new FileReader(FILE_NAME);
         createMapOfProperties(fileReader, propertiesMap);
@@ -29,7 +32,7 @@ public class MetadataLoginUtil {
         ConnectorConfig config = new ConnectorConfig();
         config.setUsername(propertiesMap.get("username"));
         config.setPassword(propertiesMap.get("password"));
-        config.setAuthEndpoint(propertiesMap.get("partnerURL"));
+        config.setAuthEndpoint(partnerURL);
         try {
             try {
                 partnerConnection = Connector.newConnection(config);
@@ -58,7 +61,7 @@ public class MetadataLoginUtil {
 
     }
 
-    public static ApexClassWrapper modifyApexBody(ApexClassWrapper apexClassWrapper) throws Exception {
+    public static ApexClassWrapper modifyApexBody(ApexClassWrapper apexClassWrapper, String partnerURL, String toolingURL) throws Exception {
 
         Map<String, String> propertiesMap = new HashMap<String, String>();
         FileReader fileReader = new FileReader(FILE_NAME);
@@ -67,7 +70,7 @@ public class MetadataLoginUtil {
         ConnectorConfig toolConfig = new ConnectorConfig();
         toolConfig.setUsername(propertiesMap.get("username"));
         toolConfig.setPassword(propertiesMap.get("password"));
-        toolConfig.setAuthEndpoint(propertiesMap.get("toolingURL"));
+        toolConfig.setAuthEndpoint(toolingURL);
 
 
         ToolingConnection toolingConnection = new ToolingConnection(toolConfig);
@@ -216,7 +219,8 @@ public class MetadataLoginUtil {
         fwOb.close();
     }
 
-    public static List<ApexClassWrapper> getAllApexClasses() throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
+    public static List<ApexClassWrapper> getAllApexClasses(String partnerURL, String toolingURL) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
+
         Map<String, String> propertiesMap = new HashMap<String, String>();
         FileReader fileReader = new FileReader(FILE_NAME);
         createMapOfProperties(fileReader, propertiesMap);
@@ -224,7 +228,7 @@ public class MetadataLoginUtil {
         ConnectorConfig config = new ConnectorConfig();
         config.setUsername(propertiesMap.get("username"));
         config.setPassword(propertiesMap.get("password"));
-        config.setAuthEndpoint(propertiesMap.get("partnerURL"));
+        config.setAuthEndpoint(partnerURL);
 
         try {
             partnerConnection = Connector.newConnection(config);
@@ -255,7 +259,7 @@ public class MetadataLoginUtil {
         return apexClassWrappers;
     }
 
-    public static Map<String, SymbolTable> generateSymbolTable() throws IOException, ConnectionException, com.sforce.ws.ConnectionException{
+    public static Map<String, SymbolTable> generateSymbolTable(String partnerURL, String toolingURL) throws IOException, ConnectionException, com.sforce.ws.ConnectionException{
 
         Map<String, String> propertiesMap = new HashMap<String, String>();
         FileReader fileReader = new FileReader(FILE_NAME);
@@ -267,13 +271,13 @@ public class MetadataLoginUtil {
         ConnectorConfig config = new ConnectorConfig();
         toolConfig.setUsername(propertiesMap.get("username"));
         toolConfig.setPassword(propertiesMap.get("password"));
-        toolConfig.setAuthEndpoint(propertiesMap.get("toolingURL"));
+        toolConfig.setAuthEndpoint(toolingURL);
 
         ToolingConnection toolingConnection = new ToolingConnection(toolConfig);
 
         config.setUsername(propertiesMap.get("username"));
         config.setPassword(propertiesMap.get("password"));
-        config.setAuthEndpoint(propertiesMap.get("partnerURL"));
+        config.setAuthEndpoint(partnerURL);
         partnerConnection = Connector.newConnection(config);
 
 
@@ -302,6 +306,7 @@ public class MetadataLoginUtil {
         }
 
 
+        System.out.println("Symbol Table Generated");
         return stringSymbolTableMap;
     }
 
