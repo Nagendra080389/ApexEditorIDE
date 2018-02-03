@@ -38,8 +38,8 @@ public class PMDController {
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
         try {
-            //generateSymbolTable(partnerURL, toolingURL);
-            List<ApexClassWrapper> allApexClasses = new ArrayList<>();
+            generateSymbolTable(partnerURL, toolingURL);
+            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL);
             List<String> allClassesInString = new ArrayList<>();
 
             for (ApexClassWrapper allApexClass : allApexClasses) {
