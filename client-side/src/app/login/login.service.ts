@@ -28,4 +28,12 @@ export class LoginService {
     localStorage.removeItem('currentUser');
   }
 
+  checkIfUserIsLoggedIn(): boolean {
+    if (localStorage.getItem('currentUser')) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 }

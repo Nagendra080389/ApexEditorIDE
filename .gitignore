@@ -103,3 +103,8 @@ Thumbs.db
 /client-side/node_modules/
 /client-side/bin/
 /client-side/lib/
+/client-side/target/
+client-side/etc/
+client-side/target/
+server-side/repo/
+server-side/target/

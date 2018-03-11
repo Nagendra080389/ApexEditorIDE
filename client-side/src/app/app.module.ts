@@ -14,6 +14,7 @@ import {AlertService} from './alert/alert.service';
 import {HttpClientModule} from "@angular/common/http";
 import {routing} from "./app.routing";
 import {AuthGuard} from "./auth.guard";
+import { LogoutComponent } from './logout/logout.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import {AuthGuard} from "./auth.guard";
     HomeComponent,
     EditorComponent,
     LoginComponent,
-    AlertComponent
+    AlertComponent,
+    LogoutComponent
   ],
   imports: [
     BrowserModule,

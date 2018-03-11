@@ -13,12 +13,13 @@
         <li class="nav-item">
           <a class="nav-link" [routerLink]="['editor']">Editor <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item">
+        <!--<li class="nav-item">
           <a class="nav-link" [routerLink]="['login']">Login <span class="sr-only">(current)</span></a>
-        </li>
+        </li>-->
       </ul>
       <form class="form-inline mt-2 mt-md-0">
-        <button class="btn btn-outline-success my-2 my-sm-0" [routerLink]="['login']" type="submit">Login</button>
+        <button *ngIf="checkForLoggedOut()" class="btn btn-outline-success my-2 my-sm-0" [routerLink]="['login']">Login</button>
+        <button *ngIf="checkForLogin()" class="btn btn-outline-success my-2 my-sm-0" [routerLink]="['logout']">Logout</button>
       </form>
     </div>
   </nav>
