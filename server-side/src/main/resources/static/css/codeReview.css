@@ -1,0 +1,98 @@
+body{
+    font: 15px/1.5 Arial, Helvetica,sans-serif;
+    padding: 0;
+    margin: 0;
+    background-color: #f6f6f6;
+}
+
+.container{
+    width: 90%;
+    margin: auto;
+    overflow: hidden;
+}
+
+header{
+    background-color: #000;
+    color: #FFFFFF;
+    padding-top: 30px;
+    min-height: 70px;
+    /*border-bottom: #e8491d 3px solid;*/
+}
+
+
+header ul{
+    margin:0;
+    padding: 0;
+}
+
+header #branding{
+    float: none;
+    text-align: center;
+}
+header #branding h1{
+    margin: 0;
+}
+
+header .highlight, header .current a{
+    color: #86bc25;
+    font-weight: bold;
+}
+
+header a:hover{
+    color: #cccccc;
+    font-weight:bold;
+}
+
+section{
+    padding-top: 2%;
+    padding-bottom: 10%;
+    text-align: center;
+}
+
+footer{
+    position: inherit;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 1rem;
+    text-align: center;
+}
+
+.imageSection{
+    image-resolution: from-image;
+    border-image: fill;
+    image-rendering: optimize-contrast;
+}
+
+.submitButton{
+    float: right;
+}
+
+.severityLevel{
+    padding-top: 1%;
+    margin: auto;
+    top:50%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+}
+
+.componentTitle {
+    font-size: 18px;
+    background-color: white;
+    display: inline-block;
+    padding: .5em .3em;
+
+}
+
+.componentWrapper {
+    border: solid #e8491d;
+    border-radius: 40px;
+    padding: 10px;
+    margin-top: 2em;
+}
+
+.componentWrapper div {
+    margin-top: -1.2em;
+}
