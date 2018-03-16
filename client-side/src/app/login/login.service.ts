@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import 'rxjs/add/operator/map'
-import {environment} from "../../environments/environment";
+import 'rxjs/add/operator/map';
+import {environment} from '../../environments/environment';
 
 @Injectable()
 export class LoginService {
@@ -11,7 +11,7 @@ export class LoginService {
   constructor(private http: HttpClient) { }
 
   login(username: string, password: string) {
-    return this.http.post<any>(this.url+'/login', { username: username, password: password })
+    return this.http.post<any>(this.url + '/login', { username: username, password: password })
       .map(user => {
         // login successful if there's a jwt token in the response
         if (user && user.hash) {

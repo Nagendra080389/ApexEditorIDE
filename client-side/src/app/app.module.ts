@@ -11,9 +11,9 @@ import {FormsModule} from '@angular/forms';
 import {LoginService} from './login/login.service';
 import {AlertComponent} from './alert/alert.component';
 import {AlertService} from './alert/alert.service';
-import {HttpClientModule} from "@angular/common/http";
-import {routing} from "./app.routing";
-import {AuthGuard} from "./auth.guard";
+import {HttpClientModule} from '@angular/common/http';
+import {routing} from './app.routing';
+import {AuthGuard} from './auth.guard';
 import { LogoutComponent } from './logout/logout.component';
 
 

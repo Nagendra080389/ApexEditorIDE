@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
-import {LoginService} from "./login.service";
-import {AlertService} from "../alert/alert.service";
+import {ActivatedRoute, Router} from '@angular/router';
+import {LoginService} from './login.service';
+import {AlertService} from '../alert/alert.service';
 
 @Component({
   selector: 'app-login',
