@@ -76,7 +76,7 @@ public class PMDController {
         return gson.toJson(newMapReturn);
     }
 
-    @RequestMapping(value = "/getMethodSuggestion", method = RequestMethod.POST)
+    @RequestMapping(value = "/apex/getMethodSuggestion", method = RequestMethod.GET)
     public String getMethodSuggestion(String query) throws IOException {
         Gson gson = new GsonBuilder().create();
         SymbolTable symbolTable = symbolTableMap.get(query);
@@ -91,7 +91,7 @@ public class PMDController {
         }
 
         newMapReturn.put("hints", newListToBeAdded);
-        return gson.toJson(newMapReturn);
+        return gson.toJson(newListToBeAdded);
     }
 
 
@@ -146,6 +146,21 @@ public class PMDController {
                 String errorMessage = gson.toJson(modifiedClass.getLineNumberError());
                 throw new DeploymentException(errorMessage);
             }
+            return gson.toJson(modifiedClass);
+
+        } catch (DeploymentException e) {
+            throw e;
+        }
+
+    }
+
+    @RequestMapping(value = "/createFile", method = RequestMethod.GET)
+    public String createFile() throws Exception {
+
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        try {
+            ApexClassWrapper modifiedClass = MetadataLoginUtil.createFiles("",null);
+
             return gson.toJson(modifiedClass);
 
         } catch (DeploymentException e) {
