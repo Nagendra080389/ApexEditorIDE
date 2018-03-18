@@ -1,5 +1,6 @@
 package com.forceFilesEditor.model;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,8 @@ public class ApexClassWrapper {
 
     public String body;
 
+    public Date salesForceSystemModStamp;
+
     public String id;
 
     public Map<Integer, List<String>> lineNumberError = new HashMap<>();
@@ -17,6 +20,14 @@ public class ApexClassWrapper {
     public Integer lineNumber;
 
     public boolean isCompilationError;
+
+    public Date getSalesForceSystemModStamp() {
+        return salesForceSystemModStamp;
+    }
+
+    public void setSalesForceSystemModStamp(Date salesForceSystemModStamp) {
+        this.salesForceSystemModStamp = salesForceSystemModStamp;
+    }
 
     public String getId() {
         return id;

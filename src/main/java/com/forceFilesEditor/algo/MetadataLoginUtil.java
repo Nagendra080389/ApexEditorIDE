@@ -1,6 +1,7 @@
 package com.forceFilesEditor.algo;
 
 import com.forceFilesEditor.model.ApexClassWrapper;
+import com.forceFilesEditor.pmd.PmdReviewService;
 import com.sforce.soap.metadata.MetadataConnection;
 import com.sforce.soap.partner.Connector;
 import com.sforce.soap.partner.PartnerConnection;
@@ -8,23 +9,24 @@ import com.sforce.soap.partner.QueryResult;
 import com.sforce.soap.tooling.*;
 import com.sforce.soap.tooling.sobject.*;
 import com.sforce.ws.ConnectorConfig;
+import net.sourceforge.pmd.*;
+import net.sourceforge.pmd.util.ResourceLoader;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.coyote.http2.ConnectionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
 import java.util.*;
 
 public class MetadataLoginUtil {
-    public static final String FILE_NAME = "C:\\JenkinsPOC\\Jenkins\\ConfigurationFile.txt";
-
+    public static final String FILE_NAME = "C:\\JenkinsPOC\\Jenkins\\ConfigurationFileForIDE.txt";
 
     static PartnerConnection partnerConnection;
     static MetadataConnection metadataConnection;
 
-    public static ApexClassWrapper getApexBody(String className, String partnerURL, String apexClassName) throws Exception {
+    public static ApexClassWrapper getApexBody(String className, String partnerURL, String toolingURL) throws Exception {
         Map<String, String> propertiesMap = new HashMap<String, String>();
         FileReader fileReader = new FileReader(FILE_NAME);
         createMapOfProperties(fileReader, propertiesMap);
@@ -41,17 +43,19 @@ public class MetadataLoginUtil {
                 throw new com.sforce.ws.ConnectionException("Cannot connect to Org");
             }
 
-            String apexClassBody = "SELECT Id,Body, Name FROM APEXCLASS Where Name = '"+apexClassName+"'";
+            String apexClassBody = "SELECT Id,Body,SystemModStamp, Name FROM APEXCLASS Where Name = '" + className + "'";
             QueryResult query = partnerConnection.query(apexClassBody);
 
             Object body = query.getRecords()[0].getField("Body");
             Object name = query.getRecords()[0].getField("Name");
             Object id = query.getRecords()[0].getField("Id");
+            Object salesForceSystemModStamp = query.getRecords()[0].getField("SystemModstamp");
 
             ApexClassWrapper apexClassWrapper = new ApexClassWrapper();
             apexClassWrapper.setName(name.toString());
             apexClassWrapper.setBody(body.toString());
             apexClassWrapper.setId(id.toString());
+            apexClassWrapper.setSalesForceSystemModStamp(DateUtils.parseDateStrictly(salesForceSystemModStamp.toString(), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 
             return apexClassWrapper;
 
@@ -74,7 +78,7 @@ public class MetadataLoginUtil {
 
 
         ToolingConnection toolingConnection = new ToolingConnection(toolConfig);
-        BufferedReader bufferedReader= null;
+        BufferedReader bufferedReader = null;
         try {
             // Create a MetaData Container, this is like a bucket for ur modified member
             MetadataContainer container = new MetadataContainer();
@@ -90,13 +94,7 @@ public class MetadataLoginUtil {
             apexClassMember.setContentEntityId(apexClassWrapper.getId());
             apexClassMember.setMetadataContainerId(containerId);
 
-            List<String> lines = Arrays.asList(apexClassWrapper.getBody());
-            File file = new File("C:\\Users\\nagesingh\\IdeaProjects\\ApexEditorIDE\\apexClass\\"+apexClassWrapper.getName()+".cls");
-            for (String line : lines) {
-                FileUtils.writeStringToFile(file, line);
-            }
             Map<Integer, List<String>> lineNumberError = new HashMap<>();
-
 
             con = new SObject[]{apexClassMember};
             com.sforce.soap.tooling.SaveResult[] saveMember = toolingConnection.create(con);
@@ -104,6 +102,139 @@ public class MetadataLoginUtil {
             ContainerAsyncRequest containerAsyncRequest = new ContainerAsyncRequest();
             containerAsyncRequest.setMetadataContainerId(containerId);
             containerAsyncRequest.setIsCheckOnly(true);
+
+            con = new SObject[]{containerAsyncRequest};
+            com.sforce.soap.tooling.SaveResult[] asyncResultMember = toolingConnection.create(con);
+
+            String id = asyncResultMember[0].getId();
+
+            while (true) {
+                com.sforce.soap.tooling.QueryResult containerSyncRequestCompile = toolingConnection.query("SELECT Id,State, DeployDetails, ErrorMsg FROM ContainerAsyncRequest where id = '" + id + "'");
+                ContainerAsyncRequest sObject1 = (ContainerAsyncRequest) containerSyncRequestCompile.getRecords()[0];
+                if ("Queued".equals(sObject1.getState())) {
+                    Thread.sleep(5000);
+                    continue;
+                } else {
+                    if ("Failed".equals(sObject1.getState())) {
+                        DeployDetails deployDetails = sObject1.getDeployDetails();
+                        if (deployDetails != null && deployDetails.getComponentFailures() != null) {
+                            if (deployDetails.getComponentFailures().length > 0) {
+                                apexClassWrapper.setCompilationError(true);
+                                for (DeployMessage deployMessage : deployDetails.getComponentFailures()) {
+                                    if (lineNumberError.containsKey(deployMessage.getLineNumber())) {
+                                        List<String> strings = lineNumberError.get(deployMessage.getLineNumber());
+                                        strings.add(deployMessage.getProblem());
+                                    } else {
+                                        List<String> problemList = new ArrayList<>();
+                                        problemList.add(deployMessage.getProblem());
+                                        lineNumberError.put(deployMessage.getLineNumber(), problemList);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+
+            apexClassWrapper.setLineNumberError(lineNumberError);
+
+            if (!apexClassWrapper.isCompilationError()) {
+                PMDConfiguration pmdConfiguration = new PMDConfiguration();
+                File ruleSet = new ClassPathResource("xml/ruleSet.xml").getFile();
+                pmdConfiguration.setReportFormat("text");
+                pmdConfiguration.setRuleSets(ruleSet.getAbsolutePath());
+                pmdConfiguration.setThreads(4);
+                SourceCodeProcessor sourceCodeProcessor = new SourceCodeProcessor(pmdConfiguration);
+                RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(pmdConfiguration, new ResourceLoader());
+                RuleSets ruleSets = RulesetsFactoryUtils.getRuleSetsWithBenchmark(pmdConfiguration.getRuleSets(), ruleSetFactory);
+
+                PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
+                List<RuleViolation> review = pmdReviewService.review(apexClassWrapper.getBody(), apexClassWrapper.getName() + ".cls");
+
+                for (RuleViolation ruleViolation : review) {
+                    if (lineNumberError.containsKey(ruleViolation.getBeginLine())) {
+                        List<String> strings = lineNumberError.get(ruleViolation.getBeginLine());
+                        strings.add(ruleViolation.getDescription());
+                    } else {
+                        List<String> problemList = new ArrayList<>();
+                        problemList.add(ruleViolation.getDescription());
+                        lineNumberError.put(ruleViolation.getBeginLine(), problemList);
+                    }
+                }
+            }
+            return apexClassWrapper;
+
+        } catch (com.sforce.ws.ConnectionException e) {
+            throw new com.sforce.ws.ConnectionException(e.getMessage());
+
+        } finally {
+            if (bufferedReader != null) {
+                bufferedReader.close();
+            }
+        }
+
+    }
+
+
+    public static ApexClassWrapper createFiles(String type, ApexClassWrapper apexClassWrapper) throws Exception {
+
+        Map<String, String> propertiesMap = new HashMap<String, String>();
+        FileReader fileReader = new FileReader(FILE_NAME);
+        createMapOfProperties(fileReader, propertiesMap);
+
+        ConnectorConfig toolConfig = new ConnectorConfig();
+        toolConfig.setUsername(propertiesMap.get("username"));
+        toolConfig.setPassword(propertiesMap.get("password"));
+        toolConfig.setAuthEndpoint(propertiesMap.get("toolingURL"));
+
+
+        ToolingConnection toolingConnection = new ToolingConnection(toolConfig);
+        BufferedReader bufferedReader = null;
+        try {
+            // Create a MetaData Container, this is like a bucket for ur modified member
+            MetadataContainer container = new MetadataContainer();
+            container.setName(String.valueOf(Math.random()));
+            SObject[] con = {container};
+            com.sforce.soap.tooling.SaveResult[] saveResults = toolingConnection.create(con);
+            String containerId = saveResults[0].getId();
+
+
+            // we create a member if we want to update and direttly ApexClass when we want to create
+
+
+            ApexClass apexClass1 = new ApexClass();
+            apexClass1.setBody(" public class TestClassFromToolingAPI {\n" +
+                    "                public string SayHello() {\n" +
+                    "                    return 'Hello1';\n" +
+                    "                }\n" +
+                    "           }");
+
+            con = new SObject[]{apexClass1};
+
+            com.sforce.soap.tooling.SaveResult[] saveApex = toolingConnection.create(con);
+            String apexId = saveApex[0].getId();
+
+
+            /*ApexClassMember apexClass = new ApexClassMember();
+            apexClass.setMetadataContainerId(containerId);
+            apexClass.setBody(" public class TestClassFromToolingAPI {\n" +
+                    "                public string SayHello() {\n" +
+                    "                    return 'Hello1';\n" +
+                    "                }\n" +
+                    "           }");
+            apexClass.setFullName("TestClassFromToolingAPI");
+            apexClass.setContentEntityId(apexId);*/
+
+            Map<Integer, List<String>> lineNumberError = new HashMap<>();
+
+
+            //con = new SObject[]{apexClass};
+            //com.sforce.soap.tooling.SaveResult[] saveMember = toolingConnection.create(con);
+
+            ContainerAsyncRequest containerAsyncRequest = new ContainerAsyncRequest();
+            containerAsyncRequest.setMetadataContainerId(containerId);
+            containerAsyncRequest.setIsCheckOnly(false);
 
             con = new SObject[]{containerAsyncRequest};
 
@@ -126,10 +257,10 @@ public class MetadataLoginUtil {
                             if (deployDetails.getComponentFailures().length > 0) {
                                 apexClassWrapper.setCompilationError(true);
                                 for (DeployMessage deployMessage : deployDetails.getComponentFailures()) {
-                                    if(lineNumberError.containsKey(deployMessage.getLineNumber())){
+                                    if (lineNumberError.containsKey(deployMessage.getLineNumber())) {
                                         List<String> strings = lineNumberError.get(deployMessage.getLineNumber());
                                         strings.add(deployMessage.getProblem());
-                                    }else {
+                                    } else {
                                         List<String> problemList = new ArrayList<>();
                                         problemList.add(deployMessage.getProblem());
                                         lineNumberError.put(deployMessage.getLineNumber(), problemList);
@@ -142,53 +273,13 @@ public class MetadataLoginUtil {
                 break;
             }
 
-            apexClassWrapper.setLineNumberError(lineNumberError);
-
-
-            if(!apexClassWrapper.isCompilationError()) {
-                ProcessBuilder processBuilder = new ProcessBuilder(propertiesMap.get("PmdBatFile"));
-                File log = new File(propertiesMap.get("apexClassReviewResult") + "\\" + apexClassWrapper.getName() + "_result" + ".txt");
-                if (log.exists()) {
-                    log.delete();
-                }
-                processBuilder.redirectErrorStream(true);
-                processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(log));
-                Process process = processBuilder.start();
-                process.waitFor();
-                System.out.println("PMD ruleset Done");
-
-                FileReader fileReader1 = new FileReader(log);
-                bufferedReader = new BufferedReader(fileReader1);
-                String sCurrentLine;
-
-                while ((sCurrentLine = bufferedReader.readLine()) != null) {
-                    if (sCurrentLine.contains(apexClassWrapper.getName())) {
-                        String[] split = sCurrentLine.split("\\\\");
-                        String lastElement = split[split.length - 1];
-                        String[] lastTwoDetails = lastElement.split("\\t");
-                        String[] nameAndNumber = lastTwoDetails[0].split(":");
-                        Integer lineNumber = Integer.valueOf(nameAndNumber[1]);
-                        String errorMessage = lastTwoDetails[1];
-
-                        if (lineNumberError.containsKey(lineNumber)) {
-                            List<String> strings = lineNumberError.get(lineNumber);
-                            strings.add(errorMessage);
-                        } else {
-                            List<String> problemList = new ArrayList<>();
-                            problemList.add(errorMessage);
-                            lineNumberError.put(lineNumber, problemList);
-                        }
-                    }
-                }
-            }
-
 
             return apexClassWrapper;
 
         } catch (com.sforce.ws.ConnectionException e) {
             throw new com.sforce.ws.ConnectionException(e.getMessage());
 
-        }finally {
+        } finally {
             if (bufferedReader != null) {
                 bufferedReader.close();
             }
@@ -225,6 +316,7 @@ public class MetadataLoginUtil {
         FileReader fileReader = new FileReader(FILE_NAME);
         createMapOfProperties(fileReader, propertiesMap);
 
+
         ConnectorConfig config = new ConnectorConfig();
         config.setUsername(propertiesMap.get("username"));
         config.setPassword(propertiesMap.get("password"));
@@ -259,7 +351,7 @@ public class MetadataLoginUtil {
         return apexClassWrappers;
     }
 
-    public static Map<String, SymbolTable> generateSymbolTable(String partnerURL, String toolingURL) throws IOException, ConnectionException, com.sforce.ws.ConnectionException{
+    public static Map<String, SymbolTable> generateSymbolTable(String partnerURL, String toolingURL) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
 
         Map<String, String> propertiesMap = new HashMap<String, String>();
         FileReader fileReader = new FileReader(FILE_NAME);
@@ -281,8 +373,8 @@ public class MetadataLoginUtil {
         partnerConnection = Connector.newConnection(config);
 
 
-        String apexClassBody = "SELECT Id, Name FROM APEXCLASS";
-        List<String> idList  = new ArrayList<>();
+        String apexClassBody = "SELECT Id, Name FROM APEXCLASS WHERE Name = '" + "TestBusinessHelper'";
+        List<String> idList = new ArrayList<>();
 
         QueryResult className = partnerConnection.query(apexClassBody);
         for (com.sforce.soap.partner.sobject.SObject sObject : className.getRecords()) {
@@ -295,10 +387,10 @@ public class MetadataLoginUtil {
 
         SObject[] apexClasses = toolingConnection.retrieve("SymbolTable, Id, Name", "ApexClass", classArray);
 
-        for(SObject sObjects : apexClasses) {
+        for (SObject sObjects : apexClasses) {
             ApexClass apexClass = (ApexClass) sObjects;
             SymbolTable symbolTable = apexClass.getSymbolTable();
-            if(symbolTable==null) { // No symbol table, then class likely is invalid
+            if (symbolTable == null) { // No symbol table, then class likely is invalid
                 continue;
             }
 
@@ -306,12 +398,11 @@ public class MetadataLoginUtil {
         }
 
 
-        System.out.println("Symbol Table Generated");
         return stringSymbolTableMap;
     }
 
-    private static void setValues(String id, ApexClass apexClass,Map<String, SymbolTable> stringSymbolTableMap,SymbolTable symbolTable){
-        if(id.equals(apexClass.getId())){
+    private static void setValues(String id, ApexClass apexClass, Map<String, SymbolTable> stringSymbolTableMap, SymbolTable symbolTable) {
+        if (id.equals(apexClass.getId())) {
             stringSymbolTableMap.put(apexClass.getName(), symbolTable);
         }
     }

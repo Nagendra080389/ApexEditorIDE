@@ -52,38 +52,19 @@
             <h1>Apex <span class="highlight"> Editor </span></h1>
 
         </div>
-        <div id="mySidenav" class="sidenav">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <a href="#">Login</a>
-            <a href="#">Create New</a>
-            <a href="#">Modify Existing</a>
-            <a href="#">Contact</a>
-        </div>
-
     </div>
 </header>
 <div class="col-md-12 col-lg-12" id="main">
     <div class="panel with-nav-tabs panel-default">
         <div class="panel-heading">
             <ul class="nav nav-tabs">
-                <li class="active"><a href="#tab1default" data-toggle="tab">Apex Editor</a></li>
+                <li class="active"><a href="#tab1default" data-toggle="tab">Apex Creator</a></li>
             </ul>
         </div>
         <div class="panel-body">
             <div class="tab-content">
                 <div class="tab-pane fade in active" id="tab1default">
-                    <div>
-                        <input type="text" name="apexClass" id="autocomplete"
-                               placeholder="Type the name of the Apex class you want to edit"/>
-                    </div>
-                    <div class="btn-group-vertical" style="padding: 1%">
-                        <button type="button" class="btn btn-primary" id="editBtn">Edit</button>
-                    </div>
-
                     <div id='error' style='display:none'>{{apexClassWrapperError.message}}</div>
-
-                    <div>{{apexClassWrapper.name}}</div>
-                    <img src="../img/ajax-loader.gif" id="loaderImage" style='display:none'>
                     <div align="left">
                         <article>
                             <textarea ng-model="apexClassWrapper.body" id="apexBody" name="apexBody" readonly="true">{{apexClassWrapper.body}}</textarea>
