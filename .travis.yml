@@ -1,5 +1,7 @@
-language: java
-sudo: true
-jdk: oraclejdk8
-before_install:
-  - chmod +x mvnw
+env:
+- MAVEN_VERSION=3.2.5
+- MAVEN_VERSION=3.3.9
+install:
+- "mvn -N io.takari:maven:wrapper -Dmaven=${MAVEN_VERSION}"
+- "./mvnw --show-version --errors --batch-mode test-compile dependency:go-offline"
+script: "./mvnw --show-version --errors --batch-mode -Prun-its clean verify"
