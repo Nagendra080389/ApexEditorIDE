@@ -10,13 +10,17 @@ import com.sforce.soap.tooling.*;
 import com.sforce.soap.tooling.sobject.*;
 import com.sforce.ws.ConnectorConfig;
 import net.sourceforge.pmd.*;
+import net.sourceforge.pmd.cache.AnalysisCache;
+import net.sourceforge.pmd.cache.FileAnalysisCache;
 import net.sourceforge.pmd.util.ResourceLoader;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.coyote.http2.ConnectionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
+import javax.servlet.http.Cookie;
 import java.io.*;
 import java.util.*;
 
@@ -26,15 +30,25 @@ public class MetadataLoginUtil {
     static PartnerConnection partnerConnection;
     static MetadataConnection metadataConnection;
 
-    public static ApexClassWrapper getApexBody(String className, String partnerURL, String toolingURL) throws Exception {
-        Map<String, String> propertiesMap = new HashMap<String, String>();
-        FileReader fileReader = new FileReader(FILE_NAME);
-        createMapOfProperties(fileReader, propertiesMap);
+    public static ApexClassWrapper getApexBody(String className, String partnerURL, String toolingURL, Cookie[] cookies) throws Exception {
+
+        String instanceUrl = null;
+        String accessToken = null;
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("ACCESS_TOKEN")){
+                accessToken = cookie.getValue();
+            }
+            if(cookie.getName().equals("INSTANCE_URL")){
+                instanceUrl = cookie.getValue();
+                instanceUrl = instanceUrl + partnerURL;
+            }
+        }
+
 
         ConnectorConfig config = new ConnectorConfig();
-        config.setUsername(propertiesMap.get("username"));
-        config.setPassword(propertiesMap.get("password"));
-        config.setAuthEndpoint(partnerURL);
+        config.setSessionId(accessToken);
+        config.setServiceEndpoint(instanceUrl);
+
         try {
             try {
                 partnerConnection = Connector.newConnection(config);
@@ -65,19 +79,28 @@ public class MetadataLoginUtil {
 
     }
 
-    public static ApexClassWrapper modifyApexBody(ApexClassWrapper apexClassWrapper, String partnerURL, String toolingURL) throws Exception {
+    public static ApexClassWrapper modifyApexBody(ApexClassWrapper apexClassWrapper, String partnerURL, String toolingURL, Cookie[] cookies) throws Exception {
 
-        Map<String, String> propertiesMap = new HashMap<String, String>();
-        FileReader fileReader = new FileReader(FILE_NAME);
-        createMapOfProperties(fileReader, propertiesMap);
+        String instanceUrl = null;
+        String accessToken = null;
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("ACCESS_TOKEN")){
+                accessToken = cookie.getValue();
+            }
+            if(cookie.getName().equals("INSTANCE_URL")){
+                instanceUrl = cookie.getValue();
+                instanceUrl = instanceUrl + toolingURL;
+            }
+        }
 
         ConnectorConfig toolConfig = new ConnectorConfig();
-        toolConfig.setUsername(propertiesMap.get("username"));
-        toolConfig.setPassword(propertiesMap.get("password"));
-        toolConfig.setAuthEndpoint(toolingURL);
+
+        toolConfig.setServiceEndpoint(instanceUrl);
+        toolConfig.setSessionId(accessToken);
 
 
         ToolingConnection toolingConnection = new ToolingConnection(toolConfig);
+
         BufferedReader bufferedReader = null;
         try {
             // Create a MetaData Container, this is like a bucket for ur modified member
@@ -145,6 +168,7 @@ public class MetadataLoginUtil {
                 pmdConfiguration.setReportFormat("text");
                 pmdConfiguration.setRuleSets(ruleSet.getAbsolutePath());
                 pmdConfiguration.setThreads(4);
+                //pmdConfiguration.setAnalysisCache(new FileAnalysisCache());
                 SourceCodeProcessor sourceCodeProcessor = new SourceCodeProcessor(pmdConfiguration);
                 RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(pmdConfiguration, new ResourceLoader());
                 RuleSets ruleSets = RulesetsFactoryUtils.getRuleSetsWithBenchmark(pmdConfiguration.getRuleSets(), ruleSetFactory);
@@ -310,17 +334,24 @@ public class MetadataLoginUtil {
         fwOb.close();
     }
 
-    public static List<ApexClassWrapper> getAllApexClasses(String partnerURL, String toolingURL) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
+    public static List<ApexClassWrapper> getAllApexClasses(String partnerURL, String toolingURL, Cookie[] cookies) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
 
-        Map<String, String> propertiesMap = new HashMap<String, String>();
-        FileReader fileReader = new FileReader(FILE_NAME);
-        createMapOfProperties(fileReader, propertiesMap);
+        String instanceUrl = null;
+        String accessToken = null;
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("ACCESS_TOKEN")){
+                accessToken = cookie.getValue();
+            }
+            if(cookie.getName().equals("INSTANCE_URL")){
+                instanceUrl = cookie.getValue();
+                instanceUrl = instanceUrl + partnerURL;
+            }
+        }
 
 
         ConnectorConfig config = new ConnectorConfig();
-        config.setUsername(propertiesMap.get("username"));
-        config.setPassword(propertiesMap.get("password"));
-        config.setAuthEndpoint(partnerURL);
+        config.setSessionId(accessToken);
+        config.setServiceEndpoint(instanceUrl);
 
         try {
             partnerConnection = Connector.newConnection(config);
@@ -332,12 +363,12 @@ public class MetadataLoginUtil {
         String apexClassBody = "SELECT Id, Name FROM APEXCLASS";
 
 
-        QueryResult query = partnerConnection.query(apexClassBody);
+        List<com.sforce.soap.partner.sobject.SObject> sObjectList = queryRecords(apexClassBody, partnerConnection, null, true);
 
         ApexClassWrapper apexClassWrapper = null;
 
         List<ApexClassWrapper> apexClassWrappers = new ArrayList<>();
-        for (com.sforce.soap.partner.sobject.SObject sObject : query.getRecords()) {
+        for (com.sforce.soap.partner.sobject.SObject sObject : sObjectList) {
             Object name = sObject.getField("Name");
             Object id = sObject.getField("Id");
 
@@ -351,59 +382,112 @@ public class MetadataLoginUtil {
         return apexClassWrappers;
     }
 
-    public static Map<String, SymbolTable> generateSymbolTable(String partnerURL, String toolingURL) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
+    public static Map<String, SymbolTable> generateSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
 
-        Map<String, String> propertiesMap = new HashMap<String, String>();
-        FileReader fileReader = new FileReader(FILE_NAME);
-        createMapOfProperties(fileReader, propertiesMap);
+
+
+        String accessToken = null;
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("ACCESS_TOKEN")){
+                accessToken = cookie.getValue();
+            }
+            if(cookie.getName().equals("INSTANCE_URL")){
+                String instanceUrl = cookie.getValue();
+                partnerURL = instanceUrl + partnerURL;
+                toolingURL = instanceUrl + toolingURL;
+            }
+        }
+
+
+
 
         Map<String, SymbolTable> stringSymbolTableMap = new HashMap<>();
 
         ConnectorConfig toolConfig = new ConnectorConfig();
         ConnectorConfig config = new ConnectorConfig();
-        toolConfig.setUsername(propertiesMap.get("username"));
-        toolConfig.setPassword(propertiesMap.get("password"));
-        toolConfig.setAuthEndpoint(toolingURL);
+
+        toolConfig.setServiceEndpoint(toolingURL);
+        toolConfig.setSessionId(accessToken);
 
         ToolingConnection toolingConnection = new ToolingConnection(toolConfig);
 
-        config.setUsername(propertiesMap.get("username"));
-        config.setPassword(propertiesMap.get("password"));
-        config.setAuthEndpoint(partnerURL);
+        config.setSessionId(accessToken);
+        config.setServiceEndpoint(partnerURL);
         partnerConnection = Connector.newConnection(config);
 
 
-        String apexClassBody = "SELECT Id, Name FROM APEXCLASS WHERE Name = '" + "TestBusinessHelper'";
-        List<String> idList = new ArrayList<>();
+        String apexClassBodytooling = "SELECT Id, Name, SymbolTable FROM APEXCLASS";
+        List<ApexClass> sObjectListTooling = queryRecords(apexClassBodytooling, partnerConnection, toolingConnection, false);
 
-        QueryResult className = partnerConnection.query(apexClassBody);
-        for (com.sforce.soap.partner.sobject.SObject sObject : className.getRecords()) {
-            String Id = (String) sObject.getField("Id");
-            idList.add(Id);
+        for (ApexClass apexClasses : sObjectListTooling) {
+            SymbolTable symbolTable = apexClasses.getSymbolTable();
+            String name = apexClasses.getName();
+            setValues(name, stringSymbolTableMap, symbolTable);
         }
 
-        String[] classArray = new String[idList.size()];
-        classArray = idList.toArray(classArray);
-
-        SObject[] apexClasses = toolingConnection.retrieve("SymbolTable, Id, Name", "ApexClass", classArray);
-
-        for (SObject sObjects : apexClasses) {
-            ApexClass apexClass = (ApexClass) sObjects;
-            SymbolTable symbolTable = apexClass.getSymbolTable();
-            if (symbolTable == null) { // No symbol table, then class likely is invalid
-                continue;
-            }
-
-            idList.parallelStream().forEach(id -> setValues(id, apexClass, stringSymbolTableMap, symbolTable));
-        }
-
+        System.out.println("Symbol table generated");
 
         return stringSymbolTableMap;
     }
 
-    private static void setValues(String id, ApexClass apexClass, Map<String, SymbolTable> stringSymbolTableMap, SymbolTable symbolTable) {
-        if (id.equals(apexClass.getId())) {
-            stringSymbolTableMap.put(apexClass.getName(), symbolTable);
+    private static void setValues(String name, Map<String, SymbolTable> stringSymbolTableMap, SymbolTable symbolTable) {
+        stringSymbolTableMap.put(name, symbolTable);
+
+    }
+
+    public static <T> List<T> queryRecords(String query, PartnerConnection partnerConnection, ToolingConnection toolingConnection, boolean usePartner)
+            throws com.sforce.ws.ConnectionException {
+        if (usePartner) {
+            List<T> sObjectList = new ArrayList<>();
+            QueryResult qResult;
+            qResult = partnerConnection.query(query);
+            boolean done = false;
+            if (qResult.getSize() > 0) {
+                System.out.println("Logged-in user can see a total of "
+                        + qResult.getSize() + " contact records.");
+                while (!done) {
+                    com.sforce.soap.partner.sobject.SObject[] records = qResult.getRecords();
+                    for (com.sforce.soap.partner.sobject.SObject record : records) {
+                        sObjectList.add((T) record);
+                    }
+
+                    if (qResult.isDone()) {
+                        done = true;
+                    } else {
+                        qResult = partnerConnection.queryMore(qResult.getQueryLocator());
+                    }
+                }
+            } else {
+                System.out.println("No records found.");
+            }
+            System.out.println("Query successfully executed.");
+
+            return sObjectList;
+        } else {
+            List<T> sObjectList = new ArrayList<>();
+            com.sforce.soap.tooling.QueryResult qResult = toolingConnection.query(query);
+            boolean done = false;
+            if (qResult.getSize() > 0) {
+                System.out.println("Logged-in user can see a total of "
+                        + qResult.getSize() + " contact records.");
+                while (!done) {
+                    SObject[] records = qResult.getRecords();
+                    for (SObject record : records) {
+                        sObjectList.add((T) record);
+                    }
+                    if (qResult.isDone()) {
+                        done = true;
+                    } else {
+                        qResult = toolingConnection.queryMore(qResult.getQueryLocator());
+                    }
+                }
+            } else {
+                System.out.println("No records found.");
+            }
+            System.out.println("Query successfully executed.");
+
+            return sObjectList;
+
         }
     }
 }

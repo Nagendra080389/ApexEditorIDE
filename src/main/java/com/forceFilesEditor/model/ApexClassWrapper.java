@@ -1,5 +1,7 @@
 package com.forceFilesEditor.model;
 
+import com.sforce.soap.tooling.SymbolTable;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +22,8 @@ public class ApexClassWrapper {
     public Integer lineNumber;
 
     public boolean isCompilationError;
+
+    private SymbolTable symbolTable;
 
     public Date getSalesForceSystemModStamp() {
         return salesForceSystemModStamp;
@@ -75,5 +79,13 @@ public class ApexClassWrapper {
 
     public void setLineNumberError(Map<Integer, List<String>> lineNumberError) {
         this.lineNumberError = lineNumberError;
+    }
+
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
+    }
+
+    public void setSymbolTable(SymbolTable symbolTable) {
+        this.symbolTable = symbolTable;
     }
 }

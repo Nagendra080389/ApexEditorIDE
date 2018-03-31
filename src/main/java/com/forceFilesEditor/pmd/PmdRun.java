@@ -1,6 +1,7 @@
 package com.forceFilesEditor.pmd;
 
 import net.sourceforge.pmd.*;
+import net.sourceforge.pmd.cache.AnalysisCache;
 import net.sourceforge.pmd.stat.Metric;
 import net.sourceforge.pmd.util.ResourceLoader;
 import org.springframework.core.io.ClassPathResource;

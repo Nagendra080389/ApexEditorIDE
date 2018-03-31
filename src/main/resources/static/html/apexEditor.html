@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<meta charset="utf-8"/>
+<title>POC-SalesForce</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.29/angular.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Cookie|Open+Sans:400,700" rel="stylesheet"/>
+<!-- The main CSS file -->
+<link href="../css/style.css" rel="stylesheet"/>
+<link href="../css/codeReview.css" rel="stylesheet"/>
+<link href="../css/codemirror/codemirror.css" rel="stylesheet"/>
+<link href="../css/codemirror/show-hint.css" rel="stylesheet"/>
+<link href="../css/codemirror/matchesonscrollbar.css" rel="stylesheet"/>
+<link href="../css/codemirror/dialog.css" rel="stylesheet"/>
+
+<link rel="stylesheet prefetch" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.1/animate.min.css">
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="../js/script.js"></script>
+<script src="../js/codemirror/codemirror.js"></script>
+<script src="../js/codemirror/apex.js"></script>
+<script src="../js/codemirror/addon/edit/matchbrackets.js"></script>
+<script src="../js/codemirror/addon/edit/closebrackets.js"></script>
+<script src="../js/codemirror/addon/edit/closetag.js"></script>
+<script src="../js/codemirror/addon/hint/show-hint.js"></script>
+<script src="../js/codemirror/addon/hint/anyword-hint.js"></script>
+<script src="../js/codemirror/addon/search/jump-to-line.js"></script>
+<script src="../js/codemirror/addon/search/match-highlighter.js"></script>
+<script src="../js/codemirror/addon/scroll/annotatescrollbar.js"></script>
+<script src="../js/codemirror/addon/search/matchesonscrollbar.js"></script>
+<script src="../js/codemirror/addon/search/search.js"></script>
+<script src="../js/codemirror/addon/search/searchcursor.js"></script>
+<script src="../js/codemirror/addon/search/dialog.js"></script>
+<script src="../js/jquery.autocomplete.min.js"></script>
+<!--Default theme-->
+</head>
+
+<body ng-app ng-controller="OrderFormController">
+<!--<h1 class="errorHeader">List of Classes</h1>-->
+<header>
+    <div class="container">
+        <div id="branding">
+            <h1>Apex <span class="highlight"> Editor </span></h1>
+        </div>
+    </div>
+</header>
+
+<div id="myModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="modal-body">
+                    <table class="table table-sm table-inverse table-responsive table-striped">
+                        <thead>
+                        <tr>
+                            <th>Line Number</th>
+                            <th>Review Feedback</th>
+                        </tr>
+                        </thead>
+                        <tr ng-repeat='(key, value) in errorDetails'>
+                            <td>{{key}}</td>
+                            <td ng-repeat="v in value">
+                                {{v}}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default">Deploy With Errors</button>
+
+            <button type="button" class="btn btn-default" data-dismiss="modal">
+                Close
+            </button>
+
+        </div>
+
+    </div>
+</div>
+<div class="col-md-12 col-lg-12" id="main">
+    <div class="panel with-nav-tabs panel-default">
+        <div class="panel-heading">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab1default" data-toggle="tab">Apex Editor</a></li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="tab-content">
+                <div class="tab-pane fade in active" id="tab1default">
+                    <div>
+                        <input type="text" name="apexClass" id="autocomplete"
+                               placeholder="Type the name of the Apex class you want to edit"/>
+                    </div>
+                    <div class="btn-group-vertical" style="padding: 1%">
+                        <button type="button" class="btn btn-primary" id="editBtn">Edit</button>
+                    </div>
+
+                    <!--<div id='error' style='display:none'>{{apexClassWrapperError.message}}</div>-->
+
+                    <div>{{apexClassWrapper.name}}</div>
+                    <img src="../img/ajax-loader.gif" id="loaderImage" style='display:none'>
+                    <div align="left">
+                        <article>
+                            <textarea ng-model="apexClassWrapper.body" id="apexBody" name="apexBody" readonly="true">{{apexClassWrapper.body}}</textarea>
+                        </article>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary" id="saveBtn" ng-click="postdata(apexClassWrapper)">Save
+            </button>
+        </div>
+    </div>
+</div>
+<script src="../js/makeEditable.js"></script>
+<script>
+
+</script>
+
+
+<footer>
+    <p>Web based Apex Editor</p>
+    <p>Developed By - Nagendra Kumar Singh</p>
+</footer>
+</body>
+</html>

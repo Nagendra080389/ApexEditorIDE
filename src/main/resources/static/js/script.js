@@ -25,12 +25,14 @@ function OrderFormController($scope, $http) {
                 setTimeout(function (test) {
                     CodeMirror.commands.autocomplete = function (cm) {
                         cm.showHint({hint: CodeMirror.hint.anyword});
+                        //cm.showHint({hint: CodeMirror.hint.fromList});
                     };
                     var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
                         lineNumbers: true,
                         matchBrackets: true,
                         extraKeys: {"Ctrl-Space": "autocomplete"},
                         mode: "text/x-apex"
+
                     });
 
                     globalEditor = $('.CodeMirror')[0].CodeMirror;
@@ -40,6 +42,19 @@ function OrderFormController($scope, $http) {
 
         }
     });
+
+    var ModalInstanceCtrl = function ($scope, $modalInstance, data) {
+      $scope.data = data;
+      $scope.close = function(/*result*/){
+        $modalInstance.close($scope.data);
+      };
+    };
+
+    $scope.data = {
+        boldTextTitle: "Done",
+        textAlert : "Some content",
+        mode : 'error'
+      }
 
 
     $scope.postdata = function (apexClassWrapper) {
@@ -57,14 +72,16 @@ function OrderFormController($scope, $http) {
             .success(function (data) {
                 $scope.apexClassWrapper = data;
                 $('#loaderImage').hide();
-                $('#error').show();
+                /*$('#error').show();
                 $('#error').html("Compiled Successfully");
                 var value;
                 Object.keys(data.lineNumberError).forEach(function (key) {
                     value = data.lineNumberError[key];
                     $('#error').css("color", "red")
                     $('#error').append('<br>' + ' ' + key + ': -> ' + value);
-                });
+                });*/
+                $scope.errorDetails = data.lineNumberError;
+                $('#myModal').modal('show');
 
             })
             .error(function (data) {
@@ -77,7 +94,31 @@ function OrderFormController($scope, $http) {
 
     };
 
+    $(document).ready(function () {
+
+            $('#loaderImage').show();
+            $http.post("/getAllApexClasses")
+                .success(function (data) {
+
+
+                })
+                .error(function (data) {
+
+                });
+            $('#loaderImage').hide();
+        });
+
+
+
+
+
 };
+
+function testAnim(x) {
+    $('.modal .modal-dialog').attr('class', 'modal-dialog  ' + x + '  animated');
+};
+
+
 
 /* Set the width of the side navigation to 250px and the left margin of the page content to 250px and add a black background color to body */
 function openNav() {

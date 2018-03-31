@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  * This controller Is responsible for login.
  */
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/auth")
 public class LoginController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
