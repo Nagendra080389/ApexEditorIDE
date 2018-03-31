@@ -222,7 +222,7 @@ public class PMDController {
         PostMethod post = new PostMethod(environment);
         post.addParameter("code",code);
         post.addParameter("grant_type","authorization_code");
-        post.addParameter("redirect_uri","https://58b17fae.ngrok.io/auth");
+        post.addParameter("redirect_uri","https://forcefileseditor.herokuapp.com/auth");
         post.addParameter("client_id","3MVG9d8..z.hDcPLDlm9QqJ3hRfsVqxDxkNuH__5ke7onhRrPniHqH_KRi53jOM_9V_TOQPVsRmEL2McIFJtb");
         post.addParameter("client_secret","8493474984808415138");
 

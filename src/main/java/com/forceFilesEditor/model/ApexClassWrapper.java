@@ -13,15 +13,15 @@ public class ApexClassWrapper {
 
     public String body;
 
-    public Date salesForceSystemModStamp;
+    private Date salesForceSystemModStamp;
 
     public String id;
 
-    public Map<Integer, List<String>> lineNumberError = new HashMap<>();
+    private Map<Integer, List<String>> lineNumberError = new HashMap<>();
 
-    public Integer lineNumber;
+    private Integer lineNumber;
 
-    public boolean isCompilationError;
+    private boolean isCompilationError;
 
     private SymbolTable symbolTable;
 
