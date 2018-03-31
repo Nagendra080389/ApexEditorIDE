@@ -10,18 +10,12 @@ import com.google.gson.JsonParser;
 import com.sforce.soap.tooling.Method;
 import com.sforce.soap.tooling.Symbol;
 import com.sforce.soap.tooling.SymbolTable;
-import com.sun.deploy.net.HttpResponse;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.coyote.http2.ConnectionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
