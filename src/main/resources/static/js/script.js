@@ -80,8 +80,14 @@ function OrderFormController($scope, $http) {
                     $('#error').css("color", "red")
                     $('#error').append('<br>' + ' ' + key + ': -> ' + value);
                 });*/
-                $scope.errorDetails = data.lineNumberError;
-                $('#myModal').modal('show');
+                var errors = data.lineNumberError;
+                if(Object.keys(errors).length > 0){
+                    $scope.errorDetails = errors;
+                    $('#myModal').modal('show');
+                }else{
+                    $scope.errorDetails = 'No errors';
+                    $('#myModalWithoutError').modal('show');
+                }
 
             })
             .error(function (data) {
