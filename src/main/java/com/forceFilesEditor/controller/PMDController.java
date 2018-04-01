@@ -180,7 +180,8 @@ public class PMDController {
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         try {
             if(apexClassWrapper == null) return null;
-            ApexClassWrapper modifiedClass = MetadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL,cookies);
+            MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
+            ApexClassWrapper modifiedClass = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL,cookies);
             if(modifiedClass.isCompilationError()){
                 String errorMessage = gson.toJson(modifiedClass.getLineNumberError());
                 throw new DeploymentException(errorMessage);

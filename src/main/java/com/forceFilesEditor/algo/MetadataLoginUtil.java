@@ -10,17 +10,17 @@ import com.sforce.soap.tooling.*;
 import com.sforce.soap.tooling.sobject.*;
 import com.sforce.ws.ConnectorConfig;
 import net.sourceforge.pmd.*;
-import net.sourceforge.pmd.cache.AnalysisCache;
-import net.sourceforge.pmd.cache.FileAnalysisCache;
 import net.sourceforge.pmd.util.ResourceLoader;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.coyote.http2.ConnectionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import javax.servlet.http.Cookie;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.*;
 
@@ -79,7 +79,7 @@ public class MetadataLoginUtil {
 
     }
 
-    public static ApexClassWrapper modifyApexBody(ApexClassWrapper apexClassWrapper, String partnerURL, String toolingURL, Cookie[] cookies) throws Exception {
+    public ApexClassWrapper modifyApexBody(ApexClassWrapper apexClassWrapper, String partnerURL, String toolingURL, Cookie[] cookies) throws Exception {
 
         String instanceUrl = null;
         String accessToken = null;
@@ -165,10 +165,15 @@ public class MetadataLoginUtil {
             if (!apexClassWrapper.isCompilationError()) {
                 PMDConfiguration pmdConfiguration = new PMDConfiguration();
                 pmdConfiguration.setReportFormat("text");
-                System.out.println(ClassLoader.getSystemResource("xml/ruleSet.xml"));
-                System.out.println(ClassLoader.getSystemResourceAsStream("xml/ruleSet.xml"));
-                pmdConfiguration.setRuleSets(
-                        ClassLoader.getSystemResource("xml/ruleSet.xml").getPath());
+                ClassLoader classLoader = this.getClass().getClassLoader();
+                InputStream resourceAsStream = classLoader.getResourceAsStream("xml/ruleSet.xml");
+                String ruleSetFilePath = "";
+                if(resourceAsStream != null){
+                    File file = stream2file(resourceAsStream);
+                    ruleSetFilePath = file.getPath();
+
+                }
+                pmdConfiguration.setRuleSets(ruleSetFilePath);
                 pmdConfiguration.setThreads(4);
                 //pmdConfiguration.setAnalysisCache(new FileAnalysisCache());
                 SourceCodeProcessor sourceCodeProcessor = new SourceCodeProcessor(pmdConfiguration);
@@ -200,6 +205,17 @@ public class MetadataLoginUtil {
             }
         }
 
+    }
+
+    public static File stream2file (InputStream in) throws IOException {
+        final File tempFile = File.createTempFile("ruleSet", ".xml");
+        tempFile.deleteOnExit();
+        try (FileOutputStream out = new FileOutputStream(tempFile)) {
+            IOUtils.copy(in, out);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return tempFile;
     }
 
 
