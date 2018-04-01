@@ -165,6 +165,8 @@ public class MetadataLoginUtil {
             if (!apexClassWrapper.isCompilationError()) {
                 PMDConfiguration pmdConfiguration = new PMDConfiguration();
                 pmdConfiguration.setReportFormat("text");
+                System.out.println(ClassLoader.getSystemResource("xml/ruleSet.xml"));
+                System.out.println(ClassLoader.getSystemResourceAsStream("xml/ruleSet.xml"));
                 pmdConfiguration.setRuleSets(
                         ClassLoader.getSystemResource("xml/ruleSet.xml").getPath());
                 pmdConfiguration.setThreads(4);
