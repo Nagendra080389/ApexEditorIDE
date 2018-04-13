@@ -5,15 +5,7 @@
     For .omb_spanOr use @body-bg instead of white.
 */
 
-@media (min-width: 768px) {
-    .omb_row-sm-offset-3 div:first-child[class*="col-"] {
-        margin-left: 30%;
-        margin-top:30%;
-    }
-    .omb_row-sm-offset-3 div:last-child[class*="col-"] {
-            margin-top:30%;
-        }
-}
+
 
 .omb_login .omb_authTitle {
     text-align: center;
@@ -49,7 +41,7 @@
 
 
 
-.omb_login .omb_socialButtons{
+.content-mrg {
     -webkit-animation: fadein 4s; /* Safari, Chrome and Opera > 12.1 */
        -moz-animation: fadein 4s; /* Firefox < 16 */
         -ms-animation: fadein 4s; /* Internet Explorer */
@@ -87,4 +79,78 @@
 }
 
 
+body.background-body{
+   background-image: url('/img/lightning.jpg');
+
+}
+
+div#cloudtent{
+     position: absolute;
+    width: 76%;
+    top: 126px;
+    left: 170px;
+    text-align: center;
+}
+
+.content-mrg{
+   padding: 0;
+   margin: 35px 0 15px;
+}
+
+.we-create {
+	font-family: 'Montserrat',sans-serif;
+    font-size:30px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    font-weight: 400;
+    display: inline-block;
+    width: 100%
+	}
+h1{
+   font-family: 'Montserrat',sans-serif;
+    font-size: 100px;
+    font-weight: 400;
+    letter-spacing: -1px;
+    margin: 0 0 22px 0;
+    color: #fff;
+}
+.btn1{
+   float:left;
+   width: 250px;
+   padding:20px;
+    margin-bottom: 5px;
+	text-decoration: none;
+    color: #000;
+    background: skyblue;
+	text-transform: uppercase;
+	font-family: 'Montserrat', sans-serif;
+	left: 196px;
+    position: absolute;
+    border-top: 1px solid #CCCCCC;
+      border-right: 1px solid #333333;
+      border-bottom: 1px solid #333333;
+      border-left: 1px solid #CCCCCC;
+      cursor: pointer;
+}
+.btn2{
+   float:right;
+   width: 250px;
+    padding:20px;
+    margin-bottom: 5px;
+	text-decoration: none;
+    color: #000;
+    background: skyblue;
+	text-transform: uppercase;
+	font-family: 'Montserrat', sans-serif;
+	right: 190px;
+    position: absolute;
+    border-top: 1px solid #CCCCCC;
+      border-right: 1px solid #333333;
+      border-bottom: 1px solid #333333;
+      border-left: 1px solid #CCCCCC;
+      cursor: pointer;
+}
+.no-mrg{
+margin:0px;
+}
 

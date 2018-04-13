@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css?family=Cookie|Open+Sans:400,700" rel="stylesheet"/>
 
     <link href="../css/login/loginStyle.css" rel="stylesheet"/>
-    <script src="../js/login/loginScript.js"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <!------ Include the above in your HEAD tag ---------->
@@ -25,25 +24,21 @@ function redirectJS(orgType){
 window.open('https://' + orgType + '.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9d8..z.hDcPLDlm9QqJ3hRfsVqxDxkNuH__5ke7onhRrPniHqH_KRi53jOM_9V_TOQPVsRmEL2McIFJtb&redirect_uri=https://forcefileseditor.herokuapp.com/auth&state=' + (orgType === 'test' ? 'a' : 'b'), '_self');
 }
 
-</script>
-<body>
-<div class="container">
-    <div class="omb_login">
-        <div class="row omb_row-sm-offset-3 omb_socialButtons">
-            <div class="col-xs-4 col-sm-2">
-                <button onclick=redirectJS("test") class="btn btn-lg btn-block omb_btn-twitter">
-                    SANDBOX LOGIN
-                </button>
-            </div>
-            <div class="col-xs-4 col-sm-2">
-                <button onclick=redirectJS("login") class="btn btn-lg btn-block omb_btn-google">
-                    PRODUCTION LOGIN
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
+</script>
+
+<body class="background-body">
+<div id="cloudtent">
+    <h1 class="we-create">Apex Editor with Inbuilt Code Review</h1>
+
+    <p class="content-mrg we-create">blazing fast force.com reviewer for your environment</p>
+    <p class="we-create no-mrg">click below to review environment</p>
+    <div class="content-mrg">
+        <a class="btn1" onclick=redirectJS("test")>Sand Box</a><a class="btn2" onclick=redirectJS("login")>Production Box</a>
+    </div>
+
+
+</div>
 </body>
 
 </html>
