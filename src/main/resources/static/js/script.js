@@ -24,8 +24,7 @@ function OrderFormController($scope, $http) {
                 }
                 setTimeout(function (test) {
                     CodeMirror.commands.autocomplete = function (cm) {
-                        cm.showHint({hint: CodeMirror.hint.anyword});
-                        //cm.showHint({hint: CodeMirror.hint.fromList});
+                        cm.showHint({hint: CodeMirror.hint.auto});
                     };
                     var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
                         lineNumbers: true,

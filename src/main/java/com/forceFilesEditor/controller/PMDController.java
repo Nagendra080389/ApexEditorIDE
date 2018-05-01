@@ -85,53 +85,57 @@ public class PMDController {
     }
 
     @RequestMapping(value = "/apex/getMethodSuggestion", method = RequestMethod.GET)
-    public String getMethodSuggestion(String query) throws IOException {
+    public String getMethodSuggestion() throws IOException {
         Gson gson = new GsonBuilder().create();
-        SymbolTable symbolTable = symbolTableMap.get(query);
         Map<String, Map<String, List<String>>> newMapReturn = new HashMap<>();
-        List<String> newListToBeAdded = new ArrayList<>();
-        Map<String, List<String>> newMapToBeAdded = new HashMap<>();
+        for (SymbolTable symbolTable : symbolTableMap.values()) {
+            List<String> newListToBeAdded = new ArrayList<>();
+            Map<String, List<String>> newMapToBeAdded = new HashMap<>();
 
-        if(symbolTable != null) {
-            for (Method method : symbolTable.getMethods()) {
-                String name = method.getName();
-                if(newMapToBeAdded.containsKey("methods")){
-                    List<String> strings = newMapToBeAdded.get("methods");
-                    strings.add(name);
-                }else {
-                    List<String> strings = new ArrayList<>();
-                    strings.add(name);
-                    newMapToBeAdded.put("methods",strings);
+            if(symbolTable != null) {
+                for (Method method : symbolTable.getMethods()) {
+                    String name = method.getName();
+                    if(newMapToBeAdded.containsKey("methods")){
+                        List<String> strings = newMapToBeAdded.get("methods");
+                        strings.add(name);
+                    }else {
+                        List<String> strings = new ArrayList<>();
+                        strings.add(name);
+                        newMapToBeAdded.put("methods",strings);
+                    }
+                }
+
+                for (Symbol constructors : symbolTable.getConstructors()) {
+                    String name = constructors.getName();
+                    if(newMapToBeAdded.containsKey("constructors")){
+                        List<String> strings = newMapToBeAdded.get("constructors");
+                        strings.add(name);
+                    }else {
+                        List<String> strings = new ArrayList<>();
+                        strings.add(name);
+                        newMapToBeAdded.put("constructors",strings);
+                    }
+                }
+
+                for (Symbol properties : symbolTable.getProperties()) {
+                    String name = properties.getName();
+                    if(newMapToBeAdded.containsKey("properties")){
+                        List<String> strings = newMapToBeAdded.get("properties");
+                        strings.add(name);
+                    }else {
+                        List<String> strings = new ArrayList<>();
+                        strings.add(name);
+                        newMapToBeAdded.put("properties",strings);
+                    }
                 }
             }
 
-            for (Symbol constructors : symbolTable.getConstructors()) {
-                String name = constructors.getName();
-                if(newMapToBeAdded.containsKey("constructors")){
-                    List<String> strings = newMapToBeAdded.get("constructors");
-                    strings.add(name);
-                }else {
-                    List<String> strings = new ArrayList<>();
-                    strings.add(name);
-                    newMapToBeAdded.put("constructors",strings);
-                }
-            }
-
-            for (Symbol properties : symbolTable.getProperties()) {
-                String name = properties.getName();
-                if(newMapToBeAdded.containsKey("properties")){
-                    List<String> strings = newMapToBeAdded.get("properties");
-                    strings.add(name);
-                }else {
-                    List<String> strings = new ArrayList<>();
-                    strings.add(name);
-                    newMapToBeAdded.put("properties",strings);
-                }
+            if (symbolTable != null) {
+                newMapReturn.put(symbolTable.getName(), newMapToBeAdded);
             }
         }
 
-        newMapReturn.put("hints", newMapToBeAdded);
-        return gson.toJson(newMapToBeAdded);
+        return gson.toJson(newMapReturn);
     }
 
 
@@ -184,7 +188,7 @@ public class PMDController {
             ApexClassWrapper modifiedClass = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL,cookies);
             if(modifiedClass.isCompilationError()){
                 String errorMessage = gson.toJson(modifiedClass.getLineNumberError());
-                throw new DeploymentException(errorMessage);
+                return gson.toJson(modifiedClass);
             }
             return gson.toJson(modifiedClass);
 
@@ -223,9 +227,9 @@ public class PMDController {
         PostMethod post = new PostMethod(environment);
         post.addParameter("code",code);
         post.addParameter("grant_type","authorization_code");
-        post.addParameter("redirect_uri","https://forcefileseditor.herokuapp.com/auth");
-        post.addParameter("client_id","3MVG9d8..z.hDcPLDlm9QqJ3hRfsVqxDxkNuH__5ke7onhRrPniHqH_KRi53jOM_9V_TOQPVsRmEL2McIFJtb");
-        post.addParameter("client_secret","8493474984808415138");
+        post.addParameter("redirect_uri","https://2e0bf63e.ngrok.io/auth");
+        post.addParameter("client_id","3MVG9d8..z.hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz");
+        post.addParameter("client_secret","7957205307299792687");
 
         httpClient.executeMethod(post);
         String responseBody = post.getResponseBodyAsString();

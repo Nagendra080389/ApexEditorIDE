@@ -14,8 +14,8 @@ body{
 header{
     background-color: #000;
     color: #FFFFFF;
-    padding-top: 30px;
-    min-height: 70px;
+    padding-top: 10px;
+    min-height: 20px;
     /*border-bottom: #e8491d 3px solid;*/
 }
 
@@ -31,6 +31,7 @@ header #branding{
 }
 header #branding h1{
     margin: 0;
+    font-size : 15px;
 }
 
 header .highlight, header .current a{
