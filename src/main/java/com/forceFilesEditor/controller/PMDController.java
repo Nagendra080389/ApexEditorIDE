@@ -206,7 +206,6 @@ public class PMDController {
             ApexClassWrapper modifiedClass = MetadataLoginUtil.createFiles("",null);
 
             return gson.toJson(modifiedClass);
-
         } catch (DeploymentException e) {
             throw e;
         }
