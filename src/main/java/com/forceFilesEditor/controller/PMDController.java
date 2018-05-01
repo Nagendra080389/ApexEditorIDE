@@ -216,23 +216,22 @@ public class PMDController {
     public void auth(@RequestParam String code, @RequestParam String state, ServletResponse response, ServletRequest request) throws Exception {
 
         String environment = null;
-        if(state.equals("b")) {
+        if (state.equals("b")) {
             environment = "https://login.salesforce.com/services/oauth2/token";
-        }else {
+        } else {
             environment = "https://test.salesforce.com/services/oauth2/token";
         }
         HttpClient httpClient = new HttpClient();
 
         PostMethod post = new PostMethod(environment);
-        post.addParameter("code",code);
-        post.addParameter("grant_type","authorization_code");
-        post.addParameter("redirect_uri","https://apexeditortooldev.herokuapp.com/auth");
-        post.addParameter("client_id","3MVG9d8..z.hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz");
-        post.addParameter("client_secret","7957205307299792687");
+        post.addParameter("code", code);
+        post.addParameter("grant_type", "authorization_code");
+        post.addParameter("redirect_uri", "https://apexeditortooldev.herokuapp.com/auth");
+        post.addParameter("client_id", "3MVG9d8..z.hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz");
+        post.addParameter("client_secret", "7957205307299792687");
 
         httpClient.executeMethod(post);
         String responseBody = post.getResponseBodyAsString();
-
 
 
         String accessToken = null;
@@ -256,11 +255,11 @@ public class PMDController {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             post.releaseConnection();
         }
 
-        HttpServletResponse httpResponse = (HttpServletResponse)response;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
         Cookie session1 = new Cookie("ACCESS_TOKEN", accessToken);
         Cookie session2 = new Cookie("INSTANCE_URL", instance_url);
         Cookie session3 = new Cookie("ID_TOKEN", id_token);
