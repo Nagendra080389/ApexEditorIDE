@@ -245,6 +245,8 @@ public class PMDController {
         } else {
             environment = "https://test.salesforce.com/services/oauth2/token";
         }
+
+        System.out.println("environment -> "+environment);
         HttpClient httpClient = new HttpClient();
 
         PostMethod post = new PostMethod(environment);
@@ -258,7 +260,6 @@ public class PMDController {
         String responseBody = post.getResponseBodyAsString();
 
 
-        System.out.println("responseBody -> "+responseBody);
         String accessToken = null;
         String issuedAt = null;
         String signature = null;
