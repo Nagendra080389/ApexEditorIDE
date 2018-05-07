@@ -124,7 +124,7 @@ h1{
     background: skyblue;
 	text-transform: uppercase;
 	font-family: 'Montserrat', sans-serif;
-	left: 196px;
+	left: 20px;
     position: absolute;
     border-top: 1px solid #CCCCCC;
       border-right: 1px solid #333333;
@@ -142,7 +142,7 @@ h1{
     background: skyblue;
 	text-transform: uppercase;
 	font-family: 'Montserrat', sans-serif;
-	right: 190px;
+	right: 450px;
     position: absolute;
     border-top: 1px solid #CCCCCC;
       border-right: 1px solid #333333;
@@ -150,6 +150,26 @@ h1{
       border-left: 1px solid #CCCCCC;
       cursor: pointer;
 }
+
+.btn3{
+   float:right;
+   width: 250px;
+    padding:20px;
+    margin-bottom: 5px;
+	text-decoration: none;
+    color: #000;
+    background: skyblue;
+	text-transform: uppercase;
+	font-family: 'Montserrat', sans-serif;
+	right : -10px;
+    position: relative;
+    border-top: 1px solid #CCCCCC;
+      border-right: 1px solid #333333;
+      border-bottom: 1px solid #333333;
+      border-left: 1px solid #CCCCCC;
+      cursor: pointer;
+}
+
 .no-mrg{
 margin:0px;
 }

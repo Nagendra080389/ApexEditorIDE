@@ -14,14 +14,10 @@ import net.sourceforge.pmd.util.ResourceLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.coyote.http2.ConnectionException;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import javax.servlet.http.Cookie;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.time.Instant;
 import java.util.*;
 
 public class MetadataLoginUtil {
@@ -57,13 +53,13 @@ public class MetadataLoginUtil {
                 throw new com.sforce.ws.ConnectionException("Cannot connect to Org");
             }
 
-            String apexClassBody = "SELECT Id,Body,SystemModStamp, Name FROM APEXCLASS Where Name = '" + className + "'";
+            String apexClassBody = "SELECT Id,Body,LastModifiedDate, Name FROM APEXCLASS Where Name = '" + className + "'";
             QueryResult query = partnerConnection.query(apexClassBody);
 
             Object body = query.getRecords()[0].getField("Body");
             Object name = query.getRecords()[0].getField("Name");
             Object id = query.getRecords()[0].getField("Id");
-            Object salesForceSystemModStamp = query.getRecords()[0].getField("SystemModstamp");
+            Object salesForceSystemModStamp = query.getRecords()[0].getField("LastModifiedDate");
 
             ApexClassWrapper apexClassWrapper = new ApexClassWrapper();
             apexClassWrapper.setName(name.toString());
@@ -79,7 +75,7 @@ public class MetadataLoginUtil {
 
     }
 
-    public ApexClassWrapper modifyApexBody(ApexClassWrapper apexClassWrapper, String partnerURL, String toolingURL, Cookie[] cookies) throws Exception {
+    public ApexClassWrapper modifyApexBody(ApexClassWrapper apexClassWrapper, String partnerURL, String toolingURL, Cookie[] cookies, boolean save) throws Exception {
 
         String instanceUrl = null;
         String accessToken = null;
@@ -122,9 +118,21 @@ public class MetadataLoginUtil {
             con = new SObject[]{apexClassMember};
             com.sforce.soap.tooling.SaveResult[] saveMember = toolingConnection.create(con);
 
+            String apexClassBody = "SELECT Body,LastModifiedDate FROM APEXCLASS Where Name = '" + apexClassWrapper.getName() + "'";
+            QueryResult query = partnerConnection.query(apexClassBody);
+            Object body = query.getRecords()[0].getField("Body");
+            Date dateFromOrg = DateUtils.parseDateStrictly((String) query.getRecords()[0].getField("LastModifiedDate"), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            if (dateFromOrg.getTime() != apexClassWrapper.getSalesForceSystemModStamp().getTime()) {
+                apexClassWrapper.setTimeStampNotMatching(true);
+                ApexClassWrapper fromOrg = new ApexClassWrapper();
+                fromOrg.setBody(body.toString());
+                apexClassWrapper.setModifiedApexClassWrapper(fromOrg);
+                return apexClassWrapper;
+            }
+
             ContainerAsyncRequest containerAsyncRequest = new ContainerAsyncRequest();
             containerAsyncRequest.setMetadataContainerId(containerId);
-            containerAsyncRequest.setIsCheckOnly(true);
+            containerAsyncRequest.setIsCheckOnly(!save);
 
             con = new SObject[]{containerAsyncRequest};
             com.sforce.soap.tooling.SaveResult[] asyncResultMember = toolingConnection.create(con);
@@ -132,6 +140,19 @@ public class MetadataLoginUtil {
             String id = asyncResultMember[0].getId();
 
             while (true) {
+                /*if(save) {
+                    String apexClassBody = "SELECT Body,LastModifiedDate FROM APEXCLASS Where Name = '" + apexClassWrapper.getName() + "'";
+                    QueryResult query = partnerConnection.query(apexClassBody);
+                    Object body = query.getRecords()[0].getField("Body");
+                    Date dateFromOrg = DateUtils.parseDateStrictly((String) query.getRecords()[0].getField("LastModifiedDate"), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                    if (dateFromOrg.getTime() != apexClassWrapper.getSalesForceSystemModStamp().getTime()) {
+                        apexClassWrapper.setTimeStampNotMatching(true);
+                        ApexClassWrapper fromOrg = new ApexClassWrapper();
+                        fromOrg.setBody(body.toString());
+                        apexClassWrapper.setModifiedApexClassWrapper(fromOrg);
+                        break;
+                    }
+                }*/
                 com.sforce.soap.tooling.QueryResult containerSyncRequestCompile = toolingConnection.query("SELECT Id,State, DeployDetails, ErrorMsg FROM ContainerAsyncRequest where id = '" + id + "'");
                 ContainerAsyncRequest sObject1 = (ContainerAsyncRequest) containerSyncRequestCompile.getRecords()[0];
                 if ("Queued".equals(sObject1.getState())) {
@@ -160,37 +181,39 @@ public class MetadataLoginUtil {
                 break;
             }
 
-            apexClassWrapper.setLineNumberError(lineNumberError);
+            if(!save) {
+                apexClassWrapper.setLineNumberError(lineNumberError);
 
-            if (!apexClassWrapper.isCompilationError()) {
-                PMDConfiguration pmdConfiguration = new PMDConfiguration();
-                pmdConfiguration.setReportFormat("text");
-                ClassLoader classLoader = this.getClass().getClassLoader();
-                InputStream resourceAsStream = classLoader.getResourceAsStream("xml/ruleSet.xml");
-                String ruleSetFilePath = "";
-                if(resourceAsStream != null){
-                    File file = stream2file(resourceAsStream);
-                    ruleSetFilePath = file.getPath();
+                if (!apexClassWrapper.isCompilationError()) {
+                    PMDConfiguration pmdConfiguration = new PMDConfiguration();
+                    pmdConfiguration.setReportFormat("text");
+                    ClassLoader classLoader = this.getClass().getClassLoader();
+                    InputStream resourceAsStream = classLoader.getResourceAsStream("xml/ruleSet.xml");
+                    String ruleSetFilePath = "";
+                    if (resourceAsStream != null) {
+                        File file = stream2file(resourceAsStream);
+                        ruleSetFilePath = file.getPath();
 
-                }
-                pmdConfiguration.setRuleSets(ruleSetFilePath);
-                pmdConfiguration.setThreads(4);
-                //pmdConfiguration.setAnalysisCache(new FileAnalysisCache());
-                SourceCodeProcessor sourceCodeProcessor = new SourceCodeProcessor(pmdConfiguration);
-                RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(pmdConfiguration, new ResourceLoader());
-                RuleSets ruleSets = RulesetsFactoryUtils.getRuleSetsWithBenchmark(pmdConfiguration.getRuleSets(), ruleSetFactory);
+                    }
+                    pmdConfiguration.setRuleSets(ruleSetFilePath);
+                    pmdConfiguration.setThreads(4);
+                    //pmdConfiguration.setAnalysisCache(new FileAnalysisCache());
+                    SourceCodeProcessor sourceCodeProcessor = new SourceCodeProcessor(pmdConfiguration);
+                    RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(pmdConfiguration, new ResourceLoader());
+                    RuleSets ruleSets = RulesetsFactoryUtils.getRuleSetsWithBenchmark(pmdConfiguration.getRuleSets(), ruleSetFactory);
 
-                PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
-                List<RuleViolation> review = pmdReviewService.review(apexClassWrapper.getBody(), apexClassWrapper.getName() + ".cls");
+                    PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
+                    List<RuleViolation> review = pmdReviewService.review(apexClassWrapper.getBody(), apexClassWrapper.getName() + ".cls");
 
-                for (RuleViolation ruleViolation : review) {
-                    if (lineNumberError.containsKey(ruleViolation.getBeginLine())) {
-                        List<String> strings = lineNumberError.get(ruleViolation.getBeginLine());
-                        strings.add(ruleViolation.getDescription());
-                    } else {
-                        List<String> problemList = new ArrayList<>();
-                        problemList.add(ruleViolation.getDescription());
-                        lineNumberError.put(ruleViolation.getBeginLine(), problemList);
+                    for (RuleViolation ruleViolation : review) {
+                        if (lineNumberError.containsKey(ruleViolation.getBeginLine())) {
+                            List<String> strings = lineNumberError.get(ruleViolation.getBeginLine());
+                            strings.add(ruleViolation.getDescription());
+                        } else {
+                            List<String> problemList = new ArrayList<>();
+                            problemList.add(ruleViolation.getDescription());
+                            lineNumberError.put(ruleViolation.getBeginLine(), problemList);
+                        }
                     }
                 }
             }

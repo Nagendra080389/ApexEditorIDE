@@ -12,6 +12,7 @@
 <link href="../css/codeReview.css" rel="stylesheet"/>
 <link href="../css/codemirror/codemirror.css" rel="stylesheet"/>
 <link href="../css/codemirror/show-hint.css" rel="stylesheet"/>
+<link href="../css/codemirror/merge.css" rel="stylesheet"/>
 <link href="../css/codemirror/matchesonscrollbar.css" rel="stylesheet"/>
 <link href="../css/codemirror/dialog.css" rel="stylesheet"/>
 
@@ -26,6 +27,8 @@
 <script src="../js/oboe-browser.min.js"></script>
 <script src="../js/script.js"></script>
 <script src="../js/codemirror/codemirror.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
+<script src="../js/codemirror/addon/merge/merge.js"></script>
 <script src="../js/codemirror/apex.js"></script>
 <script src="../js/codemirror/addon/edit/matchbrackets.js"></script>
 <script src="../js/codemirror/addon/edit/closebrackets.js"></script>
@@ -79,7 +82,7 @@
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn btn-default" ng-click="deployWithErrors()">Deploy With Errors</button>
+            <button type="button" class="btn btn-default" ng-click="deployWithErrors(salesforcetimeStamp, apexClassWrapper)">Deploy With Errors</button>
 
             <button type="button" class="btn btn-default" data-dismiss="modal">
                 Close
@@ -117,6 +120,17 @@
     </div>
 </div>
 
+<div id="diffView" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div id="mergemodal"></div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+            Close
+        </button>
+    </div>
+</div>
+
 
 <div class="col-md-12 col-lg-12" id="main">
     <div class="panel with-nav-tabs panel-default">
@@ -132,10 +146,10 @@
                         <input type="text" name="apexClass" id="autocomplete"
                                placeholder="Type the name of the Apex class you want to edit"/>
                     </div>
-                    <div class="btn-group-vertical" style="padding: 1%">
+                    <!--<div class="btn-group-vertical" style="padding: 1%">
                         <button type="button" class="btn btn-primary" id="editBtn">Edit</button>
                     </div>
-
+-->
                     <!--<div id='error' style='display:none'>{{apexClassWrapperError.message}}</div>-->
 
                     <div>{{apexClassWrapper.name}}</div>
@@ -152,11 +166,6 @@
         </div>
     </div>
 </div>
-<script src="../js/makeEditable.js"></script>
-<script>
-
-</script>
-
 
 <footer>
     <p>Web based Apex Editor</p>

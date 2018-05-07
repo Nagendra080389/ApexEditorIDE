@@ -17,13 +17,34 @@ public class ApexClassWrapper {
 
     public String id;
 
+    private boolean timeStampNotMatching;
+
     private Map<Integer, List<String>> lineNumberError = new HashMap<>();
+
+    private ApexClassWrapper modifiedApexClassWrapper;
 
     private Integer lineNumber;
 
     private boolean isCompilationError;
 
     private SymbolTable symbolTable;
+
+
+    public ApexClassWrapper getModifiedApexClassWrapper() {
+        return modifiedApexClassWrapper;
+    }
+
+    public void setModifiedApexClassWrapper(ApexClassWrapper modifiedApexClassWrapper) {
+        this.modifiedApexClassWrapper = modifiedApexClassWrapper;
+    }
+
+    public boolean isTimeStampNotMatching() {
+        return timeStampNotMatching;
+    }
+
+    public void setTimeStampNotMatching(boolean timeStampNotMatching) {
+        this.timeStampNotMatching = timeStampNotMatching;
+    }
 
     public Date getSalesForceSystemModStamp() {
         return salesForceSystemModStamp;

@@ -46,6 +46,7 @@ public class PMDController {
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
         Cookie[] cookies = request.getCookies();
+        Gson gson = new GsonBuilder().create();
         try {
             generateSymbolTable(partnerURL, toolingURL,cookies);
             List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL,cookies);
@@ -57,13 +58,12 @@ public class PMDController {
 
             stringListHashMap.put("suggestions",allClassesInString);
 
-            Gson gson = new GsonBuilder().create();
             return gson.toJson(allApexClasses);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            return gson.toJson(e.getMessage());
         }
-        return null;
+
     }
 
     @RequestMapping(value = "/getSuggestion", method = RequestMethod.POST)
@@ -185,9 +185,8 @@ public class PMDController {
         try {
             if(apexClassWrapper == null) return null;
             MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
-            ApexClassWrapper modifiedClass = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL,cookies);
+            ApexClassWrapper modifiedClass = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL,cookies, false);
             if(modifiedClass.isCompilationError()){
-                String errorMessage = gson.toJson(modifiedClass.getLineNumberError());
                 return gson.toJson(modifiedClass);
             }
             return gson.toJson(modifiedClass);
@@ -195,6 +194,29 @@ public class PMDController {
         } catch (DeploymentException e) {
             throw e;
         }
+
+    }
+
+    @RequestMapping(value = "/saveModifiedApexBody", method = RequestMethod.POST)
+    public String saveModifiedApexBody(@RequestBody ApexClassWrapper apexClassWrapper,HttpServletResponse response, HttpServletRequest request) throws Exception {
+
+        String partnerURL = this.partnerURL;
+        String toolingURL = this.toolingURL;
+        Cookie[] cookies = request.getCookies();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        try {
+            if(apexClassWrapper == null) return null;
+            MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
+            ApexClassWrapper apexClassWrapper1 = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL, cookies, true);
+            if(apexClassWrapper1.isTimeStampNotMatching()){
+                return gson.toJson(apexClassWrapper1);
+            }
+
+        } catch (DeploymentException e) {
+            return gson.toJson(e.getStackTrace());
+        }
+        apexClassWrapper.setTimeStampNotMatching(false);
+        return gson.toJson(apexClassWrapper);
 
     }
 
@@ -218,6 +240,8 @@ public class PMDController {
         String environment = null;
         if (state.equals("b")) {
             environment = "https://login.salesforce.com/services/oauth2/token";
+        } else if (state.contains("CustomDomain")){
+            environment = "https://"+state.split(",")[0]+".my.salesforce.com/services/oauth2/token";
         } else {
             environment = "https://test.salesforce.com/services/oauth2/token";
         }
@@ -226,9 +250,9 @@ public class PMDController {
         PostMethod post = new PostMethod(environment);
         post.addParameter("code", code);
         post.addParameter("grant_type", "authorization_code");
-        post.addParameter("redirect_uri", "https://apexeditortooldev.herokuapp.com/auth");
-        post.addParameter("client_id", "3MVG9d8..z.hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz");
-        post.addParameter("client_secret", "7957205307299792687");
+        post.addParameter("redirect_uri", "https://99051fc1.ngrok.io/auth");
+        post.addParameter("client_id", "3MVG9d8..z.hDcPLDlm9QqJ3hRa..IRUJdGRp4Shjuu01GT.H5KRjos_xlbZEtYGy55M6SzOOELg7sfD4T6Pl");
+        post.addParameter("client_secret", "1846517738759045110");
 
         httpClient.executeMethod(post);
         String responseBody = post.getResponseBodyAsString();
