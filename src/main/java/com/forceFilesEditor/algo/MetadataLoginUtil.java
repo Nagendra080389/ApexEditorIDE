@@ -123,6 +123,8 @@ public class MetadataLoginUtil {
             Object body = query.getRecords()[0].getField("Body");
             Date dateFromOrg = DateUtils.parseDateStrictly((String) query.getRecords()[0].getField("LastModifiedDate"), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
             System.out.println("cookies -> "+cookies);
+            System.out.println("dateFromOrg -> "+dateFromOrg);
+            System.out.println("cookies -> "+apexClassWrapper.getSalesForceSystemModStamp());
             if (dateFromOrg.getTime() != apexClassWrapper.getSalesForceSystemModStamp().getTime()) {
                 apexClassWrapper.setTimeStampNotMatching(true);
                 ApexClassWrapper fromOrg = new ApexClassWrapper();
