@@ -75,6 +75,8 @@ function OrderFormController($scope, $http) {
             salesForceSystemModStamp: new Date(apexClassWrapper.salesForceSystemModStamp)
         };
 
+        console.log('salesForceSystemModStamp - >' +dataObj.salesForceSystemModStamp);
+
         $('#loaderImage').show();
         $http.post("/modifyApexBody", dataObj)
             .success(function(data) {
