@@ -22,6 +22,7 @@ function OrderFormController($scope, $http) {
             $http.get("/getApexBody", config).then(function(response) {
                 document.getElementById("saveBtn").disabled = false;
                 $scope.apexClassWrapper = response.data;
+                console.log('date while Loading  - >' +response.data.salesForceSystemModStamp);
                 $('#loaderImage').hide();
                 if (globalEditor) {
                     globalEditor.toTextArea();
