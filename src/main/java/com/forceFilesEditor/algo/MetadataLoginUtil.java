@@ -122,6 +122,7 @@ public class MetadataLoginUtil {
             QueryResult query = partnerConnection.query(apexClassBody);
             Object body = query.getRecords()[0].getField("Body");
             Date dateFromOrg = DateUtils.parseDateStrictly((String) query.getRecords()[0].getField("LastModifiedDate"), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            System.out.println("cookies -> "+cookies);
             if (dateFromOrg.getTime() != apexClassWrapper.getSalesForceSystemModStamp().getTime()) {
                 apexClassWrapper.setTimeStampNotMatching(true);
                 ApexClassWrapper fromOrg = new ApexClassWrapper();
@@ -129,6 +130,8 @@ public class MetadataLoginUtil {
                 apexClassWrapper.setModifiedApexClassWrapper(fromOrg);
                 return apexClassWrapper;
             }
+
+            System.out.println("after return cookies -> "+apexClassWrapper);
 
             ContainerAsyncRequest containerAsyncRequest = new ContainerAsyncRequest();
             containerAsyncRequest.setMetadataContainerId(containerId);
