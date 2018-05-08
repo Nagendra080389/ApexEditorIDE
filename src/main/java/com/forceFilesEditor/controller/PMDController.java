@@ -188,6 +188,8 @@ public class PMDController {
             if(apexClassWrapper == null) return null;
             MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
             System.out.println("apexClassWrapper - > "+apexClassWrapper.getSalesForceSystemModStamp());
+            Date convertToLocal = new Date(apexClassWrapper.getSalesForceSystemModStamp().toString());
+            apexClassWrapper.setSalesForceSystemModStamp(convertToLocal);
             //Mon May 07 21:54:09 UTC 2018
             ApexClassWrapper modifiedClass = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL,cookies, false);
             if(modifiedClass.isCompilationError()){
