@@ -12,6 +12,7 @@ import com.sforce.soap.tooling.Symbol;
 import com.sforce.soap.tooling.SymbolTable;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.coyote.http2.ConnectionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -186,6 +187,7 @@ public class PMDController {
             if(apexClassWrapper == null) return null;
             MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
             System.out.println("apexClassWrapper - > "+apexClassWrapper.getSalesForceSystemModStamp());
+            System.out.println("apexClassWrapper changed - > "+DateUtils.parseDateStrictly(apexClassWrapper.getSalesForceSystemModStamp().toString(), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
             ApexClassWrapper modifiedClass = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL,cookies, false);
             if(modifiedClass.isCompilationError()){
                 return gson.toJson(modifiedClass);
