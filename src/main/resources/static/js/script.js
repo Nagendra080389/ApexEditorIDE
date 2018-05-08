@@ -1,4 +1,5 @@
 var globalEditor = null;
+var globalMergeEditor = null;
 
 function OrderFormController($scope, $http) {
 
@@ -129,7 +130,7 @@ function OrderFormController($scope, $http) {
                         mode: "text/x-apex",
                         highlightDifferences: hilight
                     });
-
+                    globalMergeEditor = dv;
                 }
                 $('#loaderImage').hide();
             })
@@ -138,6 +139,10 @@ function OrderFormController($scope, $http) {
                 console.log('Failure : ' + data);
             });
     }
+
+    $scope.replaceMerged = function(){
+      globalEditor.getDoc().setValue(globalMergeEditor.editor().getValue());
+    };
 
     $(document).ready(function() {
 

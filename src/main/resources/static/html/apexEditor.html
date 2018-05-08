@@ -48,11 +48,11 @@
 <body ng-app ng-controller="OrderFormController">
 <!--<h1 class="errorHeader">List of Classes</h1>-->
 <header>
-    <div class="container">
+    <!--<div class="container">
         <div id="branding">
             <h1>Apex <span class="highlight"> Editor </span></h1>
         </div>
-    </div>
+    </div>-->
 </header>
 
 <div id="myModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
@@ -125,6 +125,9 @@
         <div id="mergemodal"></div>
     </div>
     <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="replaceMerged()">
+            Select Left
+        </button>
         <button type="button" class="btn btn-default" data-dismiss="modal">
             Close
         </button>
@@ -134,7 +137,7 @@
 
 <div class="col-md-12 col-lg-12" id="main">
     <div class="panel with-nav-tabs panel-default">
-        <div class="panel-heading">
+        <div class="panel-heading hide">
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#tab1default" data-toggle="tab">Apex Editor</a></li>
             </ul>
