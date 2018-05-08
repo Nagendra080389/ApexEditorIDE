@@ -23,6 +23,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -188,8 +189,10 @@ public class PMDController {
             if(apexClassWrapper == null) return null;
             MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
             System.out.println("apexClassWrapper - > "+apexClassWrapper.getSalesForceSystemModStamp());
-            Date convertToLocal = new Date(apexClassWrapper.getSalesForceSystemModStamp().toString());
-            apexClassWrapper.setSalesForceSystemModStamp(convertToLocal);
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            formatter.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
+            String dateString = formatter.format(apexClassWrapper.getSalesForceSystemModStamp());
+            apexClassWrapper.setSalesForceSystemModStamp(DateUtils.parseDateStrictly(dateString, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 
             System.out.println("apexClassWrapper after - > "+apexClassWrapper.getSalesForceSystemModStamp());
             //Mon May 07 21:54:09 UTC 2018
