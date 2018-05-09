@@ -145,6 +145,13 @@ function OrderFormController($scope, $http) {
 
     $scope.replaceMerged = function(){
       globalEditor.getDoc().setValue(globalMergeEditor.editor().getValue());
+
+    };
+
+    $scope.replaceSpaceWithTabs = function(){
+        var cleaneddata = globalEditor.getValue().replace(new RegExp(' +', 'g'), ' ')
+        globalEditor.getDoc().setValue(cleaneddata);
+
     };
 
     $(document).ready(function() {
