@@ -220,10 +220,3 @@ function closeNav() {
     document.getElementById("main").style.marginLeft = "0";
     document.body.style.backgroundColor = "white";
 }
-
-function makeMarker() {
-  var marker = document.createElement("div");
-  marker.style.color = "#FF0000";
-  marker.innerHTML = "●";
-  return marker;
-}
