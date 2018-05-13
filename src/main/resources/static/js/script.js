@@ -23,7 +23,7 @@ function OrderFormController($scope, $http) {
             $('#loaderImage').show();
             $http.get("/getApexBody", config).then(function(response) {
                 document.getElementById("saveBtn").disabled = false;
-                document.getElementById("cleanBtn").disabled = true;
+                document.getElementById("cleanBtn").disabled = false;
                 $scope.apexClassWrapper = response.data;
                 $('#loaderImage').hide();
                 if (globalEditor1) {
