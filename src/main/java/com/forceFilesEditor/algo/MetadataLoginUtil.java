@@ -139,6 +139,7 @@ public class MetadataLoginUtil {
             com.sforce.soap.tooling.SaveResult[] asyncResultMember = toolingConnection.create(con);
 
             String id = asyncResultMember[0].getId();
+            List<PMDStructure> pmdStructures = new ArrayList<>();
 
             while (true) {
                 /*if(save) {
@@ -166,14 +167,18 @@ public class MetadataLoginUtil {
                             if (deployDetails.getComponentFailures().length > 0) {
                                 apexClassWrapper.setCompilationError(true);
                                 for (DeployMessage deployMessage : deployDetails.getComponentFailures()) {
-                                    if (lineNumberError.containsKey(deployMessage.getLineNumber())) {
+                                    PMDStructure pmdStructure = new PMDStructure();
+                                    pmdStructure.setLineNumber(deployMessage.getLineNumber());
+                                    pmdStructure.setReviewFeedback(deployMessage.getProblem());
+                                    pmdStructures.add(pmdStructure);
+                                    /*if (lineNumberError.containsKey(deployMessage.getLineNumber())) {
                                         List<String> strings = lineNumberError.get(deployMessage.getLineNumber());
                                         strings.add(deployMessage.getProblem());
                                     } else {
                                         List<String> problemList = new ArrayList<>();
                                         problemList.add(deployMessage.getProblem());
                                         lineNumberError.put(deployMessage.getLineNumber(), problemList);
-                                    }
+                                    }*/
                                 }
                             }
                         }
@@ -204,7 +209,7 @@ public class MetadataLoginUtil {
 
                     PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
                     List<RuleViolation> review = pmdReviewService.review(apexClassWrapper.getBody(), apexClassWrapper.getName() + ".cls");
-                    List<PMDStructure> pmdStructures = new ArrayList<>();
+
                     for (RuleViolation ruleViolation : review) {
                         PMDStructure pmdStructure = new PMDStructure();
                         pmdStructure.setReviewFeedback(ruleViolation.getDescription());
@@ -213,7 +218,7 @@ public class MetadataLoginUtil {
                         pmdStructure.setRuleUrl(ruleViolation.getRule().getExternalInfoUrl());
                         pmdStructure.setRulePriority(ruleViolation.getRule().getPriority().getPriority());
                         pmdStructures.add(pmdStructure);
-                        apexClassWrapper.setPmdStructures(pmdStructures);
+
                         /*if (lineNumberError.containsKey(ruleViolation.getBeginLine())) {
                             List<String> strings = lineNumberError.get(ruleViolation.getBeginLine());
                             strings.add(ruleViolation.getDescription());
@@ -225,6 +230,7 @@ public class MetadataLoginUtil {
                     }
                 }
             }
+            apexClassWrapper.setPmdStructures(pmdStructures);
             return apexClassWrapper;
 
         } catch (com.sforce.ws.ConnectionException e) {

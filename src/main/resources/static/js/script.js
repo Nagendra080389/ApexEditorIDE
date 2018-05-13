@@ -1,5 +1,6 @@
 var globalEditor1 = null;
 var globalMergeEditor = null;
+var widgets = [];
 
 function OrderFormController($scope, $http) {
 
@@ -40,6 +41,8 @@ function OrderFormController($scope, $http) {
                         extraKeys: {
                             "Ctrl-Space": "autocomplete"
                         },
+                        gutters: ["CodeMirror-lint-markers"],
+                        lint: true,
                         mode: "text/x-apex"
 
                     });
@@ -72,8 +75,26 @@ function OrderFormController($scope, $http) {
                 $('#loaderImage').hide();
                 var errors = data.pmdStructures;
                 if (Object.keys(errors).length > 0) {
-                    $scope.errorDetails = errors;
-                    $('#myModal').modal('show');
+                    if(data.isCompilationError){
+                       for (var i = 0; i < widgets.length; ++i){
+                             globalEditor1.removeLineWidget(widgets[i]);
+                       }
+                       widgets.length = 0;
+                       for (var i = 0; i < 1; ++i) {
+                             var err = errors[i];
+                             if (!err) continue;
+                             var msg = document.createElement("div");
+                             var icon = msg.appendChild(document.createElement("span"));
+                             icon.innerHTML = "!!";
+                             icon.className = "lint-error-icon";
+                             msg.appendChild(document.createTextNode(err.reviewFeedback));
+                             msg.className = "lint-error";
+                             widgets.push(globalEditor1.addLineWidget(err.lineNumber - 1, msg, {coverGutter: false, noHScroll: true}));
+                        }
+                    }else{
+                        $scope.errorDetails = errors;
+                        $('#myModal').modal('show');
+                    }
                 } else {
                     $scope.errorDetails = 'No errors';
                     $('#myModalWithoutError').modal('show');
@@ -198,4 +219,11 @@ function closeNav() {
     document.getElementById("mySidenav").style.width = "0";
     document.getElementById("main").style.marginLeft = "0";
     document.body.style.backgroundColor = "white";
+}
+
+function makeMarker() {
+  var marker = document.createElement("div");
+  marker.style.color = "#FF0000";
+  marker.innerHTML = "●";
+  return marker;
 }
