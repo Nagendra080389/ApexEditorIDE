@@ -24,6 +24,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
 <script src="../js/oboe-browser.min.js"></script>
 <script src="../js/script.js"></script>
 <script src="../js/codemirror/codemirror.js"></script>
@@ -47,13 +48,13 @@
 
 <body ng-app ng-controller="OrderFormController">
 <!--<h1 class="errorHeader">List of Classes</h1>-->
-<header>
-    <!--<div class="container">
+<!--<header>
+    &lt;!&ndash;<div class="container">
         <div id="branding">
             <h1>Apex <span class="highlight"> Editor </span></h1>
         </div>
-    </div>-->
-</header>
+    </div>&ndash;&gt;
+</header>-->
 
 <div id="myModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
@@ -66,15 +67,23 @@
                     <table class="table table-sm table-inverse table-responsive table-striped">
                         <thead>
                         <tr>
-                            <th>Line Number</th>
+                            <th>Begin Line</th>
+                            <th>End Line</th>
                             <th>Review Feedback</th>
+                            <th>Severity Level</th>
+                            <th>Ruleset</th>
                         </tr>
                         </thead>
-                        <tr ng-repeat='(key, value) in errorDetails'>
-                            <td>{{key}}</td>
+                        <tr ng-repeat="eachError in errorDetails">
+                            <!--<td>{{key}}</td>
                             <td ng-repeat="v in value">
                                 {{v}}
-                            </td>
+                            </td>-->
+                            <td>{{eachError.lineNumber}}</td>
+                            <td>{{eachError.lineNumber}}</td>
+                            <td><a target="_blank" href="{{eachError.ruleUrl}}">{{eachError.reviewFeedback}}</a></td>
+                            <td>{{eachError.rulePriority}}</td>
+                            <td>{{eachError.ruleName}}</td>
                         </tr>
                     </table>
                 </div>
@@ -137,9 +146,10 @@
 
 <div class="col-md-12 col-lg-12" id="main">
     <div class="panel with-nav-tabs panel-default">
-        <div class="panel-heading hide">
+        <div class="panel-heading">
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#tab1default" data-toggle="tab">Apex Editor</a></li>
+                <li><a href="#tab2default" data-toggle="tab">Apex Creator</a></li>
             </ul>
         </div>
         <div class="panel-body">
@@ -149,25 +159,25 @@
                         <input type="text" name="apexClass" id="autocomplete"
                                placeholder="Type the name of the Apex class you want to edit"/>
                     </div>
-                    <!--<div class="btn-group-vertical" style="padding: 1%">
-                        <button type="button" class="btn btn-primary" id="editBtn">Edit</button>
-                    </div>
--->
-                    <!--<div id='error' style='display:none'>{{apexClassWrapperError.message}}</div>-->
-
-                    <!--<div>{{apexClassWrapper.name}}</div>-->
                     <img src="../img/ajax-loader.gif" id="loaderImage" style='display:none'>
                     <div align="left">
                         <article>
                             <textarea ng-model="apexClassWrapper.body" id="apexBody" name="apexBody" readonly="true">{{apexClassWrapper.body}}</textarea>
                         </article>
                     </div>
+                    <button type="button" class="btn btn-primary" id="saveBtn" ng-click="postdata(apexClassWrapper)">Save</button>
+                    <button type="button" class="btn btn-primary" id="cleanBtn" ng-click="replaceSpaceWithTabs()">Clean Up</button>
+                </div>
+
+                <div class="tab-pane fade" id="tab2default">
+                    <button type="button" class="btn btn-primary" id="newBtn" ng-click="newClassCreation()">New</button>
+                    <div align="left">
+                        <article>
+                            <textarea ng-model="apexClassWrapper.body" id="newapexBody" name="newapexBody" readonly="true">{{apexClassWrapper.body}}</textarea>
+                        </article>
+                    </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary" id="saveBtn" ng-click="postdata(apexClassWrapper)">Save
-            </button>
-            <button type="button" class="btn btn-primary"  ng-click="replaceSpaceWithTabs()">Clean Up
-            </button>
         </div>
     </div>
 </div>

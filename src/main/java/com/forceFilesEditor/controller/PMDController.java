@@ -188,14 +188,6 @@ public class PMDController {
         try {
             if(apexClassWrapper == null) return null;
             MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
-            System.out.println("apexClassWrapper - > "+apexClassWrapper.getSalesForceSystemModStamp());
-            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            formatter.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
-            String dateString = formatter.format(apexClassWrapper.getSalesForceSystemModStamp());
-            apexClassWrapper.setSalesForceSystemModStamp(DateUtils.parseDateStrictly(dateString, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-
-            System.out.println("apexClassWrapper after - > "+apexClassWrapper.getSalesForceSystemModStamp());
-            //Mon May 07 21:54:09 UTC 2018
             ApexClassWrapper modifiedClass = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL,cookies, false);
             if(modifiedClass.isCompilationError()){
                 return gson.toJson(modifiedClass);

@@ -1,6 +1,7 @@
 package com.forceFilesEditor.algo;
 
 import com.forceFilesEditor.model.ApexClassWrapper;
+import com.forceFilesEditor.model.PMDStructure;
 import com.forceFilesEditor.pmd.PmdReviewService;
 import com.sforce.soap.metadata.MetadataConnection;
 import com.sforce.soap.partner.Connector;
@@ -12,12 +13,10 @@ import com.sforce.ws.ConnectorConfig;
 import net.sourceforge.pmd.*;
 import net.sourceforge.pmd.util.ResourceLoader;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.coyote.http2.ConnectionException;
 
 import javax.servlet.http.Cookie;
 import java.io.*;
-import java.time.Instant;
 import java.util.*;
 
 public class MetadataLoginUtil {
@@ -59,13 +58,12 @@ public class MetadataLoginUtil {
             Object body = query.getRecords()[0].getField("Body");
             Object name = query.getRecords()[0].getField("Name");
             Object id = query.getRecords()[0].getField("Id");
-            Object salesForceSystemModStamp = query.getRecords()[0].getField("LastModifiedDate");
 
             ApexClassWrapper apexClassWrapper = new ApexClassWrapper();
             apexClassWrapper.setName(name.toString());
             apexClassWrapper.setBody(body.toString());
             apexClassWrapper.setId(id.toString());
-            apexClassWrapper.setSalesForceSystemModStamp(DateUtils.parseDateStrictly(salesForceSystemModStamp.toString(), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+            apexClassWrapper.setOriginalBodyFromOrg(body.toString());
 
             return apexClassWrapper;
 
@@ -118,19 +116,17 @@ public class MetadataLoginUtil {
             con = new SObject[]{apexClassMember};
             com.sforce.soap.tooling.SaveResult[] saveMember = toolingConnection.create(con);
 
-            String apexClassBody = "SELECT Body,LastModifiedDate FROM APEXCLASS Where Name = '" + apexClassWrapper.getName() + "'";
-            QueryResult query = partnerConnection.query(apexClassBody);
-            Object body = query.getRecords()[0].getField("Body");
-            Date dateFromOrg = DateUtils.parseDateStrictly((String) query.getRecords()[0].getField("LastModifiedDate"), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            System.out.println("cookies -> "+cookies);
-            System.out.println("dateFromOrg -> "+dateFromOrg);
-            System.out.println("apexClassWrapper.getSalesForceSystemModStamp() -> "+apexClassWrapper.getSalesForceSystemModStamp());
-            if (dateFromOrg.getTime() != apexClassWrapper.getSalesForceSystemModStamp().getTime()) {
-                apexClassWrapper.setTimeStampNotMatching(true);
-                ApexClassWrapper fromOrg = new ApexClassWrapper();
-                fromOrg.setBody(body.toString());
-                apexClassWrapper.setModifiedApexClassWrapper(fromOrg);
-                return apexClassWrapper;
+            if(save) {
+                String apexClassBody = "SELECT Body FROM APEXCLASS Where Name = '" + apexClassWrapper.getName() + "'";
+                QueryResult query = partnerConnection.query(apexClassBody);
+                Object body = query.getRecords()[0].getField("Body");
+                if (!body.toString().equals(apexClassWrapper.getOriginalBodyFromOrg())) {
+                    apexClassWrapper.setDataNotMatching(true);
+                    ApexClassWrapper fromOrg = new ApexClassWrapper();
+                    fromOrg.setBody(body.toString());
+                    apexClassWrapper.setModifiedApexClassWrapper(fromOrg);
+                    return apexClassWrapper;
+                }
             }
 
             System.out.println("after return cookies -> "+apexClassWrapper);
@@ -202,23 +198,30 @@ public class MetadataLoginUtil {
                     }
                     pmdConfiguration.setRuleSets(ruleSetFilePath);
                     pmdConfiguration.setThreads(4);
-                    //pmdConfiguration.setAnalysisCache(new FileAnalysisCache());
                     SourceCodeProcessor sourceCodeProcessor = new SourceCodeProcessor(pmdConfiguration);
                     RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(pmdConfiguration, new ResourceLoader());
                     RuleSets ruleSets = RulesetsFactoryUtils.getRuleSetsWithBenchmark(pmdConfiguration.getRuleSets(), ruleSetFactory);
 
                     PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
                     List<RuleViolation> review = pmdReviewService.review(apexClassWrapper.getBody(), apexClassWrapper.getName() + ".cls");
-
+                    List<PMDStructure> pmdStructures = new ArrayList<>();
                     for (RuleViolation ruleViolation : review) {
-                        if (lineNumberError.containsKey(ruleViolation.getBeginLine())) {
+                        PMDStructure pmdStructure = new PMDStructure();
+                        pmdStructure.setReviewFeedback(ruleViolation.getDescription());
+                        pmdStructure.setLineNumber(ruleViolation.getBeginLine());
+                        pmdStructure.setRuleName(ruleViolation.getRule().getName());
+                        pmdStructure.setRuleUrl(ruleViolation.getRule().getExternalInfoUrl());
+                        pmdStructure.setRulePriority(ruleViolation.getRule().getPriority().getPriority());
+                        pmdStructures.add(pmdStructure);
+                        apexClassWrapper.setPmdStructures(pmdStructures);
+                        /*if (lineNumberError.containsKey(ruleViolation.getBeginLine())) {
                             List<String> strings = lineNumberError.get(ruleViolation.getBeginLine());
                             strings.add(ruleViolation.getDescription());
                         } else {
                             List<String> problemList = new ArrayList<>();
                             problemList.add(ruleViolation.getDescription());
                             lineNumberError.put(ruleViolation.getBeginLine(), problemList);
-                        }
+                        }*/
                     }
                 }
             }

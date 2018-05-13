@@ -2,7 +2,6 @@ package com.forceFilesEditor.model;
 
 import com.sforce.soap.tooling.SymbolTable;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +12,6 @@ public class ApexClassWrapper {
 
     public String body;
 
-    private Date salesForceSystemModStamp;
-
     public String id;
 
     private boolean timeStampNotMatching;
@@ -23,12 +20,33 @@ public class ApexClassWrapper {
 
     private ApexClassWrapper modifiedApexClassWrapper;
 
+    private String originalBodyFromOrg;
+
     private Integer lineNumber;
 
     private boolean isCompilationError;
 
     private SymbolTable symbolTable;
 
+    private boolean dataNotMatching;
+
+    private List<PMDStructure> pmdStructures;
+
+    public String getOriginalBodyFromOrg() {
+        return originalBodyFromOrg;
+    }
+
+    public void setOriginalBodyFromOrg(String originalBodyFromOrg) {
+        this.originalBodyFromOrg = originalBodyFromOrg;
+    }
+
+    public boolean isDataNotMatching() {
+        return dataNotMatching;
+    }
+
+    public void setDataNotMatching(boolean dataNotMatching) {
+        this.dataNotMatching = dataNotMatching;
+    }
 
     public ApexClassWrapper getModifiedApexClassWrapper() {
         return modifiedApexClassWrapper;
@@ -46,12 +64,12 @@ public class ApexClassWrapper {
         this.timeStampNotMatching = timeStampNotMatching;
     }
 
-    public Date getSalesForceSystemModStamp() {
-        return salesForceSystemModStamp;
+    public List<PMDStructure> getPmdStructures() {
+        return pmdStructures;
     }
 
-    public void setSalesForceSystemModStamp(Date salesForceSystemModStamp) {
-        this.salesForceSystemModStamp = salesForceSystemModStamp;
+    public void setPmdStructures(List<PMDStructure> pmdStructures) {
+        this.pmdStructures = pmdStructures;
     }
 
     public String getId() {

@@ -1,9 +1,10 @@
-var globalEditor = null;
+var globalEditor1 = null;
 var globalMergeEditor = null;
 
 function OrderFormController($scope, $http) {
 
     document.getElementById("saveBtn").disabled = true;
+    document.getElementById("cleanBtn").disabled = true;
     $('#autocomplete').autocomplete({
         type: 'POST',
         serviceUrl: '/getSuggestion',
@@ -21,11 +22,11 @@ function OrderFormController($scope, $http) {
             $('#loaderImage').show();
             $http.get("/getApexBody", config).then(function(response) {
                 document.getElementById("saveBtn").disabled = false;
+                document.getElementById("cleanBtn").disabled = true;
                 $scope.apexClassWrapper = response.data;
-                console.log('date while Loading  - >' +response.data.salesForceSystemModStamp);
                 $('#loaderImage').hide();
-                if (globalEditor) {
-                    globalEditor.toTextArea();
+                if (globalEditor1) {
+                    globalEditor1.toTextArea();
                 }
                 setTimeout(function(test) {
                     CodeMirror.commands.autocomplete = function(cm) {
@@ -43,7 +44,7 @@ function OrderFormController($scope, $http) {
 
                     });
 
-                    globalEditor = $('.CodeMirror')[0].CodeMirror;
+                    globalEditor1 = $('.CodeMirror')[0].CodeMirror;
                 }), 2000
             });
 
@@ -51,39 +52,25 @@ function OrderFormController($scope, $http) {
         }
     });
 
-    var ModalInstanceCtrl = function($scope, $modalInstance, data) {
-        $scope.data = data;
-        $scope.close = function( /*result*/ ) {
-            $modalInstance.close($scope.data);
-        };
-    };
-
-    $scope.data = {
-        boldTextTitle: "Done",
-        textAlert: "Some content",
-        mode: 'error'
-    }
-
-
     $scope.postdata = function(apexClassWrapper) {
         console.log(apexClassWrapper);
 
-        apexClassWrapper.body = globalEditor.getValue();
+        apexClassWrapper.body = globalEditor1.getValue();
         var dataObj = {
             name: apexClassWrapper.name,
             body: apexClassWrapper.body,
             id: apexClassWrapper.id,
-            salesForceSystemModStamp: new Date(apexClassWrapper.salesForceSystemModStamp)
+            originalBodyFromOrg: apexClassWrapper.originalBodyFromOrg
+
         };
 
-        console.log('salesForceSystemModStamp - >' +dataObj.salesForceSystemModStamp);
 
         $('#loaderImage').show();
         $http.post("/modifyApexBody", dataObj)
             .success(function(data) {
                 $scope.apexClassWrapper = data;
                 $('#loaderImage').hide();
-                var errors = data.lineNumberError;
+                var errors = data.pmdStructures;
                 if (Object.keys(errors).length > 0) {
                     $scope.errorDetails = errors;
                     $('#myModal').modal('show');
@@ -106,18 +93,19 @@ function OrderFormController($scope, $http) {
     $scope.deployWithErrors = function(salesforcetimeStamp, apexClassWrapper) {
         $('#myModal').modal('hide');
         $('#loaderImage').show();
-        apexClassWrapper.body = globalEditor.getValue();
+        apexClassWrapper.body = globalEditor1.getValue();
         var dataObj = {
             name: apexClassWrapper.name,
             body: apexClassWrapper.body,
             id: apexClassWrapper.id,
-            salesForceSystemModStamp: new Date(apexClassWrapper.salesForceSystemModStamp)
+            //originalBodyFromOrg: apexClassWrapper.originalBodyFromOrg
+            originalBodyFromOrg: globalMergeEditor != undefined ? globalMergeEditor.rightOriginal().getValue() : apexClassWrapper.originalBodyFromOrg
         };
 
         $http.post("/saveModifiedApexBody", dataObj)
             .success(function(data) {
                 console.log('Success : ' + data);
-                if (data.timeStampNotMatching) {
+                if (data.dataNotMatching) {
                     $scope.apexClassWrapper = data;
                     $('#diffView').modal('show');
                     var value, orig1, orig2, dv, hilight = true;
@@ -144,13 +132,32 @@ function OrderFormController($scope, $http) {
     }
 
     $scope.replaceMerged = function(){
-      globalEditor.getDoc().setValue(globalMergeEditor.editor().getValue());
+      globalEditor1.getDoc().setValue(globalMergeEditor.editor().getValue());
 
     };
 
     $scope.replaceSpaceWithTabs = function(){
-        var cleaneddata = globalEditor.getValue().replace(new RegExp(' +', 'g'), ' ')
-        globalEditor.getDoc().setValue(cleaneddata);
+        var cleaneddata = globalEditor1.getValue().replace(new RegExp(' +', 'g'), ' ')
+        globalEditor1.getDoc().setValue(cleaneddata);
+
+    };
+
+    $scope.newClassCreation = function(){
+          bootbox.prompt({
+                  title: 'Enter Class Name',
+                  placeholder: 'Enter Class Name',
+                  buttons: {
+                      confirm: {
+                          label: 'Submit'
+                      }
+                  },
+                  callback: function(value){
+                      if(value == null){
+                          return;
+                      }
+
+                  }
+              });
 
     };
 
