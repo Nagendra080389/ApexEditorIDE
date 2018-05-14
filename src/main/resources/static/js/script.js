@@ -113,6 +113,7 @@ function OrderFormController($scope, $http) {
 
     $scope.deployWithErrors = function(apexClassWrapper) {
         $('#myModal').modal('hide');
+        $('#myModalWithoutError').modal('hide');
         $('#loaderImage').show();
         apexClassWrapper.body = globalEditor1.getValue();
         var dataObj = {
