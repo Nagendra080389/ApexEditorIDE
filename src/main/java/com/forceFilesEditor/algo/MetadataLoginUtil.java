@@ -298,8 +298,8 @@ public class MetadataLoginUtil {
 
             ApexClass apexClass1 = new ApexClass();
             apexClass1.setBody("public class "+apexClassName+" {\n" +
-                    "            " +
-                    "           }");
+                               "\n" +
+                               "}");
 
             con = new SObject[]{apexClass1};
 
