@@ -75,23 +75,29 @@ function OrderFormController($scope, $http) {
                 $('#loaderImage').hide();
                 var errors = data.pmdStructures;
                 if (Object.keys(errors).length > 0) {
-                    if(data.isCompilationError){
-                       for (var i = 0; i < widgets.length; ++i){
-                             globalEditor1.removeLineWidget(widgets[i]);
-                       }
-                       widgets.length = 0;
-                       for (var i = 0; i < 1; ++i) {
-                             var err = errors[i];
-                             if (!err) continue;
-                             var msg = document.createElement("div");
-                             var icon = msg.appendChild(document.createElement("span"));
-                             icon.innerHTML = "!!";
-                             icon.className = "lint-error-icon";
-                             msg.appendChild(document.createTextNode(err.reviewFeedback));
-                             msg.className = "lint-error";
-                             widgets.push(globalEditor1.addLineWidget(err.lineNumber - 1, msg, {coverGutter: false, noHScroll: true}));
+                    if (data.isCompilationError) {
+                        for (var i = 0; i < widgets.length; ++i) {
+                            globalEditor1.removeLineWidget(widgets[i]);
                         }
-                    }else{
+                        widgets.length = 0;
+                        for (var i = 0; i < 1; ++i) {
+                            var err = errors[i];
+                            if (!err) continue;
+                            var msg = document.createElement("div");
+                            var icon = msg.appendChild(document.createElement("span"));
+                            icon.innerHTML = "!!";
+                            icon.className = "lint-error-icon";
+                            msg.appendChild(document.createTextNode(err.reviewFeedback));
+                            msg.className = "lint-error";
+                            widgets.push(globalEditor1.addLineWidget(err.lineNumber - 1, msg, {
+                                coverGutter: false,
+                                noHScroll: true
+                            }));
+                        }
+                    } else {
+                        for (var i = 0; i < widgets.length; ++i) {
+                            globalEditor1.removeLineWidget(widgets[i]);
+                        }
                         $scope.errorDetails = errors;
                         $('#myModal').modal('show');
                     }
@@ -153,33 +159,33 @@ function OrderFormController($scope, $http) {
             });
     }
 
-    $scope.replaceMerged = function(){
-      globalEditor1.getDoc().setValue(globalMergeEditor.editor().getValue());
+    $scope.replaceMerged = function() {
+        globalEditor1.getDoc().setValue(globalMergeEditor.editor().getValue());
 
     };
 
-    $scope.replaceSpaceWithTabs = function(){
+    $scope.replaceSpaceWithTabs = function() {
         var cleaneddata = globalEditor1.getValue().replace(new RegExp(' +', 'g'), ' ')
         globalEditor1.getDoc().setValue(cleaneddata);
 
     };
 
-    $scope.newClassCreation = function(){
-          bootbox.prompt({
-                  title: 'Enter Class Name',
-                  placeholder: 'Enter Class Name',
-                  buttons: {
-                      confirm: {
-                          label: 'Submit'
-                      }
-                  },
-                  callback: function(value){
-                      if(value == null){
-                          return;
-                      }
+    $scope.newClassCreation = function() {
+        bootbox.prompt({
+            title: 'Enter Class Name',
+            placeholder: 'Enter Class Name',
+            buttons: {
+                confirm: {
+                    label: 'Submit'
+                }
+            },
+            callback: function(value) {
+                if (value == null) {
+                    return;
+                }
 
-                  }
-              });
+            }
+        });
 
     };
 
