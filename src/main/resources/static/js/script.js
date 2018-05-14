@@ -102,6 +102,9 @@ function OrderFormController($scope, $http) {
                         $('#myModal').modal('show');
                     }
                 } else {
+                    for (var i = 0; i < widgets.length; ++i) {
+                        globalEditor1.removeLineWidget(widgets[i]);
+                    }
                     $scope.errorDetails = 'No errors';
                     $('#myModalWithoutError').modal('show');
                 }
