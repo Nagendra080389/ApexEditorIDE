@@ -111,7 +111,7 @@ function OrderFormController($scope, $http) {
 
     };
 
-    $scope.deployWithErrors = function(salesforcetimeStamp, apexClassWrapper) {
+    $scope.deployWithErrors = function(apexClassWrapper) {
         $('#myModal').modal('hide');
         $('#loaderImage').show();
         apexClassWrapper.body = globalEditor1.getValue();

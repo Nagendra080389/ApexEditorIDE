@@ -95,7 +95,7 @@
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn btn-default" ng-click="deployWithErrors(salesforcetimeStamp, apexClassWrapper)">Deploy With Errors</button>
+            <button type="button" class="btn btn-default" ng-click="deployWithErrors(apexClassWrapper)">Deploy With Errors</button>
 
             <button type="button" class="btn btn-default" data-dismiss="modal">
                 Close
@@ -115,14 +115,14 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <div class="modal-body">
                     <table class="table table-sm table-inverse table-responsive table-striped">
-                        <td>{{errorDetails}}</td>
+                        <td>No Errors</td>
                     </table>
                 </div>
             </div>
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn btn-default">Deploy</button>
+            <button type="button" class="btn btn-default" ng-click="deployWithErrors(apexClassWrapper)">Deploy</button>
 
             <button type="button" class="btn btn-default" data-dismiss="modal">
                 Close
