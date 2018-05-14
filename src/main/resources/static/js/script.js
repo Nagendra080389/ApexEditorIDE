@@ -153,7 +153,7 @@ function OrderFormController($scope, $http) {
             placeholder: 'Enter Class Name',
             buttons: {
                 confirm: {
-                    label: 'Submit'
+                    label: 'Create'
                 }
             },
             callback: function(value) {
@@ -162,7 +162,9 @@ function OrderFormController($scope, $http) {
                 }
                 $http.post("/createFile", value).success(function(data) {
                     $scope.newApexClassWrapper = data;
-                }).error(function(data) {});
+                }).error(function(data) {
+
+                });
             }
         });
     };
