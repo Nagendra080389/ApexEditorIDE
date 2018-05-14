@@ -87,6 +87,10 @@ public class MetadataLoginUtil {
             }
         }
 
+        ConnectorConfig config = new ConnectorConfig();
+        config.setSessionId(accessToken);
+        config.setServiceEndpoint(instanceUrl);
+
         ConnectorConfig toolConfig = new ConnectorConfig();
 
         toolConfig.setServiceEndpoint(instanceUrl);
@@ -118,6 +122,9 @@ public class MetadataLoginUtil {
 
             if(save) {
                 String apexClassBody = "SELECT Body FROM APEXCLASS Where Name = '" + apexClassWrapper.getName() + "'";
+                if(partnerConnection == null){
+                    partnerConnection = Connector.newConnection(config);
+                }
                 QueryResult query = partnerConnection.query(apexClassBody);
                 Object body = query.getRecords()[0].getField("Body");
                 if (!body.toString().equals(apexClassWrapper.getOriginalBodyFromOrg())) {
