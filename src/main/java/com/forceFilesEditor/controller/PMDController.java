@@ -224,15 +224,16 @@ public class PMDController {
     }
 
     @RequestMapping(value = "/createFile", method = RequestMethod.GET)
-    public String createFile() throws Exception {
-
+    public String createFile(@RequestBody String apexClassName, HttpServletResponse response, HttpServletRequest request) throws Exception {
+        String partnerURL = this.partnerURL;
+        String toolingURL = this.toolingURL;
+        Cookie[] cookies = request.getCookies();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         try {
-            ApexClassWrapper modifiedClass = MetadataLoginUtil.createFiles("",null);
-
+            ApexClassWrapper modifiedClass = MetadataLoginUtil.createFiles("",apexClassName ,partnerURL, toolingURL, cookies);
             return gson.toJson(modifiedClass);
         } catch (DeploymentException e) {
-            throw e;
+            return gson.toJson(e.getStackTrace());
         }
 
     }

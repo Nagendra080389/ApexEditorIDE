@@ -263,16 +263,23 @@ public class MetadataLoginUtil {
     }
 
 
-    public static ApexClassWrapper createFiles(String type, ApexClassWrapper apexClassWrapper) throws Exception {
+    public static ApexClassWrapper createFiles(String type, String apexClassName, String partnerURL, String toolingURL, Cookie[] cookies) throws Exception {
 
-        Map<String, String> propertiesMap = new HashMap<String, String>();
-        FileReader fileReader = new FileReader(FILE_NAME);
-        createMapOfProperties(fileReader, propertiesMap);
+        String instanceUrl = null;
+        String accessToken = null;
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("ACCESS_TOKEN")){
+                accessToken = cookie.getValue();
+            }
+            if(cookie.getName().equals("INSTANCE_URL")){
+                instanceUrl = cookie.getValue();
+                instanceUrl = instanceUrl + toolingURL;
+            }
+        }
 
         ConnectorConfig toolConfig = new ConnectorConfig();
-        toolConfig.setUsername(propertiesMap.get("username"));
-        toolConfig.setPassword(propertiesMap.get("password"));
-        toolConfig.setAuthEndpoint(propertiesMap.get("toolingURL"));
+        toolConfig.setServiceEndpoint(instanceUrl);
+        toolConfig.setSessionId(accessToken);
 
 
         ToolingConnection toolingConnection = new ToolingConnection(toolConfig);
@@ -290,34 +297,14 @@ public class MetadataLoginUtil {
 
 
             ApexClass apexClass1 = new ApexClass();
-            apexClass1.setBody(" public class TestClassFromToolingAPI {\n" +
-                    "                public string SayHello() {\n" +
-                    "                    return 'Hello1';\n" +
-                    "                }\n" +
+            apexClass1.setBody("public class "+apexClassName+" {\n" +
+                    "            " +
                     "           }");
 
             con = new SObject[]{apexClass1};
 
             com.sforce.soap.tooling.SaveResult[] saveApex = toolingConnection.create(con);
             String apexId = saveApex[0].getId();
-
-
-            /*ApexClassMember apexClass = new ApexClassMember();
-            apexClass.setMetadataContainerId(containerId);
-            apexClass.setBody(" public class TestClassFromToolingAPI {\n" +
-                    "                public string SayHello() {\n" +
-                    "                    return 'Hello1';\n" +
-                    "                }\n" +
-                    "           }");
-            apexClass.setFullName("TestClassFromToolingAPI");
-            apexClass.setContentEntityId(apexId);*/
-
-            Map<Integer, List<String>> lineNumberError = new HashMap<>();
-
-
-            //con = new SObject[]{apexClass};
-            //com.sforce.soap.tooling.SaveResult[] saveMember = toolingConnection.create(con);
-
             ContainerAsyncRequest containerAsyncRequest = new ContainerAsyncRequest();
             containerAsyncRequest.setMetadataContainerId(containerId);
             containerAsyncRequest.setIsCheckOnly(false);
@@ -328,6 +315,8 @@ public class MetadataLoginUtil {
             com.sforce.soap.tooling.SaveResult[] asyncResultMember = toolingConnection.create(con);
 
             String id = asyncResultMember[0].getId();
+            List<PMDStructure> pmdStructures = new ArrayList<>();
+            ApexClassWrapper apexClassWrapper = new ApexClassWrapper();
 
 
             while (true) {
@@ -343,14 +332,10 @@ public class MetadataLoginUtil {
                             if (deployDetails.getComponentFailures().length > 0) {
                                 apexClassWrapper.setCompilationError(true);
                                 for (DeployMessage deployMessage : deployDetails.getComponentFailures()) {
-                                    if (lineNumberError.containsKey(deployMessage.getLineNumber())) {
-                                        List<String> strings = lineNumberError.get(deployMessage.getLineNumber());
-                                        strings.add(deployMessage.getProblem());
-                                    } else {
-                                        List<String> problemList = new ArrayList<>();
-                                        problemList.add(deployMessage.getProblem());
-                                        lineNumberError.put(deployMessage.getLineNumber(), problemList);
-                                    }
+                                    PMDStructure pmdStructure = new PMDStructure();
+                                    pmdStructure.setLineNumber(deployMessage.getLineNumber());
+                                    pmdStructure.setReviewFeedback(deployMessage.getProblem());
+                                    pmdStructures.add(pmdStructure);
                                 }
                             }
                         }
@@ -358,7 +343,7 @@ public class MetadataLoginUtil {
                 }
                 break;
             }
-
+            apexClassWrapper.setPmdStructures(pmdStructures);
 
             return apexClassWrapper;
 
