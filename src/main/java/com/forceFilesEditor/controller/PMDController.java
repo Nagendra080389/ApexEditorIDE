@@ -223,7 +223,7 @@ public class PMDController {
 
     }
 
-    @RequestMapping(value = "/createFile", method = RequestMethod.GET)
+    @RequestMapping(value = "/createFile", method = RequestMethod.POST)
     public String createFile(@RequestBody String apexClassName, HttpServletResponse response, HttpServletRequest request) throws Exception {
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
