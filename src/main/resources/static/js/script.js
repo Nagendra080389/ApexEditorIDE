@@ -156,6 +156,7 @@ function OrderFormController($scope, $http) {
                     label: 'Create'
                 }
             },
+
             callback: function(value) {
                 if (value == null) {
                     return;
