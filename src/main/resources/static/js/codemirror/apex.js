@@ -292,13 +292,13 @@
             }).fail(function() {
                 console.log('error getAllApexClasses');
             });
-            console.log(words);
         }
         add(mode.keywords);
         add(mode.types);
         add(mode.builtin);
         add(mode.atoms);
         addServerSideHints();
+        console.log(words);
         if (words.length) {
             mode.helperType = mimes[0];
             CodeMirror.registerHelper("hintWords", mimes[0], words);
