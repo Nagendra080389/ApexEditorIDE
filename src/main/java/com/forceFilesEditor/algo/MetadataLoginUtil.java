@@ -297,7 +297,8 @@ public class MetadataLoginUtil {
 
 
             ApexClass apexClass1 = new ApexClass();
-            apexClass1.setBody("/** Class Name -> "+apexClassName +"\n"+
+            apexClass1.setBody("/** \n" +
+                    "Class Name -> "+apexClassName +"\n"+
                     "**/\n" +
                     "public class "+apexClassName+" {\n" +
                                "\n" +

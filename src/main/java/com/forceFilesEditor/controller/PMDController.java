@@ -43,9 +43,6 @@ public class PMDController {
     @Value("${toolingURL}")
     volatile String toolingURL;
 
-    @Value("${suggestionWord}")
-    volatile String suggestionWord;
-
     @RequestMapping(value = "/getAllApexClasses", method = RequestMethod.POST)
     public String getAllApexClasses(HttpServletResponse response, HttpServletRequest request) throws IOException {
 
