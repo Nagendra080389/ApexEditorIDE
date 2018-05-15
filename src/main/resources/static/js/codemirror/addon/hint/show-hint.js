@@ -493,6 +493,9 @@
         var found = [];
         for (var i = 0; i < options.words.length; i++) {
             var word = options.words[i];
+            if(word.indexOf(term) > 0){
+                found.push(word);
+            }
             if (word.slice(0, term.length) == term){
                 if(word.split("+")[0] == term){
                     if(word.split.length >= 2){
