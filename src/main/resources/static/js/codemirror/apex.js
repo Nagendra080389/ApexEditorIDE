@@ -283,7 +283,7 @@
             }).fail(function() {
                 console.log('error getMethodSuggestion');
             });
-            oboe('/getAllApexClasses').done(function(data) {
+            oboe('/getAllApexClassesNames').done(function(data) {
                 var value;
 
                 Object.keys(data).forEach(function(key) {

@@ -43,6 +43,9 @@ public class PMDController {
     @Value("${toolingURL}")
     volatile String toolingURL;
 
+    @Value("${suggestionWord}")
+    volatile String suggestionWord;
+
     @RequestMapping(value = "/getAllApexClasses", method = RequestMethod.POST)
     public String getAllApexClasses(HttpServletResponse response, HttpServletRequest request) throws IOException {
 
@@ -69,6 +72,23 @@ public class PMDController {
 
     }
 
+    @RequestMapping(value = "/getAllApexClassesNames", method = RequestMethod.GET)
+    public String getAllApexClassesNames(HttpServletResponse response, HttpServletRequest request) throws IOException {
+
+        String partnerURL = this.partnerURL;
+        String toolingURL = this.toolingURL;
+        Cookie[] cookies = request.getCookies();
+        Gson gson = new GsonBuilder().create();
+        try {
+            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL,cookies);
+            return gson.toJson(allApexClasses);
+
+        } catch (Exception e) {
+            return gson.toJson(e.getMessage());
+        }
+
+    }
+
     @RequestMapping(value = "/getSuggestion", method = RequestMethod.POST)
     public String getSuggestion(String query) throws IOException {
         Gson gson = new GsonBuilder().create();
@@ -86,6 +106,26 @@ public class PMDController {
         newMapReturn.put("suggestions", newListToBeAdded);
         return gson.toJson(newMapReturn);
     }
+
+    /*@RequestMapping(value = "/getSuggestionForEditor", method = RequestMethod.POST)
+    public String getSuggestionForEditor(String query) throws IOException {
+        Gson gson = new GsonBuilder().create();
+        List<String> strings = new ArrayList<>();
+        String[] split = this.suggestionWord.split("\\s+");
+        strings.addAll(Arrays.asList(split));
+        Map<String, List<String>> newMapReturn = new HashMap<>();
+        List<String> newListToBeAdded = new ArrayList<>();
+        Iterator itr = strings.iterator();
+        while (itr.hasNext())
+        {
+            String x = (String)itr.next();
+            if (x.toLowerCase().contains(query.toLowerCase()))
+                newListToBeAdded.add(x);
+        }
+
+        newMapReturn.put("suggestions", newListToBeAdded);
+        return gson.toJson(newMapReturn);
+    }*/
 
     @RequestMapping(value = "/apex/getMethodSuggestion", method = RequestMethod.GET)
     public String getMethodSuggestion() throws IOException {
@@ -256,9 +296,9 @@ public class PMDController {
         PostMethod post = new PostMethod(environment);
         post.addParameter("code", code);
         post.addParameter("grant_type", "authorization_code");
-        post.addParameter("redirect_uri", "https://apexeditortooldev.herokuapp.com/auth");
-        post.addParameter("client_id", "3MVG9d8..z.hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz");
-        post.addParameter("client_secret", "7957205307299792687");
+        post.addParameter("redirect_uri", "https://798394f2.ngrok.io/auth");
+        post.addParameter("client_id", "3MVG9d8..z.hDcPLDlm9QqJ3hRa..IRUJdGRp4Shjuu01GT.H5KRjos_xlbZEtYGy55M6SzOOELg7sfD4T6Pl");
+        post.addParameter("client_secret", "1846517738759045110");
 
         httpClient.executeMethod(post);
         String responseBody = post.getResponseBodyAsString();
