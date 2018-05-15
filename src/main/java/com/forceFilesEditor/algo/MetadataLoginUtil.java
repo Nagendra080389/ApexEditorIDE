@@ -297,9 +297,14 @@ public class MetadataLoginUtil {
 
 
             ApexClass apexClass1 = new ApexClass();
-            apexClass1.setBody("public class "+apexClassName+" {\n" +
+            apexClass1.setBody("/** Class Name -> "+apexClassName +"\n"+
+                    "**/\n" +
+                    "public class "+apexClassName+" {\n" +
                                "\n" +
                                "}");
+            ApexClassWrapper apexClassWrapper = new ApexClassWrapper();
+            apexClassWrapper.setBody(apexClass1.getBody());
+            apexClassWrapper.setName(apexClassName);
 
             con = new SObject[]{apexClass1};
 
@@ -316,8 +321,6 @@ public class MetadataLoginUtil {
 
             String id = asyncResultMember[0].getId();
             List<PMDStructure> pmdStructures = new ArrayList<>();
-            ApexClassWrapper apexClassWrapper = new ApexClassWrapper();
-
 
             while (true) {
                 com.sforce.soap.tooling.QueryResult containerSyncRequestCompile = toolingConnection.query("SELECT Id,State, DeployDetails, ErrorMsg FROM ContainerAsyncRequest where id = '" + id + "'");
