@@ -284,10 +284,9 @@
                 console.log('error getMethodSuggestion');
             });
             oboe('/getAllApexClassesNames').done(function(data) {
-                var value;
-
-                for(value in data){
-                   words.push(value.name);
+                var arrayLength = data.length;
+                for (var i = 0; i < arrayLength; i++) {
+                    words.push(data[i].name);
                 }
 
             }).fail(function() {
