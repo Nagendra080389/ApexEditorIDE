@@ -279,32 +279,21 @@
                         }
                     });
                 })
-                console.log(words);
+
             }).fail(function() {
                 console.log('error getMethodSuggestion');
             });
             oboe('/getAllApexClassesNames').done(function(data) {
                 var value;
 
-                Object.keys(data).forEach(function(key) {
-                    var mainKey = key;
-                    value = data[mainKey];
-                    var innervalue;
-                    Object.keys(value).forEach(function(key) {
-                        var internalKey = key;
-                        innervalue = value[internalKey];
-                        for (var eachInnerValue in innervalue) {
-                            var finalValue = mainKey + '+' + internalKey + '+' + innervalue[eachInnerValue];
-                            if (words.indexOf(finalValue) < 0) {
-                                words.push(mainKey + '+' + internalKey + '+' + innervalue[eachInnerValue]);
-                            }
-                        }
-                    });
-                })
-                console.log(words);
+                for(value in data){
+                   words.push(value.name);
+                }
+
             }).fail(function() {
                 console.log('error getAllApexClasses');
             });
+            console.log(words);
         }
         add(mode.keywords);
         add(mode.types);
