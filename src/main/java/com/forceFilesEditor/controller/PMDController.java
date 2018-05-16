@@ -183,9 +183,10 @@ public class PMDController {
     @RequestMapping(value = "/getReturnSymbolTable", method = RequestMethod.GET)
     public String getReturnSymbolTable() throws IOException {
         Gson gson = new GsonBuilder().create();
+        MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
         List<String> strings = new ArrayList<>();
         try {
-            strings = MetadataLoginUtil.returnSymbolTable();
+            strings = metadataLoginUtil.returnSymbolTable();
         } catch (XMLStreamException e) {
             e.printStackTrace();
         } catch (JAXBException e) {
