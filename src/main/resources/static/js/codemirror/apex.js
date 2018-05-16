@@ -279,7 +279,6 @@
                         }
                     });
                 })
-
             }).fail(function() {
                 console.log('error getMethodSuggestion');
             });
@@ -288,7 +287,14 @@
                 for (var i = 0; i < arrayLength; i++) {
                     words.push(data[i].name);
                 }
-
+            }).fail(function() {
+                console.log('error getAllApexClasses');
+            });
+            oboe('/getReturnSymbolTable').done(function(data) {
+                var arrayLength = data.length;
+                for (var i = 0; i < arrayLength; i++) {
+                    words.push(data[i].name);
+                }
             }).fail(function() {
                 console.log('error getAllApexClasses');
             });

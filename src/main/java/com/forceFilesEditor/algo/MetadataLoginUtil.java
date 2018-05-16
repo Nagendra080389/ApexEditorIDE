@@ -1,7 +1,6 @@
 package com.forceFilesEditor.algo;
 
-import com.forceFilesEditor.model.ApexClassWrapper;
-import com.forceFilesEditor.model.PMDStructure;
+import com.forceFilesEditor.model.*;
 import com.forceFilesEditor.pmd.PmdReviewService;
 import com.sforce.soap.metadata.MetadataConnection;
 import com.sforce.soap.partner.Connector;
@@ -14,8 +13,16 @@ import net.sourceforge.pmd.*;
 import net.sourceforge.pmd.util.ResourceLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.coyote.http2.ConnectionException;
+import org.springframework.core.io.ClassPathResource;
+import wiremock.org.apache.commons.collections4.trie.PatriciaTrie;
 
 import javax.servlet.http.Cookie;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.util.*;
 
@@ -540,5 +547,28 @@ public class MetadataLoginUtil {
             return sObjectList;
 
         }
+    }
+
+    public static List<String> returnSymbolTable() throws IOException, XMLStreamException, JAXBException {
+        List<String> returnList = new ArrayList<>();
+
+        JAXBContext jc = JAXBContext.newInstance(Completions.class);
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        InputStream stream = new FileInputStream(new ClassPathResource("xml/completion.xml").getFile());
+        Completions unmarshal = (Completions) unmarshaller.unmarshal(stream);
+        List<Type> type = unmarshal.getSystemNamespace().getType();
+        for (Type eachType : type) {
+
+            if(!eachType.getMethodTrie().isEmpty()){
+                PatriciaTrie<ArrayList<AbstractCompletionProposalDisplayable>> methodTrie = eachType.getMethodTrie();
+                for (String methodKey : methodTrie.keySet()) {
+                    String buildSuggestions = "";
+                    buildSuggestions += eachType.name+"+method+"+methodKey;
+                    returnList.add(buildSuggestions);
+                }
+            }
+        }
+
+        return returnList;
     }
 }

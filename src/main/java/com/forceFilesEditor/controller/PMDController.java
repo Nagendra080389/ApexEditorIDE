@@ -22,6 +22,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -176,6 +178,21 @@ public class PMDController {
         }
 
         return gson.toJson(newMapReturn);
+    }
+
+    @RequestMapping(value = "/getReturnSymbolTable", method = RequestMethod.GET)
+    public String getReturnSymbolTable() throws IOException {
+        Gson gson = new GsonBuilder().create();
+        List<String> strings = new ArrayList<>();
+        try {
+            strings = MetadataLoginUtil.returnSymbolTable();
+        } catch (XMLStreamException e) {
+            e.printStackTrace();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+
+        return gson.toJson(strings);
     }
 
 
