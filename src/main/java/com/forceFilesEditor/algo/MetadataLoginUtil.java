@@ -551,11 +551,11 @@ public class MetadataLoginUtil {
 
     public List<String> returnSymbolTable() throws IOException, XMLStreamException, JAXBException {
         List<String> returnList = new ArrayList<>();
-
+        Set<String> listOfClassNames = new HashSet<>();
         JAXBContext jc = JAXBContext.newInstance(Completions.class);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         ClassLoader classLoader = this.getClass().getClassLoader();
-        InputStream resourceAsStream = classLoader.getResourceAsStream("xml/ruleSet.xml");
+        InputStream resourceAsStream = classLoader.getResourceAsStream("xml/completion.xml");
         String ruleSetFilePath = "";
         if (resourceAsStream != null) {
             File file = stream2file(resourceAsStream);
@@ -573,10 +573,12 @@ public class MetadataLoginUtil {
                     String buildSuggestions = "";
                     buildSuggestions += eachType.name+"+method+"+methodKey;
                     returnList.add(buildSuggestions);
+                    listOfClassNames.add(eachType.name);
+
                 }
             }
         }
-
+        returnList.addAll(listOfClassNames);
         return returnList;
     }
 }
