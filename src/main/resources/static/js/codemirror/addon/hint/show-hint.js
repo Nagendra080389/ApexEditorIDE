@@ -457,7 +457,11 @@
             var found = [];
             for (var i = 0; i < options.words.length; i++) {
                 var word = options.words[i];
-                if (word.slice(0, term.length) == term) found.push(word);
+                if (word.slice(0, term.length) == term) {
+                    if(!(word.indexOf('+') > -1)){
+                        found.push(word);
+                    }
+                }
             }
             if (found.length) return {
                 list: found,
