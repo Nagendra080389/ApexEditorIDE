@@ -34,6 +34,7 @@ function OrderFormController($scope, $http) {
                     var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
                         lineNumbers: true,
                         matchBrackets: true,
+                        styleActiveLine: true,
                         extraKeys: {
                             "Ctrl-Space": "autocomplete"
                         },
