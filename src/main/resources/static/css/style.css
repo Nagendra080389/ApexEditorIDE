@@ -225,8 +225,8 @@ tr th{
 	50% { opacity: 0; }
 }
 
-.modal-dialog {
-    width: 100% !important;
+#mergemodal .modal-dialog {
+    width: 90% !important;
     margin: 30px auto;
 }
 
