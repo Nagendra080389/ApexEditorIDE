@@ -430,9 +430,9 @@
             var found = [];
             for (var i = 0; i < options.words.length; i++) {
                 var word = options.words[i];
-                if (word.slice(0, term.length) == term) {
-                    if (word.split("+")[0] == term) {
-                        if (word.split.length >= 2) {
+                if (word.toLowerCase().slice(0, term.length) == term) {
+                    if (word.toLowerCase().split("+")[0] == term) {
+                        if (word.toLowerCase().split.length >= 2) {
                             for (var j = 2; j < word.split("+").length; j++) {
                                 found.push(word.split("+")[j]);
                             }
@@ -457,8 +457,8 @@
             var found = [];
             for (var i = 0; i < options.words.length; i++) {
                 var word = options.words[i];
-                if (word.slice(0, term.length) == term) {
-                    if(!(word.indexOf('+') > -1)){
+                if (word.toLowerCase().slice(0, term.length) == term) {
+                    if(!(word.toLowerCase().indexOf('+') > -1)){
                         found.push(word);
                     }
                 }

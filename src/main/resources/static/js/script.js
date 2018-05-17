@@ -171,8 +171,10 @@ function OrderFormController($scope, $http) {
     };
     $(document).ready(function() {
         $('#loaderImage').show();
-        $http.post("/getAllApexClasses").success(function(data) {}).error(function(data) {});
-        $('#loaderImage').hide();
+        $http.post("/getAllApexClasses").success(function(data) {
+            $('#loaderImage').hide();
+        }).error(function(data) {});
+
     });
 };
 
