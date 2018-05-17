@@ -41,7 +41,7 @@ function OrderFormController($scope, $http) {
                         lint: true,
                         mode: "text/x-apex"
                     });
-                    cm.on('inputRead', function onChange(editor, input) {
+                    editor.on('inputRead', function onChange(editor, input) {
                         if (input.text[0] === ';' || input.text[0] === ' ') {
                             return;
                         }
