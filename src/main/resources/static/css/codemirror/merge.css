@@ -5,10 +5,10 @@
 }
 
 .CodeMirror-merge, .CodeMirror-merge .CodeMirror {
-
+  height: 350px;
 }
 
-.CodeMirror-merge-2pane .CodeMirror-merge-pane { width: 47%; }
+.CodeMirror-merge-2pane .CodeMirror-merge-pane { width: 49%; }
 .CodeMirror-merge-2pane .CodeMirror-merge-gap { width: 2%; }
 .CodeMirror-merge-3pane .CodeMirror-merge-pane { width: 31%; }
 .CodeMirror-merge-3pane .CodeMirror-merge-gap { width: 3.5%; }
