@@ -224,7 +224,11 @@ tr th{
 @keyframes blinker {
 	50% { opacity: 0; }
 }
-
+@media (min-width: 768px)
+.modal-dialog {
+    width: 100% !important;
+    margin: 30px auto;
+}
 
 
 .panel.with-nav-tabs .panel-heading{
