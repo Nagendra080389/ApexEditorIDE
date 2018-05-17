@@ -293,7 +293,7 @@
             oboe('/getReturnSymbolTable').done(function(data) {
                 var arrayLength = data.length;
                 for (var i = 0; i < arrayLength; i++) {
-                    if(!(words.toLowerCase().indexOf(data[i].toLowerCase()) > -1)){
+                    if(!(words.indexOf(data[i]) > -1)){
                         words.push(data[i]);
                     }
                 }
