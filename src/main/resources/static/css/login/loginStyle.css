@@ -133,22 +133,21 @@ h1{
       cursor: pointer;
 }
 .btn2{
-   float:right;
-   width: 250px;
-    padding:20px;
-    margin-bottom: 5px;
-	text-decoration: none;
-    color: #000;
-    background: skyblue;
-	text-transform: uppercase;
-	font-family: 'Montserrat', sans-serif;
-	right: 450px;
-    position: absolute;
-    border-top: 1px solid #CCCCCC;
-      border-right: 1px solid #333333;
-      border-bottom: 1px solid #333333;
-      border-left: 1px solid #CCCCCC;
-      cursor: pointer;
+    width: 250px;
+       padding: 20px;
+       margin-bottom: 5px;
+       text-decoration: none;
+       color: #000;
+       background: skyblue;
+       text-transform: uppercase;
+       font-family: 'Montserrat', sans-serif;
+       right: 346px;
+       position: absolute;
+       border-top: 1px solid #CCCCCC;
+       border-right: 1px solid #333333;
+       border-bottom: 1px solid #333333;
+       border-left: 1px solid #CCCCCC;
+       cursor: pointer;
 }
 
 .btn3{
