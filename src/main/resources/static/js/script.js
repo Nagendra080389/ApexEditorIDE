@@ -35,7 +35,7 @@ function OrderFormController($scope, $http) {
                         lineNumbers: true,
                         matchBrackets: true,
                         extraKeys: {
-                            "Ctrl-Space": "autocomplete"
+                            "Ctrl-Space": "keyup"
                         },
                         gutters: ["CodeMirror-lint-markers"],
                         lint: true,
