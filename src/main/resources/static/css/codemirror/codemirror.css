@@ -37,6 +37,16 @@
   white-space: nowrap;
 }
 
+#mergemodal .CodeMirror-linenumber {
+  padding: 0 3px 0 0;
+             min-width: 20px;
+             text-align: right;
+             color: #999;
+             white-space: nowrap;
+           }
+ #mergemodal .CodeMirror-line>span{
+     margin-left:20px;
+ }
 .CodeMirror-guttermarker { color: black; }
 .CodeMirror-guttermarker-subtle { color: #999; }
 
