@@ -34,9 +34,6 @@ function OrderFormController($scope, $http) {
                     var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
                         lineNumbers: true,
                         matchBrackets: true,
-                        extraKeys: {
-                            "Ctrl-Space": "keyup"
-                        },
                         gutters: ["CodeMirror-lint-markers"],
                         lint: true,
                         mode: "text/x-apex"
