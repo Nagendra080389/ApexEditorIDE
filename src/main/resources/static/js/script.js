@@ -26,30 +26,20 @@ function OrderFormController($scope, $http) {
                     globalEditor1.toTextArea();
                 }
                 setTimeout(function(test) {
-                    /* CodeMirror.commands.autocomplete = function(cm) {
+                    CodeMirror.commands.autocomplete = function(cm) {
                         cm.showHint({
                             hint: CodeMirror.hint.auto
                         });
-                    };*/
+                    };
                     var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
                         lineNumbers: true,
                         matchBrackets: true,
-                        /*extraKeys: {
+                        extraKeys: {
                             "Ctrl-Space": "autocomplete"
-                        },*/
+                        },
                         gutters: ["CodeMirror-lint-markers"],
                         lint: true,
                         mode: "text/x-apex"
-                    });
-                    editor.on('inputRead', function onChange(editor, input) {
-                        if (input.text[0] === ';' || input.text[0] === ' ') {
-                            return;
-                        }
-                        CodeMirror.commands.autocomplete = function(editor) {
-                            editor.showHint({
-                                hint: CodeMirror.hint.auto
-                            });
-                        };
                     });
                     globalEditor1 = $('.CodeMirror')[0].CodeMirror;
                 }), 2000
@@ -166,13 +156,16 @@ function OrderFormController($scope, $http) {
                     label: 'Create'
                 }
             },
+
             callback: function(value) {
                 if (value == null) {
                     return;
                 }
                 $http.post("/createFile", value).success(function(data) {
                     $scope.newApexClassWrapper = data;
-                }).error(function(data) {});
+                }).error(function(data) {
+
+                });
             }
         });
     };
@@ -181,6 +174,7 @@ function OrderFormController($scope, $http) {
         $http.post("/getAllApexClasses").success(function(data) {
             $('#loaderImage').hide();
         }).error(function(data) {});
+
     });
 };
 
