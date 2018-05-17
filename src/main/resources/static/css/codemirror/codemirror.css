@@ -11,6 +11,10 @@
 /* PADDING */
 
 .CodeMirror-lines {
+  padding: 4px 0; /* Vertical padding around content */
+}
+
+#mergemodal .CodeMirror-lines {
   padding: 40px 0; /* Vertical padding around content */
 }
 .CodeMirror pre {
