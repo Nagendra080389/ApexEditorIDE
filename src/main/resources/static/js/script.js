@@ -45,8 +45,8 @@ function OrderFormController($scope, $http) {
                         if (input.text[0] === ';' || input.text[0] === ' ') {
                             return;
                         }
-                        CodeMirror.commands.autocomplete = function(cm) {
-                            cm.showHint({
+                        CodeMirror.commands.autocomplete = function(editor) {
+                            editor.showHint({
                                 hint: CodeMirror.hint.auto
                             });
                         };
