@@ -296,6 +296,12 @@
                     if(!(words.indexOf(data[i]) > -1)){
                         words.push(data[i]);
                     }
+                    if(data[i].split('+')){
+                        var methodVar = data[i].split('+')[2];
+                        if(!(words.indexOf(methodVar) > -1)){
+                            words.push(methodVar);
+                        }
+                    }
                 }
             }).fail(function() {
                 console.log('error getAllApexClasses');

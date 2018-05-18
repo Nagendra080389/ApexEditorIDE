@@ -1,6 +1,7 @@
 var globalEditor1 = null;
 var globalMergeEditor = null;
 var widgets = [];
+var timeout;
 
 function OrderFormController($scope, $http) {
     document.getElementById("saveBtn").disabled = true;
@@ -26,21 +27,47 @@ function OrderFormController($scope, $http) {
                     globalEditor1.toTextArea();
                 }
                 setTimeout(function(test) {
-                    CodeMirror.commands.autocomplete = function(cm) {
+                    /*CodeMirror.commands.autocomplete = function(cm) {
                         cm.showHint({
                             hint: CodeMirror.hint.auto
                         });
-                    };
+                    };*/
                     var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
                         lineNumbers: true,
                         matchBrackets: true,
                         styleActiveLine: true,
                         extraKeys: {
-                            "Ctrl-Space": "autocomplete"
+                            ".": function(editor) {
+                                setTimeout(function() {
+                                    editor.execCommand("autocomplete");
+                                }, 100);
+                                throw CodeMirror.Pass; // tell CodeMirror we didn't handle the key
+                            }
                         },
                         gutters: ["CodeMirror-lint-markers"],
                         lint: true,
                         mode: "text/x-apex"
+                    });
+                    editor.on("inputRead", function(cm) {
+                        if (timeout) clearTimeout(timeout);
+                        timeout = setTimeout(function() {
+                            editor.showHint({
+                                hint: CodeMirror.hint.auto,
+                                completeSingle: false
+                            });
+                        }, 150);
+                    });
+                    editor.on("keyup", function(cm, event) {
+                        var keyCode = event.keyCode || event.which;
+                        if (keyCode == 8 || keyCode == 46) {
+                            if (timeout) clearTimeout(timeout);
+                            timeout = setTimeout(function() {
+                                editor.showHint({
+                                    hint: CodeMirror.hint.auto,
+                                    completeSingle: false
+                                });
+                            }, 150);
+                        }
                     });
                     globalEditor1 = $('.CodeMirror')[0].CodeMirror;
                 }), 2000
@@ -125,14 +152,16 @@ function OrderFormController($scope, $http) {
                 orig2 = data.modifiedApexClassWrapper.body;
                 var target = document.getElementById("mergemodal");
                 target.innerHTML = "";
-                dv = CodeMirror.MergeView(target, {
-                    value: orig1,
-                    origLeft: null,
-                    orig: orig2,
-                    lineNumbers: true,
-                    mode: "text/x-apex",
-                    highlightDifferences: hilight
-                });
+                dv = setTimeout(function() {
+                    CodeMirror.MergeView(target, {
+                        value: orig1,
+                        origLeft: null,
+                        orig: orig2,
+                        lineNumbers: true,
+                        mode: "text/x-apex",
+                        highlightDifferences: hilight
+                    });
+                }, 1000);
                 globalMergeEditor = dv;
             }
             $('#loaderImage').hide();
@@ -157,16 +186,13 @@ function OrderFormController($scope, $http) {
                     label: 'Create'
                 }
             },
-
             callback: function(value) {
                 if (value == null) {
                     return;
                 }
                 $http.post("/createFile", value).success(function(data) {
                     $scope.newApexClassWrapper = data;
-                }).error(function(data) {
-
-                });
+                }).error(function(data) {});
             }
         });
     };
@@ -175,7 +201,6 @@ function OrderFormController($scope, $http) {
         $http.post("/getAllApexClasses").success(function(data) {
             $('#loaderImage').hide();
         }).error(function(data) {});
-
     });
 };
 
