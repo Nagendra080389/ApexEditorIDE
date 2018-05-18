@@ -152,8 +152,8 @@ function OrderFormController($scope, $http) {
                 orig2 = data.modifiedApexClassWrapper.body;
                 var target = document.getElementById("mergemodal");
                 target.innerHTML = "";
-                dv = setTimeout(function() {
-                    CodeMirror.MergeView(target, {
+                setTimeout(function() {
+                    dv = CodeMirror.MergeView(target, {
                         value: orig1,
                         origLeft: null,
                         orig: orig2,
@@ -161,8 +161,8 @@ function OrderFormController($scope, $http) {
                         mode: "text/x-apex",
                         highlightDifferences: hilight
                     });
+                    globalMergeEditor = dv;
                 }, 1000);
-                globalMergeEditor = dv;
             }
             $('#loaderImage').hide();
         }).error(function(data) {
