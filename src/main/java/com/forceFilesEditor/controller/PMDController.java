@@ -12,21 +12,20 @@ import com.sforce.soap.tooling.Symbol;
 import com.sforce.soap.tooling.SymbolTable;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.coyote.http2.ConnectionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -53,7 +52,7 @@ public class PMDController {
         Cookie[] cookies = request.getCookies();
         Gson gson = new GsonBuilder().create();
         try {
-            generateSymbolTable(partnerURL, toolingURL,cookies);
+
             List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL,cookies);
             List<String> allClassesInString = new ArrayList<>();
 
@@ -106,87 +105,15 @@ public class PMDController {
         return gson.toJson(newMapReturn);
     }
 
-    /*@RequestMapping(value = "/getSuggestionForEditor", method = RequestMethod.POST)
-    public String getSuggestionForEditor(String query) throws IOException {
-        Gson gson = new GsonBuilder().create();
-        List<String> strings = new ArrayList<>();
-        String[] split = this.suggestionWord.split("\\s+");
-        strings.addAll(Arrays.asList(split));
-        Map<String, List<String>> newMapReturn = new HashMap<>();
-        List<String> newListToBeAdded = new ArrayList<>();
-        Iterator itr = strings.iterator();
-        while (itr.hasNext())
-        {
-            String x = (String)itr.next();
-            if (x.toLowerCase().contains(query.toLowerCase()))
-                newListToBeAdded.add(x);
-        }
 
-        newMapReturn.put("suggestions", newListToBeAdded);
-        return gson.toJson(newMapReturn);
-    }*/
-
-    @RequestMapping(value = "/apex/getMethodSuggestion", method = RequestMethod.GET)
-    public String getMethodSuggestion() throws IOException {
-        Gson gson = new GsonBuilder().create();
-        Map<String, Map<String, List<String>>> newMapReturn = new HashMap<>();
-        for (SymbolTable symbolTable : symbolTableMap.values()) {
-            List<String> newListToBeAdded = new ArrayList<>();
-            Map<String, List<String>> newMapToBeAdded = new HashMap<>();
-
-            if(symbolTable != null) {
-                for (Method method : symbolTable.getMethods()) {
-                    String name = method.getName();
-                    if(newMapToBeAdded.containsKey("methods")){
-                        List<String> strings = newMapToBeAdded.get("methods");
-                        strings.add(name);
-                    }else {
-                        List<String> strings = new ArrayList<>();
-                        strings.add(name);
-                        newMapToBeAdded.put("methods",strings);
-                    }
-                }
-
-                for (Symbol constructors : symbolTable.getConstructors()) {
-                    String name = constructors.getName();
-                    if(newMapToBeAdded.containsKey("constructors")){
-                        List<String> strings = newMapToBeAdded.get("constructors");
-                        strings.add(name);
-                    }else {
-                        List<String> strings = new ArrayList<>();
-                        strings.add(name);
-                        newMapToBeAdded.put("constructors",strings);
-                    }
-                }
-
-                for (Symbol properties : symbolTable.getProperties()) {
-                    String name = properties.getName();
-                    if(newMapToBeAdded.containsKey("properties")){
-                        List<String> strings = newMapToBeAdded.get("properties");
-                        strings.add(name);
-                    }else {
-                        List<String> strings = new ArrayList<>();
-                        strings.add(name);
-                        newMapToBeAdded.put("properties",strings);
-                    }
-                }
-            }
-
-            if (symbolTable != null) {
-                newMapReturn.put(symbolTable.getName(), newMapToBeAdded);
-            }
-        }
-
-        return gson.toJson(newMapReturn);
-    }
-
-    @RequestMapping(value = "/getReturnSymbolTable", method = RequestMethod.GET)
-    public String getReturnSymbolTable() throws IOException {
+    public String getReturnSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies, OutputStream outputStream)
+            throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
         Gson gson = new GsonBuilder().create();
         MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
         List<String> strings = new ArrayList<>();
         try {
-            strings = metadataLoginUtil.returnSymbolTable();
+            strings = metadataLoginUtil.returnSymbolTable(outputStream);
+            MetadataLoginUtil.generateSymbolTable(partnerURL, toolingURL, cookies,outputStream,gson);
         } catch (XMLStreamException e) {
             e.printStackTrace();
         } catch (JAXBException e) {
@@ -194,26 +121,6 @@ public class PMDController {
         }
 
         return gson.toJson(strings);
-    }
-
-
-    public void generateSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    symbolTableMap = MetadataLoginUtil.generateSymbolTable(partnerURL, toolingURL,cookies);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ConnectionException e) {
-                    e.printStackTrace();
-                } catch (com.sforce.ws.ConnectionException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        thread.start();
     }
 
     @RequestMapping(value = "/getApexBody", method = RequestMethod.GET)
@@ -354,5 +261,33 @@ public class PMDController {
         httpResponse.addCookie(session3);
         httpResponse.sendRedirect("/html/apexEditor.html");
 
+    }
+
+    @RequestMapping("/utilities/longProcessStream")
+    public StreamingResponseBody asyncLongProcessStream(HttpServletResponse response, HttpServletRequest request) {
+        response.addHeader("Content-Type", MediaType.APPLICATION_JSON);
+        return new StreamingResponseBody() {
+            @Override
+            public void writeTo(OutputStream outputStream) throws IOException {
+                PMDController.this.callURL(response, request, outputStream);
+            }
+        };
+    }
+
+    private String callURL(HttpServletResponse response, HttpServletRequest request, OutputStream outputStream) {
+        String partnerURL = this.partnerURL;
+        String toolingURL = this.toolingURL;
+        Cookie[] cookies = request.getCookies();
+        try {
+            getReturnSymbolTable(partnerURL, toolingURL,cookies,outputStream);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ConnectionException e) {
+            e.printStackTrace();
+        } catch (com.sforce.ws.ConnectionException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }

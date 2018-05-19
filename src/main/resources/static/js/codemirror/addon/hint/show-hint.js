@@ -430,11 +430,11 @@
             var found = [];
             for (var i = 0; i < options.words.length; i++) {
                 var word = options.words[i];
-                if (word && word.toLowerCase().slice(0, term.length) == term.toLowerCase()) {
-                    if (word.toLowerCase().split("+")[0] == term.toLowerCase()) {
-                        if (word.toLowerCase().split.length >= 2) {
-                            for (var j = 2; j < word.split("+").length; j++) {
-                                found.push(word.split("+")[j]);
+                if (word) {
+                    if (!(typeof word === 'string' || word instanceof String)) {
+                        if (word.className && word.className.toLowerCase() == term.toLowerCase()) {
+                            for (var j = 0; j < word.methodsNames.length; j++) {
+                                found.push(word.methodsNames[j]);
                             }
                         }
                     }
@@ -455,13 +455,31 @@
                 from = cur
             }
             var found = [];
+            var methodCompletion = false;
+            var methodFound = [];
             for (var i = 0; i < options.words.length; i++) {
                 var word = options.words[i];
-                if (word && word.toLowerCase().slice(0, term.length) == term.toLowerCase()) {
-                    if(!(word.toLowerCase().indexOf('+') > -1)){
+                if (word && (typeof word === 'string' || word instanceof String) && word.toLowerCase().slice(0, term.length) == term.toLowerCase()) {
+                    if (!(word.toLowerCase().indexOf('+') > -1)) {
                         found.push(word);
                     }
+                } else if (!(typeof word === 'string' || word instanceof String)) {
+                    if (token.state.context.info && token.state.context.info.toLowerCase() == word.className.toLowerCase()) {
+                        for (var j = 0; j < word.methodsNames.length; j++) {
+                            if (word.methodsNames[j].toLowerCase().slice(0, term.length) == term.toLowerCase()) {
+                                methodCompletion = true;
+                                methodFound.push(word.methodsNames[j]);
+                            }
+                        }
+                    }
                 }
+            }
+            if (methodCompletion) {
+                return {
+                    list: methodFound,
+                    from: from,
+                    to: to
+                };
             }
             if (found.length) return {
                 list: found,
@@ -471,6 +489,7 @@
         }
     });
     CodeMirror.commands.autocomplete = CodeMirror.showHint;
+    CodeMirror.commands.forMethods = CodeMirror.forMethods;
     var defaultOptions = {
         hint: CodeMirror.hint.auto,
         completeSingle: true,

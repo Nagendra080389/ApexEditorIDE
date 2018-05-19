@@ -2,27 +2,27 @@ package com.forceFilesEditor.algo;
 
 import com.forceFilesEditor.model.*;
 import com.forceFilesEditor.pmd.PmdReviewService;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sforce.soap.metadata.MetadataConnection;
 import com.sforce.soap.partner.Connector;
 import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.soap.partner.QueryResult;
 import com.sforce.soap.tooling.*;
+import com.sforce.soap.tooling.Method;
 import com.sforce.soap.tooling.sobject.*;
 import com.sforce.ws.ConnectorConfig;
 import net.sourceforge.pmd.*;
 import net.sourceforge.pmd.util.ResourceLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.coyote.http2.ConnectionException;
-import org.springframework.core.io.ClassPathResource;
 import wiremock.org.apache.commons.collections4.trie.PatriciaTrie;
 
 import javax.servlet.http.Cookie;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.util.*;
 
@@ -37,10 +37,10 @@ public class MetadataLoginUtil {
         String instanceUrl = null;
         String accessToken = null;
         for (Cookie cookie : cookies) {
-            if(cookie.getName().equals("ACCESS_TOKEN")){
+            if (cookie.getName().equals("ACCESS_TOKEN")) {
                 accessToken = cookie.getValue();
             }
-            if(cookie.getName().equals("INSTANCE_URL")){
+            if (cookie.getName().equals("INSTANCE_URL")) {
                 instanceUrl = cookie.getValue();
                 instanceUrl = instanceUrl + partnerURL;
             }
@@ -85,10 +85,10 @@ public class MetadataLoginUtil {
         String instanceUrl = null;
         String accessToken = null;
         for (Cookie cookie : cookies) {
-            if(cookie.getName().equals("ACCESS_TOKEN")){
+            if (cookie.getName().equals("ACCESS_TOKEN")) {
                 accessToken = cookie.getValue();
             }
-            if(cookie.getName().equals("INSTANCE_URL")){
+            if (cookie.getName().equals("INSTANCE_URL")) {
                 instanceUrl = cookie.getValue();
                 instanceUrl = instanceUrl + toolingURL;
             }
@@ -127,9 +127,9 @@ public class MetadataLoginUtil {
             con = new SObject[]{apexClassMember};
             com.sforce.soap.tooling.SaveResult[] saveMember = toolingConnection.create(con);
 
-            if(save) {
+            if (save) {
                 String apexClassBody = "SELECT Body FROM APEXCLASS Where Name = '" + apexClassWrapper.getName() + "'";
-                if(partnerConnection == null){
+                if (partnerConnection == null) {
                     partnerConnection = Connector.newConnection(config);
                 }
                 QueryResult query = partnerConnection.query(apexClassBody);
@@ -143,7 +143,7 @@ public class MetadataLoginUtil {
                 }
             }
 
-            System.out.println("after return cookies -> "+apexClassWrapper);
+            System.out.println("after return cookies -> " + apexClassWrapper);
 
             ContainerAsyncRequest containerAsyncRequest = new ContainerAsyncRequest();
             containerAsyncRequest.setMetadataContainerId(containerId);
@@ -201,7 +201,7 @@ public class MetadataLoginUtil {
                 break;
             }
 
-            if(!save) {
+            if (!save) {
                 apexClassWrapper.setLineNumberError(lineNumberError);
 
                 if (!apexClassWrapper.isCompilationError()) {
@@ -258,12 +258,12 @@ public class MetadataLoginUtil {
 
     }
 
-    public static File stream2file (InputStream in) throws IOException {
+    public static File stream2file(InputStream in) throws IOException {
         final File tempFile = File.createTempFile("ruleSet", ".xml");
         tempFile.deleteOnExit();
         try (FileOutputStream out = new FileOutputStream(tempFile)) {
             IOUtils.copy(in, out);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return tempFile;
@@ -275,10 +275,10 @@ public class MetadataLoginUtil {
         String instanceUrl = null;
         String accessToken = null;
         for (Cookie cookie : cookies) {
-            if(cookie.getName().equals("ACCESS_TOKEN")){
+            if (cookie.getName().equals("ACCESS_TOKEN")) {
                 accessToken = cookie.getValue();
             }
-            if(cookie.getName().equals("INSTANCE_URL")){
+            if (cookie.getName().equals("INSTANCE_URL")) {
                 instanceUrl = cookie.getValue();
                 instanceUrl = instanceUrl + toolingURL;
             }
@@ -305,11 +305,11 @@ public class MetadataLoginUtil {
 
             ApexClass apexClass1 = new ApexClass();
             apexClass1.setBody("/** \n" +
-                    "Class Name -> "+apexClassName +"\n"+
+                    "Class Name -> " + apexClassName + "\n" +
                     "**/\n" +
-                    "public class "+apexClassName+" {\n" +
-                               "\n" +
-                               "}");
+                    "public class " + apexClassName + " {\n" +
+                    "\n" +
+                    "}");
             ApexClassWrapper apexClassWrapper = new ApexClassWrapper();
             apexClassWrapper.setBody(apexClass1.getBody());
             apexClassWrapper.setName(apexClassName);
@@ -397,10 +397,10 @@ public class MetadataLoginUtil {
         String instanceUrl = null;
         String accessToken = null;
         for (Cookie cookie : cookies) {
-            if(cookie.getName().equals("ACCESS_TOKEN")){
+            if (cookie.getName().equals("ACCESS_TOKEN")) {
                 accessToken = cookie.getValue();
             }
-            if(cookie.getName().equals("INSTANCE_URL")){
+            if (cookie.getName().equals("INSTANCE_URL")) {
                 instanceUrl = cookie.getValue();
                 instanceUrl = instanceUrl + partnerURL;
             }
@@ -440,23 +440,21 @@ public class MetadataLoginUtil {
         return apexClassWrappers;
     }
 
-    public static Map<String, SymbolTable> generateSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
-
+    public static Map<String, SymbolTable> generateSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies,
+                                                               OutputStream outputStream, Gson gson) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
 
 
         String accessToken = null;
         for (Cookie cookie : cookies) {
-            if(cookie.getName().equals("ACCESS_TOKEN")){
+            if (cookie.getName().equals("ACCESS_TOKEN")) {
                 accessToken = cookie.getValue();
             }
-            if(cookie.getName().equals("INSTANCE_URL")){
+            if (cookie.getName().equals("INSTANCE_URL")) {
                 String instanceUrl = cookie.getValue();
                 partnerURL = instanceUrl + partnerURL;
                 toolingURL = instanceUrl + toolingURL;
             }
         }
-
-
 
 
         Map<String, SymbolTable> stringSymbolTableMap = new HashMap<>();
@@ -480,7 +478,8 @@ public class MetadataLoginUtil {
         for (ApexClass apexClasses : sObjectListTooling) {
             SymbolTable symbolTable = apexClasses.getSymbolTable();
             String name = apexClasses.getName();
-            setValues(name, stringSymbolTableMap, symbolTable);
+            ClassStructure classStructure = new ClassStructure();
+            setValues(name, stringSymbolTableMap, symbolTable, outputStream, gson, classStructure);
         }
 
         System.out.println("Symbol table generated");
@@ -488,9 +487,27 @@ public class MetadataLoginUtil {
         return stringSymbolTableMap;
     }
 
-    private static void setValues(String name, Map<String, SymbolTable> stringSymbolTableMap, SymbolTable symbolTable) {
-        stringSymbolTableMap.put(name, symbolTable);
+    private static void setValues(String name, Map<String, SymbolTable> stringSymbolTableMap, SymbolTable symbolTable,
+                                  OutputStream outputStream, Gson gson, ClassStructure classStructure) throws IOException {
+        List<String> methodNames = new ArrayList<>();
+        List<String> propertyNames = new ArrayList<>();
+        classStructure.setClassName(name);
+        if(symbolTable!= null) {
+            for (Method method : symbolTable.getMethods()) {
+                methodNames.add(method.getName());
+            }
 
+            for (VisibilitySymbol visibilitySymbol : symbolTable.getProperties()) {
+                propertyNames.add(visibilitySymbol.getName());
+            }
+        }
+
+        classStructure.setMethodsNames(methodNames);
+        classStructure.setPropertyNames(propertyNames);
+
+
+        outputStream.write(gson.toJson(classStructure).getBytes());
+        outputStream.flush();
     }
 
     public static <T> List<T> queryRecords(String query, PartnerConnection partnerConnection, ToolingConnection toolingConnection, boolean usePartner)
@@ -549,9 +566,9 @@ public class MetadataLoginUtil {
         }
     }
 
-    public List<String> returnSymbolTable() throws IOException, XMLStreamException, JAXBException {
+    public List<String> returnSymbolTable(OutputStream outputStream) throws IOException, XMLStreamException, JAXBException {
+        Gson gson = new GsonBuilder().create();
         List<String> returnList = new ArrayList<>();
-        Set<String> listOfClassNames = new HashSet<>();
         JAXBContext jc = JAXBContext.newInstance(Completions.class);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         ClassLoader classLoader = this.getClass().getClassLoader();
@@ -566,19 +583,20 @@ public class MetadataLoginUtil {
         Completions unmarshal = (Completions) unmarshaller.unmarshal(stream);
         List<Type> type = unmarshal.getSystemNamespace().getType();
         for (Type eachType : type) {
-
-            if(!eachType.getMethodTrie().isEmpty()){
+            List<String> methodsNames = new ArrayList<>();
+            if (!eachType.getMethodTrie().isEmpty()) {
                 PatriciaTrie<ArrayList<AbstractCompletionProposalDisplayable>> methodTrie = eachType.getMethodTrie();
+                ClassStructure classStructure = new ClassStructure();
                 for (String methodKey : methodTrie.keySet()) {
-                    String buildSuggestions = "";
-                    buildSuggestions += eachType.name+"+method+"+methodKey;
-                    returnList.add(buildSuggestions);
-                    listOfClassNames.add(eachType.name);
-
+                    methodsNames.add(methodKey);
+                    classStructure.setMethodsNames(methodsNames);
                 }
+                classStructure.setClassName(eachType.name);
+                outputStream.write(gson.toJson(classStructure).getBytes());
+                outputStream.flush();
+
             }
         }
-        returnList.addAll(listOfClassNames);
         return returnList;
     }
 }

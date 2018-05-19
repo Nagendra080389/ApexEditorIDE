@@ -262,26 +262,7 @@
         }
 
         function addServerSideHints() {
-            oboe('/apex/getMethodSuggestion').done(function(data) {
-                var value;
-                Object.keys(data).forEach(function(key) {
-                    var mainKey = key;
-                    value = data[mainKey];
-                    var innervalue;
-                    Object.keys(value).forEach(function(key) {
-                        var internalKey = key;
-                        innervalue = value[internalKey];
-                        for (var eachInnerValue in innervalue) {
-                            var finalValue = mainKey + '+' + internalKey + '+' + innervalue[eachInnerValue];
-                            if (words.indexOf(finalValue) < 0) {
-                                words.push(mainKey + '+' + internalKey + '+' + innervalue[eachInnerValue]);
-                            }
-                        }
-                    });
-                })
-            }).fail(function() {
-                console.log('error getMethodSuggestion');
-            });
+            $('#loaderImage').show();
             oboe('/getAllApexClassesNames').done(function(data) {
                 var arrayLength = data.length;
                 for (var i = 0; i < arrayLength; i++) {
@@ -290,22 +271,14 @@
             }).fail(function() {
                 console.log('error getAllApexClasses');
             });
-            oboe('/getReturnSymbolTable').done(function(data) {
-                var arrayLength = data.length;
-                for (var i = 0; i < arrayLength; i++) {
-                    if(!(words.indexOf(data[i]) > -1)){
-                        words.push(data[i]);
-                    }
-                    if(data[i].split('+')){
-                        var methodVar = data[i].split('+')[2];
-                        if(!(words.indexOf(methodVar) > -1)){
-                            words.push(methodVar);
-                        }
-                    }
+            oboe('/utilities/longProcessStream').done(function(data) {
+                if (data) {
+                    words.push(data);
                 }
-            }).fail(function() {
-                console.log('error getAllApexClasses');
+            }).fail(function(errorReport) {
+                console.log(errorReport);
             });
+            $('#loaderImage').hide();
         }
         add(mode.keywords);
         add(mode.types);

@@ -32,6 +32,60 @@ function OrderFormController($scope, $http) {
                             hint: CodeMirror.hint.auto
                         });
                     };*/
+                    var ExcludedIntelliSenseTriggerKeys =
+                    {
+                        "8": "backspace",
+                        "9": "tab",
+                        "13": "enter",
+                        "16": "shift",
+                        "17": "ctrl",
+                        "18": "alt",
+                        "19": "pause",
+                        "20": "capslock",
+                        "27": "escape",
+                        "33": "pageup",
+                        "34": "pagedown",
+                        "35": "end",
+                        "36": "home",
+                        "37": "left",
+                        "38": "up",
+                        "39": "right",
+                        "40": "down",
+                        "45": "insert",
+                        "46": "delete",
+                        "90": "ctrl-z",
+                        "91": "left window key",
+                        "92": "right window key",
+                        "93": "select",
+                        "107": "add",
+                        "109": "subtract",
+                        "110": "decimal point",
+                        "111": "divide",
+                        "112": "f1",
+                        "113": "f2",
+                        "114": "f3",
+                        "115": "f4",
+                        "116": "f5",
+                        "117": "f6",
+                        "118": "f7",
+                        "119": "f8",
+                        "120": "f9",
+                        "121": "f10",
+                        "122": "f11",
+                        "123": "f12",
+                        "144": "numlock",
+                        "145": "scrolllock",
+                        "186": "semicolon",
+                        "187": "equalsign",
+                        "188": "comma",
+                        "189": "dash",
+                        "190": "period",
+                        "191": "slash",
+                        "192": "graveaccent",
+                        "220": "backslash",
+                        "222": "quote"
+                    }
+
                     var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
                         lineNumbers: true,
                         matchBrackets: true,
@@ -48,18 +102,10 @@ function OrderFormController($scope, $http) {
                         lint: true,
                         mode: "text/x-apex"
                     });
-                    editor.on("inputRead", function(cm) {
-                        if (timeout) clearTimeout(timeout);
-                        timeout = setTimeout(function() {
-                            editor.showHint({
-                                hint: CodeMirror.hint.auto,
-                                completeSingle: false
-                            });
-                        }, 150);
-                    });
+
                     editor.on("keyup", function(cm, event) {
                         var keyCode = event.keyCode || event.which;
-                        if (keyCode == 8 || keyCode == 46) {
+                        if (!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
                             if (timeout) clearTimeout(timeout);
                             timeout = setTimeout(function() {
                                 editor.showHint({
@@ -94,7 +140,7 @@ function OrderFormController($scope, $http) {
                         globalEditor1.removeLineWidget(widgets[i]);
                     }
                     widgets.length = 0;
-                    for (var i = 0; i < 1; ++i) {
+                    for (var i = 0; i < errors.length; ++i) {
                         var err = errors[i];
                         if (!err) continue;
                         var msg = document.createElement("div");
@@ -134,7 +180,23 @@ function OrderFormController($scope, $http) {
         $('#myModal').modal('hide');
         $('#myModalWithoutError').modal('hide');
         $('#loaderImage').show();
-        apexClassWrapper.body = globalEditor1.getValue();
+        var cleaneddata = globalEditor1.getValue().replace(new RegExp(' +', 'g'), ' ')
+        globalEditor1.getDoc().setValue(cleaneddata);
+        globalEditor1.setSelection({
+            'line':globalEditor1.firstLine(),
+            'ch':0,
+            'sticky':null
+          },{
+            'line':globalEditor1.lastLine(),
+            'ch':0,
+            'sticky':null
+          },
+          {scroll: false});
+          //auto indent the selection
+          globalEditor1.indentSelection("smart");
+          globalEditor1.setCursor({line: globalEditor1.firstLine(), ch: 0})
+          apexClassWrapper.body = globalEditor1.getValue();
+
         var dataObj = {
             name: apexClassWrapper.name,
             body: apexClassWrapper.body,
