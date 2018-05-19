@@ -180,7 +180,7 @@ function OrderFormController($scope, $http) {
         $('#myModal').modal('hide');
         $('#myModalWithoutError').modal('hide');
         $('#loaderImage').show();
-        var cleaneddata = globalEditor1.getValue().replace(new RegExp(' +', 'g'), ' ')
+        var cleaneddata = globalEditor1.getValue().replace(new RegExp(' +', 'g'), ' ');
         globalEditor1.getDoc().setValue(cleaneddata);
         globalEditor1.setSelection({
             'line':globalEditor1.firstLine(),
