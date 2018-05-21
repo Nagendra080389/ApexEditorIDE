@@ -340,29 +340,6 @@ public class MetadataLoginUtil {
 
     }
 
-
-    private static void createMapOfProperties(FileReader fileReader, Map<String, String> propertiesMap) throws IOException {
-        BufferedReader bufferedReader = null;
-        String sCurrentLine;
-
-        bufferedReader = new BufferedReader(fileReader);
-
-        while ((sCurrentLine = bufferedReader.readLine()) != null) {
-            sCurrentLine = sCurrentLine.replaceAll("\\s+", "");
-            String[] split = sCurrentLine.split("=");
-            propertiesMap.put(split[0], split[1]);
-
-        }
-    }
-
-    private static void clearTheFile(Map<String, String> propertiesMap) throws IOException {
-        FileWriter fwOb = new FileWriter(propertiesMap.get("ClassesTextFilepath"), false);
-        PrintWriter pwOb = new PrintWriter(fwOb, false);
-        pwOb.flush();
-        pwOb.close();
-        fwOb.close();
-    }
-
     public static List<ApexClassWrapper> getAllApexClasses(String partnerURL, String toolingURL, Cookie[] cookies) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
 
         String instanceUrl = null;

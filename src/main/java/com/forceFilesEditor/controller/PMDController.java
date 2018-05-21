@@ -1,5 +1,6 @@
 package com.forceFilesEditor.controller;
 
+import com.forceFilesEditor.model.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.forceFilesEditor.algo.MetadataLoginUtil;
@@ -11,6 +12,7 @@ import com.sforce.soap.tooling.Method;
 import com.sforce.soap.tooling.Symbol;
 import com.sforce.soap.tooling.SymbolTable;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.coyote.http2.ConnectionException;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +24,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -227,16 +230,18 @@ public class PMDController {
         httpClient.executeMethod(post);
         String responseBody = post.getResponseBodyAsString();
 
-        System.out.println("responseBody - > "+responseBody);
         String accessToken = null;
         String issuedAt = null;
         String signature = null;
         String id_token = null;
         String instance_url = null;
+        String useridURL = null;
+        String username = null;
+        String display_name = null;
+        String email = null;
         JsonParser parser = new JsonParser();
-        JsonObject jsonObject = null;
 
-        jsonObject = parser.parse(responseBody).getAsJsonObject();
+        JsonObject jsonObject = parser.parse(responseBody).getAsJsonObject();
 
 
         try {
@@ -246,6 +251,7 @@ public class PMDController {
             signature = jsonObject.get("signature").getAsString();
             id_token = jsonObject.get("id_token").getAsString();
             instance_url = jsonObject.get("instance_url").getAsString();
+            useridURL = jsonObject.get("id").getAsString();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -257,12 +263,59 @@ public class PMDController {
         Cookie session1 = new Cookie("ACCESS_TOKEN", accessToken);
         Cookie session2 = new Cookie("INSTANCE_URL", instance_url);
         Cookie session3 = new Cookie("ID_TOKEN", id_token);
+        Cookie session4 = new Cookie("USERIDURL", useridURL);
         session1.setMaxAge(-1); //cookie not persistent, destroyed on browser exit
         httpResponse.addCookie(session1);
         httpResponse.addCookie(session2);
         httpResponse.addCookie(session3);
+        httpResponse.addCookie(session4);
         httpResponse.sendRedirect("/html/apexEditor.html");
 
+    }
+
+    @RequestMapping(value = "/getCurrentUser", method = RequestMethod.GET)
+    public String getCurrentUser(HttpServletResponse response, HttpServletRequest request) throws Exception {
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        Cookie[] cookies = request.getCookies();
+        String accessToken = null;
+        String useridURL = null;
+        String username = null;
+        String display_name = null;
+        String email = null;
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("ACCESS_TOKEN")) {
+                accessToken = cookie.getValue();
+            }
+            if (cookie.getName().equals("USERIDURL")) {
+                useridURL = cookie.getValue();
+            }
+        }
+        HttpClient httpClient = new HttpClient();
+
+        GetMethod getMethod = new GetMethod(useridURL);
+        getMethod.addRequestHeader("Authorization", "Bearer "+accessToken);
+        httpClient.executeMethod(getMethod);
+        String responseUserName = getMethod.getResponseBodyAsString();
+        JsonParser parser = new JsonParser();
+
+        JsonObject jsonObject = parser.parse(responseUserName).getAsJsonObject();
+
+        try {
+            username = jsonObject.get("username").getAsString();
+            display_name = jsonObject.get("display_name").getAsString();
+            email = jsonObject.get("email").getAsString();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            getMethod.releaseConnection();
+        }
+
+        User user = new User();
+        user.setDisplay_name(display_name);
+        user.setEmail(email);
+        user.setUsername(username);
+
+        return gson.toJson(user);
     }
 
     @RequestMapping("/utilities/longProcessStream")
@@ -291,5 +344,20 @@ public class PMDController {
             e.printStackTrace();
         }
         return "";
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public void logout(HttpServletResponse response, HttpServletRequest request) throws Exception {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                cookie.setValue("");
+                cookie.setMaxAge(0);
+                response.addCookie(cookie);
+            }
+        }
+
+        response.sendRedirect("/index.html");
+
     }
 }

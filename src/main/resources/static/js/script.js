@@ -56,8 +56,26 @@ var ExcludedIntelliSenseTriggerKeys = {
     "222": "quote"
 }
 app.controller('OrderFormController', function($scope, $http) {
+    document.getElementById('saveBtn').style.visibility='hidden';
     var namesFromOption = [];
-    document.getElementById("saveBtn").disabled = true;
+    $http.get("/getCurrentUser").success(function(data) {
+        $scope.currentUser = data;
+        var x = document.getElementById("snackbar");
+        x.innerHTML = 'Welcome '+data.display_name;
+        x.className = "show";
+        // After 3 seconds, remove the show class from DIV
+        setTimeout(function() {
+            x.className = x.className.replace("show", "");
+        }, 5000);
+    }).error(function(data) {
+        var x = document.getElementById("snackbar");
+        x.innerHTML = data;
+        x.className = "show";
+        // After 3 seconds, remove the show class from DIV
+        setTimeout(function() {
+            x.className = x.className.replace("show", "");
+        }, 10000);
+    });
     $http.post("/getAllApexClasses").success(function(data) {
         var foundClass = [];
         for (var index = 0; index < data.length; ++index) {
@@ -91,12 +109,11 @@ app.controller('OrderFormController', function($scope, $http) {
                     if (value == null) {
                         return;
                     }
-                    var allNames = $scope.names;
                     if ($.inArray(value, namesFromOption) > -1) {
                         var x = document.getElementById("snackbar");
                         x.innerHTML = "Class with same name already exists";
                         x.className = "show";
-                        // After 3 seconds, remove the show class from DIV
+                        // After 4 seconds, remove the show class from DIV
                         setTimeout(function() {
                             x.className = x.className.replace("show", "");
                         }, 4000);
@@ -139,6 +156,7 @@ app.controller('OrderFormController', function($scope, $http) {
                                 });
                                 globalEditor1 = $('.CodeMirror')[0].CodeMirror;
                             }), 2000
+                            document.getElementById('saveBtn').style.visibility='visible';
                         }
                     }).error(function(data) {
                         var x = document.getElementById("snackbar");
@@ -195,6 +213,7 @@ app.controller('OrderFormController', function($scope, $http) {
                         });
                         globalEditor1 = $('.CodeMirror')[0].CodeMirror;
                     }), 2000
+                    document.getElementById('saveBtn').style.visibility='visible';
                 }
             });
         }
@@ -237,6 +256,7 @@ app.controller('OrderFormController', function($scope, $http) {
                     }
                     $scope.errorDetails = errors;
                     $('#myModal').modal('show');
+                    document.getElementById('saveBtn').style.visibility='hidden';
                 }
             } else {
                 for (var i = 0; i < widgets.length; ++i) {
@@ -244,6 +264,7 @@ app.controller('OrderFormController', function($scope, $http) {
                 }
                 $scope.errorDetails = 'No errors';
                 $('#myModalWithoutError').modal('show');
+                document.getElementById('saveBtn').style.visibility='hidden';
             }
         }).error(function(data) {
             var x = document.getElementById("snackbar");
@@ -337,5 +358,7 @@ function testAnim(x) {
     $('.modal .modal-dialog').attr('class', 'modal-dialog  ' + x + '  animated');
 };
 $(document).ready(function() {
-    $('.code-helper').select2();
+    $('.code-helper').select2({
+        placeholder: 'Select a command to begin'
+    });
 });

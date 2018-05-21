@@ -26,6 +26,12 @@ public class ApexClassWrapper {
 
     private String groupName;
 
+    private String lastModifiedBy;
+
+    private String lastModifiedDate;
+
+    private String currentUser;
+
     private boolean isCompilationError;
 
     private SymbolTable symbolTable;
@@ -136,5 +142,29 @@ public class ApexClassWrapper {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public String getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(String lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public String getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(String currentUser) {
+        this.currentUser = currentUser;
     }
 }

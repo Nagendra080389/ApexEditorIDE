@@ -471,6 +471,10 @@
                                 methodFound.push(word.methodsNames[j]);
                             }
                         }
+                    } else {
+                        if (word.className.toLowerCase().slice(0, term.length) == term.toLowerCase()) {
+                            found.push(word.className);
+                        }
                     }
                 }
             }

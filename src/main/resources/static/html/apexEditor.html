@@ -149,7 +149,13 @@
     <div id="container">
         <select ng-model="selectedName" ng-change="retrieveSelectedClass()" ng-options="(item.name||item) group by item.groupName for item in names"
                 class="code-helper" id="code-helperId">
+            <option value="">Select Option</option>
         </select>
+    </div>
+    <div ng-model="currentUser" id="userContainer">{{currentUser.email}}
+        <div class="dropdown-content">
+            <a href="/logout">Logout</a>
+        </div>
     </div>
     <div id="snackbar"></div>
 </nav>
@@ -158,7 +164,7 @@
 
 </div>
 <nav class="navbar navbar-default navbar-fixed-bottom">
-    <div id="saveBtn" class="unselectable" ng-click="postdata(apexClassWrapper)">Save</div>
+    <div id="saveBtn" ng-click="postdata(apexClassWrapper)">Save</div>
 </nav>
 </body>
 </html>
