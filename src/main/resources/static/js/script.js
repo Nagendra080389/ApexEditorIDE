@@ -89,7 +89,8 @@ app.controller('OrderFormController', function($scope, $http) {
                     if (value == null) {
                         return;
                     }
-                    for(var eachName : $scope.names){
+                    var allNames = $scope.names;
+                    for(var eachName : allNames){
                         $.inArray(value, eachName.name)
                     };
                     $http.post("/createFile", value).success(function(data) {

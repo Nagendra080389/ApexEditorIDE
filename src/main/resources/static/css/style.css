@@ -624,7 +624,6 @@
      position: fixed;
 }
  #saveBtn {
-     color: red !important;
      float: left;
      display:block;
      width:6em;
