@@ -335,6 +335,7 @@ app.controller('OrderFormController', function($scope, $http) {
             setTimeout(function() {
                 x.className = x.className.replace("show", "");
             }, 3000);
+            document.getElementById('saveBtn').style.visibility='visible';
         }).error(function(data) {
             var x = document.getElementById("snackbar");
             x.innerHTML = data;
