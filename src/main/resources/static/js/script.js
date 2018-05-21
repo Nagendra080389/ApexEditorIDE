@@ -119,8 +119,8 @@ app.controller('OrderFormController', function($scope, $http) {
                     });
                     globalEditor1 = $('.CodeMirror')[0].CodeMirror;
                 }), 2000
-            });
             }
+            });
         }
 
     $scope.postdata = function(apexClassWrapper) {
