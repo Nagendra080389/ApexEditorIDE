@@ -89,6 +89,9 @@ app.controller('OrderFormController', function($scope, $http) {
                     if (value == null) {
                         return;
                     }
+                    for(var eachName : $scope.names){
+                        $.inArray(value, eachName.name)
+                    };
                     $http.post("/createFile", value).success(function(data) {
                         if (data) {
                             $scope.apexClassWrapper = data;
