@@ -56,11 +56,13 @@ var ExcludedIntelliSenseTriggerKeys = {
     "222": "quote"
 }
 app.controller('OrderFormController', function($scope, $http) {
+    var namesFromOption = [];
     document.getElementById("saveBtn").disabled = true;
     $http.post("/getAllApexClasses").success(function(data) {
         var foundClass = [];
         for (var index = 0; index < data.length; ++index) {
             foundClass.push(data[index]);
+            namesFromOption.push(data[index].name)
         }
         $scope.names = foundClass;
     }).error(function(data) {
@@ -90,9 +92,15 @@ app.controller('OrderFormController', function($scope, $http) {
                         return;
                     }
                     var allNames = $scope.names;
-                    for(var eachName in allNames){
-                        $.inArray(value, eachName.name)
-                    };
+                    if ($.inArray(value, namesFromOption) == 0) {
+                        var x = document.getElementById("snackbar");
+                        x.innerHTML = "Class with same name already exists";
+                        x.className = "show";
+                        // After 3 seconds, remove the show class from DIV
+                        setTimeout(function() {
+                            x.className = x.className.replace("show", "");
+                        }, 4000);
+                    }
                     $http.post("/createFile", value).success(function(data) {
                         if (data) {
                             $scope.apexClassWrapper = data;
@@ -322,7 +330,6 @@ app.controller('OrderFormController', function($scope, $http) {
         var cleaneddata = globalEditor1.getValue().replace(new RegExp(' +', 'g'), ' ');
         globalEditor1.getDoc().setValue(cleaneddata);
     };
-
 });
 
 function testAnim(x) {
