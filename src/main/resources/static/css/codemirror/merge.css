@@ -8,7 +8,36 @@
   height: 350px;
 }
 
-.CodeMirror-merge-2pane .CodeMirror-merge-pane { width: 49%; }
+label:after{
+    padding: 2px;
+    display:none;
+    position: relative;
+    top: -20px;
+    right: -30px;
+    width: 150px;
+    text-align: center;
+    background-color: #fef4c5;
+    border: 1px solid #d4b943;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -ms-border-radius: 2px;
+    border-radius: 2px;
+}
+
+label:hover:after{
+    display: block;
+}
+
+.CodeMirror-merge-pane-rightmost label:after{
+    content: "Data from Org";
+}
+.CodeMirror-merge-2pane CodeMirror-merge-pane label:after{
+    content: "Data from Editor";
+}
+
+.CodeMirror-merge-2pane .CodeMirror-merge-pane {
+    width: 49%;
+}
 .CodeMirror-merge-2pane .CodeMirror-merge-gap { width: 2%; }
 .CodeMirror-merge-3pane .CodeMirror-merge-pane { width: 31%; }
 .CodeMirror-merge-3pane .CodeMirror-merge-gap { width: 3.5%; }

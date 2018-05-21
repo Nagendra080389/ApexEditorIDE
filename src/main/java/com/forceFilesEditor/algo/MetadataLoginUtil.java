@@ -426,6 +426,9 @@ public class MetadataLoginUtil {
         ApexClassWrapper apexClassWrapper = null;
 
         List<ApexClassWrapper> apexClassWrappers = new ArrayList<>();
+        apexClassWrapper = new ApexClassWrapper();
+        apexClassWrapper.setName("New Apex Class....");
+        apexClassWrappers.add(apexClassWrapper);
         for (com.sforce.soap.partner.sobject.SObject sObject : sObjectList) {
             Object name = sObject.getField("Name");
             Object id = sObject.getField("Id");
@@ -435,6 +438,7 @@ public class MetadataLoginUtil {
             apexClassWrapper.setId(id.toString());
             apexClassWrappers.add(apexClassWrapper);
         }
+
 
 
         return apexClassWrappers;

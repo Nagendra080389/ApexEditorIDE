@@ -489,7 +489,6 @@
         }
     });
     CodeMirror.commands.autocomplete = CodeMirror.showHint;
-    CodeMirror.commands.forMethods = CodeMirror.forMethods;
     var defaultOptions = {
         hint: CodeMirror.hint.auto,
         completeSingle: true,
