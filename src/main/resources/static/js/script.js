@@ -56,12 +56,12 @@ var ExcludedIntelliSenseTriggerKeys = {
     "222": "quote"
 }
 app.controller('OrderFormController', function($scope, $http) {
-    document.getElementById('saveBtn').style.visibility='hidden';
+    document.getElementById('saveBtn').style.visibility = 'hidden';
     var namesFromOption = [];
     $http.get("/getCurrentUser").success(function(data) {
         $scope.currentUser = data;
         var x = document.getElementById("snackbar");
-        x.innerHTML = 'Welcome '+data.display_name;
+        x.innerHTML = 'Welcome ' + data.display_name;
         x.className = "show";
         // After 3 seconds, remove the show class from DIV
         setTimeout(function() {
@@ -156,7 +156,7 @@ app.controller('OrderFormController', function($scope, $http) {
                                 });
                                 globalEditor1 = $('.CodeMirror')[0].CodeMirror;
                             }), 2000
-                            document.getElementById('saveBtn').style.visibility='visible';
+                            document.getElementById('saveBtn').style.visibility = 'visible';
                         }
                     }).error(function(data) {
                         var x = document.getElementById("snackbar");
@@ -213,7 +213,7 @@ app.controller('OrderFormController', function($scope, $http) {
                         });
                         globalEditor1 = $('.CodeMirror')[0].CodeMirror;
                     }), 2000
-                    document.getElementById('saveBtn').style.visibility='visible';
+                    document.getElementById('saveBtn').style.visibility = 'visible';
                 }
             });
         }
@@ -256,7 +256,7 @@ app.controller('OrderFormController', function($scope, $http) {
                     }
                     $scope.errorDetails = errors;
                     $('#myModal').modal('show');
-                    document.getElementById('saveBtn').style.visibility='hidden';
+                    document.getElementById('saveBtn').style.visibility = 'hidden';
                 }
             } else {
                 for (var i = 0; i < widgets.length; ++i) {
@@ -264,7 +264,7 @@ app.controller('OrderFormController', function($scope, $http) {
                 }
                 $scope.errorDetails = 'No errors';
                 $('#myModalWithoutError').modal('show');
-                document.getElementById('saveBtn').style.visibility='hidden';
+                document.getElementById('saveBtn').style.visibility = 'hidden';
             }
         }).error(function(data) {
             var x = document.getElementById("snackbar");
@@ -325,17 +325,18 @@ app.controller('OrderFormController', function($scope, $http) {
                         highlightDifferences: hilight
                     });
                     globalMergeEditor = dv;
-                }, 1000);
+                }, 2000);
+            } else {
+                console.log('Success : ' + data);
+                var x = document.getElementById("snackbar");
+                x.innerHTML = "Saved Successfully !";
+                x.className = "show";
+                // After 3 seconds, remove the show class from DIV
+                setTimeout(function() {
+                    x.className = x.className.replace("show", "");
+                }, 3000);
+                document.getElementById('saveBtn').style.visibility = 'visible';
             }
-            console.log('Success : ' + data);
-            var x = document.getElementById("snackbar");
-            x.innerHTML = "Saved Successfully !";
-            x.className = "show";
-            // After 3 seconds, remove the show class from DIV
-            setTimeout(function() {
-                x.className = x.className.replace("show", "");
-            }, 3000);
-            document.getElementById('saveBtn').style.visibility='visible';
         }).error(function(data) {
             var x = document.getElementById("snackbar");
             x.innerHTML = data;
@@ -348,10 +349,6 @@ app.controller('OrderFormController', function($scope, $http) {
     }
     $scope.replaceMerged = function() {
         globalEditor1.getDoc().setValue(globalMergeEditor.editor().getValue());
-    };
-    $scope.replaceSpaceWithTabs = function() {
-        var cleaneddata = globalEditor1.getValue().replace(new RegExp(' +', 'g'), ' ');
-        globalEditor1.getDoc().setValue(cleaneddata);
     };
 });
 
