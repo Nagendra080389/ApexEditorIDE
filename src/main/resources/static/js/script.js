@@ -30,7 +30,7 @@ app.controller('OrderFormController', function($scope, $http) {
         $('#loaderImage').show();
         $http.get("/getApexBody", config).then(function(response) {
             document.getElementById("saveBtn").disabled = false;
-            if (response.data) {
+                if(response.data){
                 $scope.apexClassWrapper = response.data;
                 $('#loaderImage').hide();
                 if (globalEditor1) {
@@ -120,8 +120,9 @@ app.controller('OrderFormController', function($scope, $http) {
                     globalEditor1 = $('.CodeMirror')[0].CodeMirror;
                 }), 2000
             });
+            }
         }
-    }
+
     $scope.postdata = function(apexClassWrapper) {
         console.log(apexClassWrapper);
         apexClassWrapper.body = globalEditor1.getValue();
@@ -270,9 +271,6 @@ app.controller('OrderFormController', function($scope, $http) {
             }
         });
     };
-    $(document).ready(function() {
-        //$('#loaderImage').show();
-    });
 });
 
 function testAnim(x) {
