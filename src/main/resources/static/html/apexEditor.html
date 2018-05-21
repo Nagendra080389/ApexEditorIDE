@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 
 <meta charset="utf-8"/>
 <head>
@@ -32,6 +32,7 @@
     <script src="../js/oboe-browser.min.js"></script>
     <script src="../js/script.js"></script>
     <script src="../js/codemirror/codemirror.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
     <script src="../js/codemirror/addon/merge/merge.js"></script>
     <script src="../js/codemirror/apex.js"></script>
@@ -159,7 +160,7 @@
     </div>
     <div id="snackbar"></div>
 </nav>
-<div style="padding: 1px; position: absolute; margin: 0px; left: 0px; right: 0px; top: 30px; bottom: 30px; width: 100%; height: auto; ">
+<div style="padding: 1px; position: absolute; margin: 0px; left: 0px; right: 0px; top: 30px; bottom: 30px; width: 100%; height: auto; " loading-pane="isPaneShown">
     <textarea ng-model="apexClassWrapper.body" id="apexBody" name="apexBody" style="display: none;" readonly="true">{{apexClassWrapper.body}}</textarea>
 
 </div>

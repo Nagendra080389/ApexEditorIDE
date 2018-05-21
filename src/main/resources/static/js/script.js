@@ -58,6 +58,7 @@ var ExcludedIntelliSenseTriggerKeys = {
 app.controller('OrderFormController', function($scope, $http) {
     document.getElementById('saveBtn').style.visibility = 'hidden';
     var namesFromOption = [];
+    $scope.isPaneShown = true;
     $http.get("/getCurrentUser").success(function(data) {
         $scope.currentUser = data;
         var x = document.getElementById("snackbar");
@@ -83,6 +84,7 @@ app.controller('OrderFormController', function($scope, $http) {
             namesFromOption.push(data[index].name)
         }
         $scope.names = foundClass;
+        $scope.isPaneShown = false;
     }).error(function(data) {
         var x = document.getElementById("snackbar");
         x.innerHTML = data;
@@ -91,12 +93,16 @@ app.controller('OrderFormController', function($scope, $http) {
         setTimeout(function() {
             x.className = x.className.replace("show", "");
         }, 10000);
+        $scope.isPaneShown = false;
     });
     $scope.retrieveSelectedClass = function() {
+        $scope.isPaneShown = true;
         if ($scope.selectedName === undefined) {
+            $scope.isPaneShown = false;
             return;
         }
         if ($scope.selectedName.groupName === 'Create New') {
+            $scope.isPaneShown = false;
             bootbox.prompt({
                 title: 'Enter Class Name',
                 placeholder: 'Enter Class Name',
@@ -119,6 +125,7 @@ app.controller('OrderFormController', function($scope, $http) {
                         }, 4000);
                         return;
                     }
+                    $scope.isPaneShown = true;
                     $http.post("/createFile", value).success(function(data) {
                         if (data) {
                             $scope.apexClassWrapper = data;
@@ -157,8 +164,10 @@ app.controller('OrderFormController', function($scope, $http) {
                                 globalEditor1 = $('.CodeMirror')[0].CodeMirror;
                             }), 2000
                             document.getElementById('saveBtn').style.visibility = 'visible';
+                            $scope.isPaneShown = false;
                         }
                     }).error(function(data) {
+                        $scope.isPaneShown = false;
                         var x = document.getElementById("snackbar");
                         x.innerHTML = data;
                         x.className = "show";
@@ -214,12 +223,13 @@ app.controller('OrderFormController', function($scope, $http) {
                         globalEditor1 = $('.CodeMirror')[0].CodeMirror;
                     }), 2000
                     document.getElementById('saveBtn').style.visibility = 'visible';
+                    $scope.isPaneShown = false;
                 }
             });
         }
     }
     $scope.postdata = function(apexClassWrapper) {
-        console.log(apexClassWrapper);
+        $scope.isPaneShown = true;
         apexClassWrapper.body = globalEditor1.getValue();
         var dataObj = {
             name: apexClassWrapper.name,
@@ -231,6 +241,7 @@ app.controller('OrderFormController', function($scope, $http) {
             $scope.apexClassWrapper = data;
             var errors = data.pmdStructures;
             if (Object.keys(errors).length > 0) {
+                $scope.isPaneShown = false;
                 if (data.isCompilationError) {
                     for (var i = 0; i < widgets.length; ++i) {
                         globalEditor1.removeLineWidget(widgets[i]);
@@ -259,6 +270,7 @@ app.controller('OrderFormController', function($scope, $http) {
                     document.getElementById('saveBtn').style.visibility = 'hidden';
                 }
             } else {
+                $scope.isPaneShown = false;
                 for (var i = 0; i < widgets.length; ++i) {
                     globalEditor1.removeLineWidget(widgets[i]);
                 }
@@ -267,6 +279,7 @@ app.controller('OrderFormController', function($scope, $http) {
                 document.getElementById('saveBtn').style.visibility = 'hidden';
             }
         }).error(function(data) {
+            $scope.isPaneShown = false;
             var x = document.getElementById("snackbar");
             x.innerHTML = data;
             x.className = "show";
@@ -277,6 +290,7 @@ app.controller('OrderFormController', function($scope, $http) {
         });
     };
     $scope.deployWithErrors = function(apexClassWrapper) {
+        $scope.isPaneShown = true;
         $('#myModal').modal('hide');
         $('#myModalWithoutError').modal('hide');
         var cleaneddata = globalEditor1.getValue().replace(new RegExp(' +', 'g'), ' ');
@@ -308,6 +322,7 @@ app.controller('OrderFormController', function($scope, $http) {
         };
         $http.post("/saveModifiedApexBody", dataObj).success(function(data) {
             if (data.dataNotMatching) {
+                $scope.isPaneShown = false;
                 $scope.apexClassWrapper = data;
                 $('#diffView').modal('show');
                 var value, orig1, orig2, dv, hilight = true;
@@ -327,6 +342,7 @@ app.controller('OrderFormController', function($scope, $http) {
                     globalMergeEditor = dv;
                 }, 2000);
             } else {
+                $scope.isPaneShown = false;
                 console.log('Success : ' + data);
                 var x = document.getElementById("snackbar");
                 x.innerHTML = "Saved Successfully !";
@@ -338,6 +354,7 @@ app.controller('OrderFormController', function($scope, $http) {
                 document.getElementById('saveBtn').style.visibility = 'visible';
             }
         }).error(function(data) {
+            $scope.isPaneShown = false;
             var x = document.getElementById("snackbar");
             x.innerHTML = data;
             x.className = "show";
@@ -359,4 +376,91 @@ $(document).ready(function() {
     $('.code-helper').select2({
         placeholder: 'Select a command to begin'
     });
+});
+
+app.directive('loadingPane', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attr) {
+            var directiveId = 'loadingPane';
+
+            var targetElement;
+            var paneElement;
+            var throttledPosition;
+
+            function init(element) {
+                targetElement = element;
+
+                paneElement = angular.element('<div>');
+                paneElement.addClass('loading-pane');
+
+                if (attr['id']) {
+                    paneElement.attr('data-target-id', attr['id']);
+                }
+
+                var spinnerImage = angular.element('<div>');
+                spinnerImage.addClass('spinner-image');
+                spinnerImage.appendTo(paneElement);
+
+                angular.element('body').append(paneElement);
+
+                setZIndex();
+
+                //reposition window after a while, just in case if:
+                // - watched scope property will be set to true from the beginning
+                // - and initial position of the target element will be shifted during page rendering
+                $timeout(position, 100);
+                $timeout(position, 200);
+                $timeout(position, 300);
+
+                throttledPosition = _.throttle(position, 50);
+                angular.element($window).scroll(throttledPosition);
+                angular.element($window).resize(throttledPosition);
+            }
+
+            function updateVisibility(isVisible) {
+                if (isVisible) {
+                    show();
+                } else {
+                    hide();
+                }
+            }
+
+            function setZIndex() {
+                var paneZIndex = 500;
+
+                paneElement.css('zIndex', paneZIndex).find('.spinner-image').css('zIndex', paneZIndex + 1);
+            }
+
+            function position() {
+                paneElement.css({
+                    'left': targetElement.offset().left,
+                    'top': targetElement.offset().top - $(window).scrollTop(),
+                    'width': targetElement.outerWidth(),
+                    'height': targetElement.outerHeight()
+                });
+            }
+
+            function show() {
+                paneElement.show();
+                position();
+            }
+
+            function hide() {
+                paneElement.hide();
+            }
+
+            init(element);
+
+            scope.$watch(attr[directiveId], function (newVal) {
+                updateVisibility(newVal);
+            });
+
+            scope.$on('$destroy', function cleanup() {
+                paneElement.remove();
+                $(window).off('scroll', throttledPosition);
+                $(window).off('resize', throttledPosition);
+            });
+        }
+    };
 });
