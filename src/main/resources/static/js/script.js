@@ -92,7 +92,7 @@ app.controller('OrderFormController', function($scope, $http) {
                         return;
                     }
                     var allNames = $scope.names;
-                    if ($.inArray(value, namesFromOption) == 1) {
+                    if ($.inArray(value, namesFromOption) > -1) {
                         var x = document.getElementById("snackbar");
                         x.innerHTML = "Class with same name already exists";
                         x.className = "show";
