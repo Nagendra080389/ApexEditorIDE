@@ -629,10 +629,11 @@
      display:block;
      width:6em;
      height:2em;
-     color:#333;
+     color: rgba(255,255,255,0.75);
      line-height:2;
      text-align:center;
      text-decoration:none;
+     font-weight: 600 !important;
 }
  #saveBtn:hover{
      background:#ccc;
@@ -751,5 +752,5 @@
     }
 }
  .navbar-default {
-     background-color: #e6ffee;
+     background-color: #24292e;
 }
