@@ -58,13 +58,20 @@ var ExcludedIntelliSenseTriggerKeys = {
 app.controller('OrderFormController', function($scope, $http) {
     document.getElementById("saveBtn").disabled = true;
     $http.post("/getAllApexClasses").success(function(data) {
-        $('#loaderImage').hide();
         var foundClass = [];
         for (var index = 0; index < data.length; ++index) {
             foundClass.push(data[index]);
         }
         $scope.names = foundClass;
-    }).error(function(data) {});
+    }).error(function(data) {
+        var x = document.getElementById("snackbar");
+        x.innerHTML = data;
+        x.className = "show";
+        // After 3 seconds, remove the show class from DIV
+        setTimeout(function() {
+            x.className = x.className.replace("show", "");
+        }, 10000);
+    });
     $scope.retrieveSelectedClass = function() {
         if ($scope.selectedName === undefined) {
             return;
@@ -85,7 +92,6 @@ app.controller('OrderFormController', function($scope, $http) {
                     $http.post("/createFile", value).success(function(data) {
                         if (data) {
                             $scope.apexClassWrapper = data;
-                            $('#loaderImage').hide();
                             if (globalEditor1) {
                                 globalEditor1.toTextArea();
                             }
@@ -121,7 +127,15 @@ app.controller('OrderFormController', function($scope, $http) {
                                 globalEditor1 = $('.CodeMirror')[0].CodeMirror;
                             }), 2000
                         }
-                    }).error(function(data) {});
+                    }).error(function(data) {
+                        var x = document.getElementById("snackbar");
+                        x.innerHTML = data;
+                        x.className = "show";
+                        // After 3 seconds, remove the show class from DIV
+                        setTimeout(function() {
+                            x.className = x.className.replace("show", "");
+                        }, 10000);
+                    });
                 }
             });
         } else {
@@ -131,11 +145,9 @@ app.controller('OrderFormController', function($scope, $http) {
             var config = {
                 params: data
             };
-            $('#loaderImage').show();
             $http.get("/getApexBody", config).then(function(response) {
                 if (response.data) {
                     $scope.apexClassWrapper = response.data;
-                    $('#loaderImage').hide();
                     if (globalEditor1) {
                         globalEditor1.toTextArea();
                     }
@@ -183,10 +195,8 @@ app.controller('OrderFormController', function($scope, $http) {
             id: apexClassWrapper.id,
             originalBodyFromOrg: apexClassWrapper.originalBodyFromOrg
         };
-        $('#loaderImage').show();
         $http.post("/modifyApexBody", dataObj).success(function(data) {
             $scope.apexClassWrapper = data;
-            $('#loaderImage').hide();
             var errors = data.pmdStructures;
             if (Object.keys(errors).length > 0) {
                 if (data.isCompilationError) {
@@ -223,17 +233,18 @@ app.controller('OrderFormController', function($scope, $http) {
                 $('#myModalWithoutError').modal('show');
             }
         }).error(function(data) {
-            $scope.apexClassWrapperError = data;
-            $('#loaderImage').hide();
-            $('#error').show();
-            $('#error').css("color", "red")
-            $('#error').html(data.message);
+            var x = document.getElementById("snackbar");
+            x.innerHTML = data;
+            x.className = "show";
+            // After 3 seconds, remove the show class from DIV
+            setTimeout(function() {
+                x.className = x.className.replace("show", "");
+            }, 10000);
         });
     };
     $scope.deployWithErrors = function(apexClassWrapper) {
         $('#myModal').modal('hide');
         $('#myModalWithoutError').modal('hide');
-        $('#loaderImage').show();
         var cleaneddata = globalEditor1.getValue().replace(new RegExp(' +', 'g'), ' ');
         globalEditor1.getDoc().setValue(cleaneddata);
         globalEditor1.setSelection({
@@ -284,15 +295,20 @@ app.controller('OrderFormController', function($scope, $http) {
             }
             console.log('Success : ' + data);
             var x = document.getElementById("snackbar");
+            x.innerHTML = "Saved Successfully !";
             x.className = "show";
             // After 3 seconds, remove the show class from DIV
             setTimeout(function() {
                 x.className = x.className.replace("show", "");
             }, 3000);
-            $('#loaderImage').hide();
         }).error(function(data) {
-            $('#loaderImage').hide();
-            console.log('Failure : ' + data);
+            var x = document.getElementById("snackbar");
+            x.innerHTML = data;
+            x.className = "show";
+            // After 3 seconds, remove the show class from DIV
+            setTimeout(function() {
+                x.className = x.className.replace("show", "");
+            }, 10000);
         });
     }
     $scope.replaceMerged = function() {
@@ -302,9 +318,7 @@ app.controller('OrderFormController', function($scope, $http) {
         var cleaneddata = globalEditor1.getValue().replace(new RegExp(' +', 'g'), ' ');
         globalEditor1.getDoc().setValue(cleaneddata);
     };
-    /*$scope.newClassCreation = function() {
 
-    };*/
 });
 
 function testAnim(x) {
