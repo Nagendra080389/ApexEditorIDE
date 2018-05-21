@@ -93,7 +93,7 @@
                 }
             }
             if (isOperatorChar.test(ch)) {
-                while (!stream.match(/^\/[\*/]/, false) && stream.eat(isOperatorChar)) {}
+                while (!stream.match(/^\/[\/*]/, false) && stream.eat(isOperatorChar)) {}
                 return "operator";
             }
             stream.eatWhile(isIdentifierChar);
