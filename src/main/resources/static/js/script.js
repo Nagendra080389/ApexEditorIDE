@@ -100,6 +100,7 @@ app.controller('OrderFormController', function($scope, $http) {
                         setTimeout(function() {
                             x.className = x.className.replace("show", "");
                         }, 4000);
+                        return;
                     }
                     $http.post("/createFile", value).success(function(data) {
                         if (data) {
