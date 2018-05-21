@@ -126,7 +126,7 @@ app.controller('OrderFormController', function($scope, $http) {
             });
         } else {
             var data = {
-                apexClassName: $scope.selectedName
+                apexClassName: $scope.selectedName.name
             };
             var config = {
                 params: data
