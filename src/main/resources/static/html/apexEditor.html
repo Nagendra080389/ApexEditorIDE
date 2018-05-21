@@ -77,10 +77,7 @@
                         </tr>
                         </thead>
                         <tr ng-repeat="eachError in errorDetails track by $index">
-                            <!--<td>{{key}}</td>
-                            <td ng-repeat="v in value">
-                                {{v}}
-                            </td>-->
+
                             <td>{{eachError.lineNumber}}</td>
                             <td>{{eachError.lineNumber}}</td>
                             <td><a target="_blank" href="{{eachError.ruleUrl}}">{{eachError.reviewFeedback}}</a></td>
@@ -150,7 +147,7 @@
 
 <nav class="navbar navbar-default navbar-fixed-top">
     <div id="container">
-        <select ng-model="selectedName" ng-change="retrieveSelectedClass()" ng-options="item for item in names"
+        <select ng-model="selectedName" ng-change="retrieveSelectedClass()" ng-options="(item.name||item) group by item.groupName for item in names"
                 class="code-helper" id="code-helperId">
         </select>
     </div>

@@ -2,25 +2,23 @@ var globalEditor1 = null;
 var globalMergeEditor = null;
 var widgets = [];
 var timeout;
-
 var app = angular.module('myApp', []);
-app.controller('OrderFormController', function($scope,$http) {
+app.controller('OrderFormController', function($scope, $http) {
     document.getElementById("saveBtn").disabled = true;
     $http.post("/getAllApexClasses").success(function(data) {
         $('#loaderImage').hide();
         var foundClass = [];
         for (var index = 0; index < data.length; ++index) {
-            foundClass.push(data[index].name);
+            foundClass.push(data[index]);
         }
         $scope.names = foundClass;
     }).error(function(data) {});
-    $scope.retrieveSelectedClass = function() {
 
-        if($scope.selectedName === undefined){
+    $scope.retrieveSelectedClass = function() {
+        if ($scope.selectedName === undefined) {
             return;
         }
-
-        if($scope.selectedName === 'New Apex Class'){
+        if ($scope.selectedName === 'New Apex Class....') {
             return;
         }
         var data = {
@@ -32,95 +30,97 @@ app.controller('OrderFormController', function($scope,$http) {
         $('#loaderImage').show();
         $http.get("/getApexBody", config).then(function(response) {
             document.getElementById("saveBtn").disabled = false;
-            $scope.apexClassWrapper = response.data;
-            $('#loaderImage').hide();
-            if (globalEditor1) {
-                globalEditor1.toTextArea();
-            }
-            setTimeout(function(test) {
-                var ExcludedIntelliSenseTriggerKeys = {
-                    "8": "backspace",
-                    "9": "tab",
-                    "13": "enter",
-                    "16": "shift",
-                    "17": "ctrl",
-                    "18": "alt",
-                    "19": "pause",
-                    "20": "capslock",
-                    "27": "escape",
-                    "33": "pageup",
-                    "34": "pagedown",
-                    "35": "end",
-                    "36": "home",
-                    "37": "left",
-                    "38": "up",
-                    "39": "right",
-                    "40": "down",
-                    "45": "insert",
-                    "46": "delete",
-                    "90": "ctrl-z",
-                    "91": "left window key",
-                    "92": "right window key",
-                    "93": "select",
-                    "107": "add",
-                    "109": "subtract",
-                    "110": "decimal point",
-                    "111": "divide",
-                    "112": "f1",
-                    "113": "f2",
-                    "114": "f3",
-                    "115": "f4",
-                    "116": "f5",
-                    "117": "f6",
-                    "118": "f7",
-                    "119": "f8",
-                    "120": "f9",
-                    "121": "f10",
-                    "122": "f11",
-                    "123": "f12",
-                    "144": "numlock",
-                    "145": "scrolllock",
-                    "186": "semicolon",
-                    "187": "equalsign",
-                    "188": "comma",
-                    "189": "dash",
-                    "190": "period",
-                    "191": "slash",
-                    "192": "graveaccent",
-                    "220": "backslash",
-                    "222": "quote"
+            if (response.data) {
+                $scope.apexClassWrapper = response.data;
+                $('#loaderImage').hide();
+                if (globalEditor1) {
+                    globalEditor1.toTextArea();
                 }
-                var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
-                    lineNumbers: true,
-                    matchBrackets: true,
-                    styleActiveLine: true,
-                    extraKeys: {
-                        ".": function(editor) {
-                            setTimeout(function() {
-                                editor.execCommand("autocomplete");
-                            }, 100);
-                            throw CodeMirror.Pass; // tell CodeMirror we didn't handle the key
-                        }
-                    },
-                    gutters: ["CodeMirror-lint-markers"],
-                    lint: true,
-                    mode: "text/x-apex"
-                });
-                editor.on("keyup", function(cm, event) {
-                    var keyCode = event.keyCode || event.which;
-                    if (!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
-                        if (timeout) clearTimeout(timeout);
-                        timeout = setTimeout(function() {
-                            editor.showHint({
-                                hint: CodeMirror.hint.auto,
-                                completeSingle: false
-                            });
-                        }, 150);
+                setTimeout(function(test) {
+                    var ExcludedIntelliSenseTriggerKeys = {
+                        "8": "backspace",
+                        "9": "tab",
+                        "13": "enter",
+                        "16": "shift",
+                        "17": "ctrl",
+                        "18": "alt",
+                        "19": "pause",
+                        "20": "capslock",
+                        "27": "escape",
+                        "33": "pageup",
+                        "34": "pagedown",
+                        "35": "end",
+                        "36": "home",
+                        "37": "left",
+                        "38": "up",
+                        "39": "right",
+                        "40": "down",
+                        "45": "insert",
+                        "46": "delete",
+                        "90": "ctrl-z",
+                        "91": "left window key",
+                        "92": "right window key",
+                        "93": "select",
+                        "107": "add",
+                        "109": "subtract",
+                        "110": "decimal point",
+                        "111": "divide",
+                        "112": "f1",
+                        "113": "f2",
+                        "114": "f3",
+                        "115": "f4",
+                        "116": "f5",
+                        "117": "f6",
+                        "118": "f7",
+                        "119": "f8",
+                        "120": "f9",
+                        "121": "f10",
+                        "122": "f11",
+                        "123": "f12",
+                        "144": "numlock",
+                        "145": "scrolllock",
+                        "186": "semicolon",
+                        "187": "equalsign",
+                        "188": "comma",
+                        "189": "dash",
+                        "190": "period",
+                        "191": "slash",
+                        "192": "graveaccent",
+                        "220": "backslash",
+                        "222": "quote"
                     }
-                });
-                globalEditor1 = $('.CodeMirror')[0].CodeMirror;
-            }), 2000
-        });
+                    var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
+                        lineNumbers: true,
+                        matchBrackets: true,
+                        styleActiveLine: true,
+                        extraKeys: {
+                            ".": function(editor) {
+                                setTimeout(function() {
+                                    editor.execCommand("autocomplete");
+                                }, 100);
+                                throw CodeMirror.Pass; // tell CodeMirror we didn't handle the key
+                            }
+                        },
+                        gutters: ["CodeMirror-lint-markers"],
+                        lint: true,
+                        mode: "text/x-apex"
+                    });
+                    editor.on("keyup", function(cm, event) {
+                        var keyCode = event.keyCode || event.which;
+                        if (!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
+                            if (timeout) clearTimeout(timeout);
+                            timeout = setTimeout(function() {
+                                editor.showHint({
+                                    hint: CodeMirror.hint.auto,
+                                    completeSingle: false
+                                });
+                            }, 150);
+                        }
+                    });
+                    globalEditor1 = $('.CodeMirror')[0].CodeMirror;
+                }), 2000
+            });
+        }
     }
     $scope.postdata = function(apexClassWrapper) {
         console.log(apexClassWrapper);
@@ -178,6 +178,7 @@ app.controller('OrderFormController', function($scope,$http) {
             $('#error').html(data.message);
         });
     };
+
     $scope.deployWithErrors = function(apexClassWrapper) {
         $('#myModal').modal('hide');
         $('#myModalWithoutError').modal('hide');
@@ -233,9 +234,10 @@ app.controller('OrderFormController', function($scope,$http) {
             console.log('Success : ' + data);
             var x = document.getElementById("snackbar");
             x.className = "show";
-
             // After 3 seconds, remove the show class from DIV
-            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+            setTimeout(function() {
+                x.className = x.className.replace("show", "");
+            }, 3000);
             $('#loaderImage').hide();
         }).error(function(data) {
             $('#loaderImage').hide();
@@ -270,7 +272,7 @@ app.controller('OrderFormController', function($scope,$http) {
     };
     $(document).ready(function() {
         //$('#loaderImage').show();
-                });
+    });
 });
 
 function testAnim(x) {

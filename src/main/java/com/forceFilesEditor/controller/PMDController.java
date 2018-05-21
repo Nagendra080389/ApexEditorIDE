@@ -130,9 +130,11 @@ public class PMDController {
         String toolingURL = this.toolingURL;
         Cookie[] cookies = request.getCookies();
         try {
-            ApexClassWrapper main = MetadataLoginUtil.getApexBody(apexClassName, partnerURL, toolingURL,cookies);
-            Gson gson = new GsonBuilder().create();
-            return gson.toJson(main);
+            if(!apexClassName.equals("New Apex Class....")) {
+                ApexClassWrapper main = MetadataLoginUtil.getApexBody(apexClassName, partnerURL, toolingURL, cookies);
+                Gson gson = new GsonBuilder().create();
+                return gson.toJson(main);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

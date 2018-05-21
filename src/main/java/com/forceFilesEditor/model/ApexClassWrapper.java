@@ -24,6 +24,8 @@ public class ApexClassWrapper {
 
     private Integer lineNumber;
 
+    private String groupName;
+
     private boolean isCompilationError;
 
     private SymbolTable symbolTable;
@@ -126,5 +128,13 @@ public class ApexClassWrapper {
 
     public void setSymbolTable(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 }

@@ -156,19 +156,7 @@ public class MetadataLoginUtil {
             List<PMDStructure> pmdStructures = new ArrayList<>();
 
             while (true) {
-                /*if(save) {
-                    String apexClassBody = "SELECT Body,LastModifiedDate FROM APEXCLASS Where Name = '" + apexClassWrapper.getName() + "'";
-                    QueryResult query = partnerConnection.query(apexClassBody);
-                    Object body = query.getRecords()[0].getField("Body");
-                    Date dateFromOrg = DateUtils.parseDateStrictly((String) query.getRecords()[0].getField("LastModifiedDate"), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                    if (dateFromOrg.getTime() != apexClassWrapper.getSalesForceSystemModStamp().getTime()) {
-                        apexClassWrapper.setTimeStampNotMatching(true);
-                        ApexClassWrapper fromOrg = new ApexClassWrapper();
-                        fromOrg.setBody(body.toString());
-                        apexClassWrapper.setModifiedApexClassWrapper(fromOrg);
-                        break;
-                    }
-                }*/
+
                 com.sforce.soap.tooling.QueryResult containerSyncRequestCompile = toolingConnection.query("SELECT Id,State, DeployDetails, ErrorMsg FROM ContainerAsyncRequest where id = '" + id + "'");
                 ContainerAsyncRequest sObject1 = (ContainerAsyncRequest) containerSyncRequestCompile.getRecords()[0];
                 if ("Queued".equals(sObject1.getState())) {
@@ -185,14 +173,6 @@ public class MetadataLoginUtil {
                                     pmdStructure.setLineNumber(deployMessage.getLineNumber());
                                     pmdStructure.setReviewFeedback(deployMessage.getProblem());
                                     pmdStructures.add(pmdStructure);
-                                    /*if (lineNumberError.containsKey(deployMessage.getLineNumber())) {
-                                        List<String> strings = lineNumberError.get(deployMessage.getLineNumber());
-                                        strings.add(deployMessage.getProblem());
-                                    } else {
-                                        List<String> problemList = new ArrayList<>();
-                                        problemList.add(deployMessage.getProblem());
-                                        lineNumberError.put(deployMessage.getLineNumber(), problemList);
-                                    }*/
                                 }
                             }
                         }
@@ -232,15 +212,6 @@ public class MetadataLoginUtil {
                         pmdStructure.setRuleUrl(ruleViolation.getRule().getExternalInfoUrl());
                         pmdStructure.setRulePriority(ruleViolation.getRule().getPriority().getPriority());
                         pmdStructures.add(pmdStructure);
-
-                        /*if (lineNumberError.containsKey(ruleViolation.getBeginLine())) {
-                            List<String> strings = lineNumberError.get(ruleViolation.getBeginLine());
-                            strings.add(ruleViolation.getDescription());
-                        } else {
-                            List<String> problemList = new ArrayList<>();
-                            problemList.add(ruleViolation.getDescription());
-                            lineNumberError.put(ruleViolation.getBeginLine(), problemList);
-                        }*/
                     }
                 }
             }
@@ -428,6 +399,7 @@ public class MetadataLoginUtil {
         List<ApexClassWrapper> apexClassWrappers = new ArrayList<>();
         apexClassWrapper = new ApexClassWrapper();
         apexClassWrapper.setName("New Apex Class....");
+        apexClassWrapper.setGroupName("Create New");
         apexClassWrappers.add(apexClassWrapper);
         for (com.sforce.soap.partner.sobject.SObject sObject : sObjectList) {
             Object name = sObject.getField("Name");
@@ -436,11 +408,9 @@ public class MetadataLoginUtil {
             apexClassWrapper = new ApexClassWrapper();
             apexClassWrapper.setName(name.toString());
             apexClassWrapper.setId(id.toString());
+            apexClassWrapper.setGroupName("Edit Apex Class");
             apexClassWrappers.add(apexClassWrapper);
         }
-
-
-
         return apexClassWrappers;
     }
 
