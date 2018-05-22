@@ -493,7 +493,7 @@ public class MetadataLoginUtil {
             return sObjectList;
         } else {
             List<T> sObjectList = new ArrayList<>();
-            response.setHeader("force-Query-Options","batchSize=200");
+            response.addHeader("force-Query-Options","batchSize=200");
             com.sforce.soap.tooling.QueryResult qResult = toolingConnection.query(query);
             boolean done = false;
             if (qResult.getSize() > 0) {
