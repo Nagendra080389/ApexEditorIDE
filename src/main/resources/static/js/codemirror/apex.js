@@ -271,7 +271,14 @@
             }).fail(function() {
                 console.log('error getAllApexClasses');
             });
-            oboe('/utilities/longProcessStream').done(function(data) {
+            oboe('/generateSystemSymbolTable').done(function(data) {
+                if (data) {
+                    words.push(data);
+                }
+            }).fail(function(errorReport) {
+                console.log(errorReport);
+            });
+            oboe('/generateCustomSymbolTable').done(function(data) {
                 if (data) {
                     words.push(data);
                 }

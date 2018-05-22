@@ -8,12 +8,11 @@ import com.forceFilesEditor.exception.DeploymentException;
 import com.forceFilesEditor.model.ApexClassWrapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sforce.soap.tooling.Method;
-import com.sforce.soap.tooling.Symbol;
 import com.sforce.soap.tooling.SymbolTable;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.io.IOUtils;
 import org.apache.coyote.http2.ConnectionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +23,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -56,7 +54,7 @@ public class PMDController {
         Gson gson = new GsonBuilder().create();
         try {
 
-            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL,cookies);
+            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL,cookies, response);
             List<String> allClassesInString = new ArrayList<>();
 
             for (ApexClassWrapper allApexClass : allApexClasses) {
@@ -81,7 +79,7 @@ public class PMDController {
         Cookie[] cookies = request.getCookies();
         Gson gson = new GsonBuilder().create();
         try {
-            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL,cookies);
+            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL,cookies, response);
             return gson.toJson(allApexClasses);
 
         } catch (Exception e) {
@@ -111,19 +109,17 @@ public class PMDController {
 
     public String getReturnSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies, OutputStream outputStream)
             throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
-        Gson gson = new GsonBuilder().create();
         MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
         List<String> strings = new ArrayList<>();
         try {
             strings = metadataLoginUtil.returnSymbolTable(outputStream);
-            MetadataLoginUtil.generateSymbolTable(partnerURL, toolingURL, cookies,outputStream,gson);
         } catch (XMLStreamException e) {
             e.printStackTrace();
         } catch (JAXBException e) {
             e.printStackTrace();
         }
 
-        return gson.toJson(strings);
+        return "";
     }
 
     @RequestMapping(value = "/getApexBody", method = RequestMethod.GET)
@@ -318,23 +314,60 @@ public class PMDController {
         return gson.toJson(user);
     }
 
-    @RequestMapping("/utilities/longProcessStream")
-    public StreamingResponseBody asyncLongProcessStream(HttpServletResponse response, HttpServletRequest request) {
+    @RequestMapping("/generateCustomSymbolTable")
+    public StreamingResponseBody generateCustomSymbolTable(HttpServletResponse response, HttpServletRequest request) {
         response.addHeader("Content-Type", MediaType.APPLICATION_JSON);
         return new StreamingResponseBody() {
             @Override
             public void writeTo(OutputStream outputStream) throws IOException {
-                PMDController.this.callURL(response, request, outputStream);
+                try {
+                    PMDController.this.generateCustomSymbolTable(response, request, outputStream);
+                }finally {
+                    IOUtils.closeQuietly(outputStream);
+                }
             }
         };
     }
 
-    private String callURL(HttpServletResponse response, HttpServletRequest request, OutputStream outputStream) {
+    @RequestMapping("/generateSystemSymbolTable")
+    public StreamingResponseBody generateSystemSymbolTable(HttpServletResponse response, HttpServletRequest request) {
+        response.addHeader("Content-Type", MediaType.APPLICATION_JSON);
+        return new StreamingResponseBody() {
+            @Override
+            public void writeTo(OutputStream outputStream) throws IOException {
+                try {
+                    PMDController.this.generateSystemSymbolTable(response, request, outputStream);
+                }finally {
+                    IOUtils.closeQuietly(outputStream);
+                }
+            }
+        };
+    }
+
+    private String generateSystemSymbolTable(HttpServletResponse response, HttpServletRequest request, OutputStream outputStream) {
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
         Cookie[] cookies = request.getCookies();
         try {
             getReturnSymbolTable(partnerURL, toolingURL,cookies,outputStream);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ConnectionException e) {
+            e.printStackTrace();
+        } catch (com.sforce.ws.ConnectionException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private String generateCustomSymbolTable(HttpServletResponse response, HttpServletRequest request, OutputStream outputStream) {
+        String partnerURL = this.partnerURL;
+        String toolingURL = this.toolingURL;
+        Gson gson = new GsonBuilder().create();
+        Cookie[] cookies = request.getCookies();
+        try {
+            MetadataLoginUtil.generateSymbolTable(partnerURL, toolingURL, cookies,outputStream,gson,response);
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -19,6 +19,7 @@ import org.apache.coyote.http2.ConnectionException;
 import wiremock.org.apache.commons.collections4.trie.PatriciaTrie;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -340,7 +341,7 @@ public class MetadataLoginUtil {
 
     }
 
-    public static List<ApexClassWrapper> getAllApexClasses(String partnerURL, String toolingURL, Cookie[] cookies) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
+    public static List<ApexClassWrapper> getAllApexClasses(String partnerURL, String toolingURL, Cookie[] cookies, HttpServletResponse response) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
 
         String instanceUrl = null;
         String accessToken = null;
@@ -369,7 +370,7 @@ public class MetadataLoginUtil {
         String apexClassBody = "SELECT Id, Name FROM APEXCLASS";
 
 
-        List<com.sforce.soap.partner.sobject.SObject> sObjectList = queryRecords(apexClassBody, partnerConnection, null, true);
+        List<com.sforce.soap.partner.sobject.SObject> sObjectList = queryRecords(apexClassBody, partnerConnection, null, true, response);
 
         ApexClassWrapper apexClassWrapper = null;
 
@@ -392,7 +393,7 @@ public class MetadataLoginUtil {
     }
 
     public static Map<String, SymbolTable> generateSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies,
-                                                               OutputStream outputStream, Gson gson) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
+                                                               OutputStream outputStream, Gson gson, HttpServletResponse response) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
 
 
         String accessToken = null;
@@ -424,7 +425,7 @@ public class MetadataLoginUtil {
 
 
         String apexClassBodytooling = "SELECT Id, Name, SymbolTable FROM APEXCLASS";
-        List<ApexClass> sObjectListTooling = queryRecords(apexClassBodytooling, partnerConnection, toolingConnection, false);
+        List<ApexClass> sObjectListTooling = queryRecords(apexClassBodytooling, partnerConnection, toolingConnection, false, response);
 
         for (ApexClass apexClasses : sObjectListTooling) {
             SymbolTable symbolTable = apexClasses.getSymbolTable();
@@ -461,11 +462,12 @@ public class MetadataLoginUtil {
         outputStream.flush();
     }
 
-    public static <T> List<T> queryRecords(String query, PartnerConnection partnerConnection, ToolingConnection toolingConnection, boolean usePartner)
+    public static <T> List<T> queryRecords(String query, PartnerConnection partnerConnection, ToolingConnection toolingConnection, boolean usePartner, HttpServletResponse response)
             throws com.sforce.ws.ConnectionException {
         if (usePartner) {
             List<T> sObjectList = new ArrayList<>();
             QueryResult qResult;
+            partnerConnection.setQueryOptions(100);
             qResult = partnerConnection.query(query);
             boolean done = false;
             if (qResult.getSize() > 0) {
@@ -491,6 +493,7 @@ public class MetadataLoginUtil {
             return sObjectList;
         } else {
             List<T> sObjectList = new ArrayList<>();
+            response.setHeader("force-Query-Options","batchSize=200");
             com.sforce.soap.tooling.QueryResult qResult = toolingConnection.query(query);
             boolean done = false;
             if (qResult.getSize() > 0) {
