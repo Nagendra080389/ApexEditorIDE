@@ -317,6 +317,7 @@ public class PMDController {
     @RequestMapping("/generateCustomSymbolTable")
     public StreamingResponseBody generateCustomSymbolTable(HttpServletResponse response, HttpServletRequest request) {
         response.addHeader("Content-Type", MediaType.APPLICATION_JSON);
+        response.addHeader("Sforce-Query-Options","batchSize=200");
         return new StreamingResponseBody() {
             @Override
             public void writeTo(OutputStream outputStream) throws IOException {
