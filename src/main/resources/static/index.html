@@ -13,6 +13,7 @@
     <link href="../css/login/loginStyle.css" rel="stylesheet"/>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!------ Include the above in your HEAD tag ---------->
 
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
@@ -42,6 +43,7 @@ function redirectJS(orgType){
 }
 
 
+
 </script>
 
 <body class="background-body">
@@ -50,8 +52,17 @@ function redirectJS(orgType){
 
     <p class="we-create no-mrg">click below to login</p>
     <p class="content-mrg we-create">&#x21A1;</p>
+
     <div class="content-mrg">
-        <a class="btn1" onclick=redirectJS("test")>Sand Box</a><a class="btn2" onclick=redirectJS("login")>Production Box</a><a class="btn3" id="myCustomDomain" onclick=domainChanger()>My Custom Domain</a>
+        <div class="box">
+            <div class="text" onclick=redirectJS("test")>Sand Box</div>
+        </div>
+        <div class="box">
+            <div class="text" onclick=redirectJS("login")>Production Box</div>
+        </div>
+        <div class="box">
+            <div class="text" onclick=domainChanger()>My Custom Domain</div>
+        </div>
     </div>
 
 
