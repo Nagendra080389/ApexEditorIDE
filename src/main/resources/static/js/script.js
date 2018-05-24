@@ -107,7 +107,7 @@ app.controller('OrderFormController', function($scope, $http) {
                 if (!globalEditor1.isClean()) {
                     var r = confirm("You have unsaved changes, are you sure you want to proceed ?");
                     if (r != true) {
-                        /*$('.code-helper').val(previousValue);*/
+                        $scope.selectedName = oldValue;
                         $scope.isPaneShown = false;
                         return;
                     }
@@ -195,8 +195,7 @@ app.controller('OrderFormController', function($scope, $http) {
                 if (!globalEditor1.isClean()) {
                     var r = confirm("You have unsaved changes, are you sure you want to proceed ?");
                     if (r != true) {
-                        /*$('.code-helper').val(previousValue);*/
-
+                        $scope.selectedName = oldValue;
                         $scope.isPaneShown = false;
                         return;
                     }
