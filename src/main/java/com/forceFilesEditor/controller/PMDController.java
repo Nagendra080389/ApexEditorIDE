@@ -88,25 +88,6 @@ public class PMDController {
 
     }
 
-    @RequestMapping(value = "/getSuggestion", method = RequestMethod.POST)
-    public String getSuggestion(String query) throws IOException {
-        Gson gson = new GsonBuilder().create();
-        List<String> strings = stringListHashMap.get("suggestions");
-        Map<String, List<String>> newMapReturn = new HashMap<>();
-        List<String> newListToBeAdded = new ArrayList<>();
-        Iterator itr = strings.iterator();
-        while (itr.hasNext())
-        {
-            String x = (String)itr.next();
-            if (x.toLowerCase().contains(query.toLowerCase()))
-                newListToBeAdded.add(x);
-        }
-
-        newMapReturn.put("suggestions", newListToBeAdded);
-        return gson.toJson(newMapReturn);
-    }
-
-
     public String getReturnSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies, OutputStream outputStream)
             throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
         MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
@@ -317,7 +298,6 @@ public class PMDController {
     @RequestMapping("/generateCustomSymbolTable")
     public StreamingResponseBody generateCustomSymbolTable(HttpServletResponse response, HttpServletRequest request) {
         response.addHeader("Content-Type", MediaType.APPLICATION_JSON);
-        response.addHeader("Sforce-Query-Options","batchSize=200");
         return new StreamingResponseBody() {
             @Override
             public void writeTo(OutputStream outputStream) throws IOException {

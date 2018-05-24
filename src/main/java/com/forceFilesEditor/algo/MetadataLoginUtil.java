@@ -14,8 +14,15 @@ import com.sforce.soap.tooling.sobject.*;
 import com.sforce.ws.ConnectorConfig;
 import net.sourceforge.pmd.*;
 import net.sourceforge.pmd.util.ResourceLoader;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.io.IOUtils;
 import org.apache.coyote.http2.ConnectionException;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import wiremock.org.apache.commons.collections4.trie.PatriciaTrie;
 
 import javax.servlet.http.Cookie;
@@ -205,7 +212,7 @@ public class MetadataLoginUtil {
                     PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
                     List<RuleViolation> review = pmdReviewService.review(apexClassWrapper.getBody(), apexClassWrapper.getName() + ".cls");
 
-                    for (RuleViolation ruleViolation : review) {
+                        for (RuleViolation ruleViolation : review) {
                         PMDStructure pmdStructure = new PMDStructure();
                         pmdStructure.setReviewFeedback(ruleViolation.getDescription());
                         pmdStructure.setLineNumber(ruleViolation.getBeginLine());
@@ -397,69 +404,86 @@ public class MetadataLoginUtil {
 
 
         String accessToken = null;
+        String instanceUrlForQuery = null;
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("ACCESS_TOKEN")) {
                 accessToken = cookie.getValue();
             }
             if (cookie.getName().equals("INSTANCE_URL")) {
                 String instanceUrl = cookie.getValue();
+                instanceUrlForQuery = instanceUrl;
                 partnerURL = instanceUrl + partnerURL;
                 toolingURL = instanceUrl + toolingURL;
             }
         }
 
+        String path = "/services/data/v41.0/tooling/query/?q=";
 
         Map<String, SymbolTable> stringSymbolTableMap = new HashMap<>();
 
-        ConnectorConfig toolConfig = new ConnectorConfig();
-        ConnectorConfig config = new ConnectorConfig();
+        String apexClassBodytooling = "Select+SymbolTable+From+ApexClass";
+        HttpClient httpclient=new HttpClient();
+        GetMethod getMethod=new GetMethod(instanceUrlForQuery+path+apexClassBodytooling);
+        getMethod.setRequestHeader("Authorization", "Bearer " +accessToken);
+        getMethod.setRequestHeader("Sforce-Query-Options","batchSize=200");
 
-        toolConfig.setServiceEndpoint(toolingURL);
-        toolConfig.setSessionId(accessToken);
+        httpclient.executeMethod(getMethod);
+        if(getMethod.getStatusCode() == HttpStatus.SC_OK ){
+            try{
+                boolean done = false;
+                JSONObject jsonResponse = new JSONObject(new JSONTokener(new InputStreamReader(getMethod.getResponseBodyAsStream())));
+                if ((Integer) jsonResponse.get("size") > 0) {
+                    while (!done) {
+                        for (Object records : ((JSONArray) jsonResponse.get("records"))) {
+                            ClassStructure classStructure = new ClassStructure();
+                            Object symbolTable = ((JSONObject) records).get("SymbolTable");
+                            if(!JSONObject.NULL.equals(symbolTable)) {
+                                Object methods = ((JSONObject) symbolTable).get("methods");
+                                Object className = ((JSONObject) symbolTable).get("name");
+                                classStructure.setClassName(className.toString());
+                                List<String> methodList = new ArrayList<>();
+                                for (Object eachMethod : ((JSONArray) methods)) {
+                                    Object name = ((JSONObject) eachMethod).get("name");
+                                    methodList.add(name.toString());
 
-        ToolingConnection toolingConnection = new ToolingConnection(toolConfig);
+                                }
+                                classStructure.setMethodsNames(methodList);
+                                outputStream.write(gson.toJson(classStructure).getBytes());
+                                outputStream.flush();
+                            }
+                        }
 
-        config.setSessionId(accessToken);
-        config.setServiceEndpoint(partnerURL);
-        partnerConnection = Connector.newConnection(config);
+                        if ((Boolean) jsonResponse.get("done")) {
+                            done = true;
+                        } else {
+                            if(!JSONObject.NULL.equals(jsonResponse.get("nextRecordsUrl"))) {
+                                getMethod = new GetMethod(instanceUrlForQuery + jsonResponse.get("nextRecordsUrl").toString());
+                                getMethod.setRequestHeader("Authorization", "Bearer " + accessToken);
+                                getMethod.setRequestHeader("Sforce-Query-Options", "batchSize=200");
+                                httpclient.executeMethod(getMethod);
+                                jsonResponse = new JSONObject(new JSONTokener(new InputStreamReader(getMethod.getResponseBodyAsStream())));
+                            }
+                        }
+                    }
+                }
 
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
 
-        String apexClassBodytooling = "SELECT Id, Name, SymbolTable FROM APEXCLASS";
-        List<ApexClass> sObjectListTooling = queryRecords(apexClassBodytooling, partnerConnection, toolingConnection, false, response);
+        //List<ApexClass> sObjectListTooling = queryRecords(apexClassBodytooling, partnerConnection, toolingConnection, false, response);
 
-        for (ApexClass apexClasses : sObjectListTooling) {
+        /*for (ApexClass apexClasses : sObjectListTooling) {
             SymbolTable symbolTable = apexClasses.getSymbolTable();
             String name = apexClasses.getName();
             ClassStructure classStructure = new ClassStructure();
             setValues(name, stringSymbolTableMap, symbolTable, outputStream, gson, classStructure);
-        }
+        }*/
 
         System.out.println("Symbol table generated");
 
         return stringSymbolTableMap;
-    }
-
-    private static void setValues(String name, Map<String, SymbolTable> stringSymbolTableMap, SymbolTable symbolTable,
-                                  OutputStream outputStream, Gson gson, ClassStructure classStructure) throws IOException {
-        List<String> methodNames = new ArrayList<>();
-        List<String> propertyNames = new ArrayList<>();
-        classStructure.setClassName(name);
-        if(symbolTable!= null) {
-            for (Method method : symbolTable.getMethods()) {
-                methodNames.add(method.getName());
-            }
-
-            for (VisibilitySymbol visibilitySymbol : symbolTable.getProperties()) {
-                propertyNames.add(visibilitySymbol.getName());
-            }
-        }
-
-        classStructure.setMethodsNames(methodNames);
-        classStructure.setPropertyNames(propertyNames);
-
-
-        outputStream.write(gson.toJson(classStructure).getBytes());
-        outputStream.flush();
     }
 
     public static <T> List<T> queryRecords(String query, PartnerConnection partnerConnection, ToolingConnection toolingConnection, boolean usePartner, HttpServletResponse response)
@@ -493,7 +517,7 @@ public class MetadataLoginUtil {
             return sObjectList;
         } else {
             List<T> sObjectList = new ArrayList<>();
-            response.addHeader("Sforce-Query-Options","batchSize=200");
+
             com.sforce.soap.tooling.QueryResult qResult = toolingConnection.query(query);
             boolean done = false;
             if (qResult.getSize() > 0) {

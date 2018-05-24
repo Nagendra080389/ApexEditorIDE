@@ -148,8 +148,8 @@
 
 <nav class="navbar navbar-default navbar-fixed-top">
     <div id="container">
-        <select ng-model="selectedName" ng-change="retrieveSelectedClass()" ng-options="(item.name||item) group by item.groupName for item in names"
-                class="code-helper" id="code-helperId">
+        <select ng-model="selectedName" ng-change="retrieveSelectedClass(selectedName, oldValue)" ng-options="(item.name||item) group by item.groupName for item in names"
+                class="code-helper" id="code-helperId" ng-click="oldValue = selectedName">
             <option value="">Select Option</option>
         </select>
     </div>

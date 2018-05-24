@@ -3,6 +3,7 @@ var globalMergeEditor = null;
 var widgets = [];
 var timeout;
 var app = angular.module('myApp', []);
+var previousValue;
 var ExcludedIntelliSenseTriggerKeys = {
     "8": "backspace",
     "9": "tab",
@@ -95,13 +96,23 @@ app.controller('OrderFormController', function($scope, $http) {
         }, 10000);
         $scope.isPaneShown = false;
     });
-    $scope.retrieveSelectedClass = function() {
+    $scope.retrieveSelectedClass = function(newValue, oldValue) {
         $scope.isPaneShown = true;
         if ($scope.selectedName === undefined) {
             $scope.isPaneShown = false;
             return;
         }
         if ($scope.selectedName.groupName === 'Create New') {
+            if (globalEditor1) {
+                if (!globalEditor1.isClean()) {
+                    var r = confirm("You have unsaved changes, are you sure you want to proceed ?");
+                    if (r != true) {
+                        /*$('.code-helper').val(previousValue);*/
+                        $scope.isPaneShown = false;
+                        return;
+                    }
+                }
+            }
             $scope.isPaneShown = false;
             bootbox.prompt({
                 title: 'Enter Class Name',
@@ -149,6 +160,7 @@ app.controller('OrderFormController', function($scope, $http) {
                                     lint: true,
                                     mode: "text/x-apex"
                                 });
+                                editor.markClean();
                                 editor.on("keyup", function(cm, event) {
                                     var keyCode = event.keyCode || event.which;
                                     if (!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
@@ -179,6 +191,17 @@ app.controller('OrderFormController', function($scope, $http) {
                 }
             });
         } else {
+            if (globalEditor1) {
+                if (!globalEditor1.isClean()) {
+                    var r = confirm("You have unsaved changes, are you sure you want to proceed ?");
+                    if (r != true) {
+                        /*$('.code-helper').val(previousValue);*/
+
+                        $scope.isPaneShown = false;
+                        return;
+                    }
+                }
+            }
             var data = {
                 apexClassName: $scope.selectedName.name
             };
@@ -208,6 +231,7 @@ app.controller('OrderFormController', function($scope, $http) {
                             lint: true,
                             mode: "text/x-apex"
                         });
+                        editor.markClean();
                         editor.on("keyup", function(cm, event) {
                             var keyCode = event.keyCode || event.which;
                             if (!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
@@ -266,6 +290,9 @@ app.controller('OrderFormController', function($scope, $http) {
                         globalEditor1.removeLineWidget(widgets[i]);
                     }
                     $scope.errorDetails = errors;
+                    $('.code-helper').select2({
+                        disabled: true
+                    });
                     $('#myModal').modal('show');
                     document.getElementById('saveBtn').style.visibility = 'hidden';
                 }
@@ -275,6 +302,9 @@ app.controller('OrderFormController', function($scope, $http) {
                     globalEditor1.removeLineWidget(widgets[i]);
                 }
                 $scope.errorDetails = 'No errors';
+                $('.code-helper').select2({
+                    disabled: true
+                });
                 $('#myModalWithoutError').modal('show');
                 document.getElementById('saveBtn').style.visibility = 'hidden';
             }
@@ -293,6 +323,9 @@ app.controller('OrderFormController', function($scope, $http) {
         $scope.isPaneShown = true;
         $('#myModal').modal('hide');
         $('#myModalWithoutError').modal('hide');
+        $('.code-helper').select2({
+            disabled: true
+        });
         var cleaneddata = globalEditor1.getValue().replace(new RegExp(' +', 'g'), ' ');
         globalEditor1.getDoc().setValue(cleaneddata);
         globalEditor1.setSelection({
@@ -324,6 +357,9 @@ app.controller('OrderFormController', function($scope, $http) {
             if (data.dataNotMatching) {
                 $scope.isPaneShown = false;
                 $scope.apexClassWrapper = data;
+                $('.code-helper').select2({
+                    disabled: true
+                });
                 $('#diffView').modal('show');
                 var value, orig1, orig2, dv, hilight = true;
                 orig1 = data.body;
@@ -342,6 +378,9 @@ app.controller('OrderFormController', function($scope, $http) {
                     globalMergeEditor = dv;
                 }, 2000);
             } else {
+                $('.code-helper').select2({
+                    disabled: false
+                });
                 $scope.isPaneShown = false;
                 console.log('Success : ' + data);
                 var x = document.getElementById("snackbar");
@@ -365,8 +404,29 @@ app.controller('OrderFormController', function($scope, $http) {
         });
     }
     $scope.replaceMerged = function() {
+        $('.code-helper').select2({
+            disabled: false
+        });
         globalEditor1.getDoc().setValue(globalMergeEditor.editor().getValue());
     };
+    $('#myModal').on('hidden.bs.modal', function() {
+        $('.code-helper').select2({
+            disabled: false
+        });
+        document.getElementById('saveBtn').style.visibility = 'visible';
+    })
+    $('#myModalWithoutError').on('hidden.bs.modal', function() {
+        $('.code-helper').select2({
+            disabled: false
+        });
+        document.getElementById('saveBtn').style.visibility = 'visible';
+    })
+    $('#diffView').on('hidden.bs.modal', function() {
+        $('.code-helper').select2({
+            disabled: false
+        });
+        document.getElementById('saveBtn').style.visibility = 'visible';
+    })
 });
 
 function testAnim(x) {
@@ -378,41 +438,34 @@ $(document).ready(function() {
     });
 });
 
-app.directive('loadingPane', function ($timeout, $window) {
+
+app.directive('loadingPane', function($timeout, $window) {
     return {
         restrict: 'A',
-        link: function (scope, element, attr) {
+        link: function(scope, element, attr) {
             var directiveId = 'loadingPane';
-
             var targetElement;
             var paneElement;
             var throttledPosition;
 
             function init(element) {
                 targetElement = element;
-
                 paneElement = angular.element('<div>');
                 paneElement.addClass('loading-pane');
-
                 if (attr['id']) {
                     paneElement.attr('data-target-id', attr['id']);
                 }
-
                 var spinnerImage = angular.element('<div>');
                 spinnerImage.addClass('spinner-image');
                 spinnerImage.appendTo(paneElement);
-
                 angular.element('body').append(paneElement);
-
                 setZIndex();
-
                 //reposition window after a while, just in case if:
                 // - watched scope property will be set to true from the beginning
                 // - and initial position of the target element will be shifted during page rendering
                 $timeout(position, 100);
                 $timeout(position, 200);
                 $timeout(position, 300);
-
                 throttledPosition = _.throttle(position, 50);
                 angular.element($window).scroll(throttledPosition);
                 angular.element($window).resize(throttledPosition);
@@ -428,7 +481,6 @@ app.directive('loadingPane', function ($timeout, $window) {
 
             function setZIndex() {
                 var paneZIndex = 500;
-
                 paneElement.css('zIndex', paneZIndex).find('.spinner-image').css('zIndex', paneZIndex + 1);
             }
 
@@ -449,13 +501,10 @@ app.directive('loadingPane', function ($timeout, $window) {
             function hide() {
                 paneElement.hide();
             }
-
             init(element);
-
-            scope.$watch(attr[directiveId], function (newVal) {
+            scope.$watch(attr[directiveId], function(newVal) {
                 updateVisibility(newVal);
             });
-
             scope.$on('$destroy', function cleanup() {
                 paneElement.remove();
                 $(window).off('scroll', throttledPosition);
