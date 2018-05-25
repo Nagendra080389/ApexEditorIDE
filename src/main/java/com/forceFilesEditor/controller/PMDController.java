@@ -17,6 +17,7 @@ import org.apache.coyote.http2.ConnectionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import sun.nio.cs.UTF_32;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -27,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -182,7 +184,7 @@ public class PMDController {
 
     }
 
-    @RequestMapping(value = "/auth", method = RequestMethod.GET)
+    @RequestMapping(value = "/auth", method = RequestMethod.GET, params = {"code","state"})
     public void auth(@RequestParam String code, @RequestParam String state, ServletResponse response, ServletRequest request) throws Exception {
 
         String environment = null;
@@ -242,11 +244,26 @@ public class PMDController {
         Cookie session3 = new Cookie("ID_TOKEN", id_token);
         Cookie session4 = new Cookie("USERIDURL", useridURL);
         session1.setMaxAge(-1); //cookie not persistent, destroyed on browser exit
+        session2.setMaxAge(-1); //cookie not persistent, destroyed on browser exit
+        session3.setMaxAge(-1); //cookie not persistent, destroyed on browser exit
+        session4.setMaxAge(-1); //cookie not persistent, destroyed on browser exit
         httpResponse.addCookie(session1);
         httpResponse.addCookie(session2);
         httpResponse.addCookie(session3);
         httpResponse.addCookie(session4);
         httpResponse.sendRedirect("/html/apexEditor.html");
+
+    }
+
+    @RequestMapping(value = "/auth", method = RequestMethod.GET, params = {"error", "error_description","state"})
+    public void authErrorHandle(@RequestParam String error, @RequestParam String error_description, @RequestParam String state,
+                                HttpServletResponse response, HttpServletRequest request) throws Exception {
+
+        Cookie errorCookie = new Cookie("ERROROAUTH", URLEncoder.encode(error, "UTF-8"));
+        Cookie errorDescCookie = new Cookie("ERROROAUTHDESC", URLEncoder.encode(error_description, "UTF-8"));
+        response.addCookie(errorCookie);
+        response.addCookie(errorDescCookie);
+        response.sendRedirect("/index.html");
 
     }
 
