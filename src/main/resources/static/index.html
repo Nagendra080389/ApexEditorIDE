@@ -13,14 +13,13 @@
     <link href="../css/login/loginStyle.css" rel="stylesheet"/>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!------ Include the above in your HEAD tag ---------->
 
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <script src="../js/loginScript.js"></script>
 </head>
 <script>
-
 function domainChanger(){
     bootbox.prompt({
         title: 'Enter Domain Name',
@@ -47,15 +46,19 @@ function redirectJS(orgType){
 
 
 
+
 </script>
 
 <body class="background-body">
+
 <div id="cloudtent">
-    <h1 class="we-create">Apex Editor with Inbuilt Code Review</h1>
-
-    <p class="we-create no-mrg">click below to login</p>
-    <p class="content-mrg we-create">&#x21A1;</p>
-
+    <div>
+        <h1 class="we-create">ApexEditor</h1>
+    </div>
+    <div id="clickhere">
+        <p class="we-create1">login here</p>
+        <i class="fa fa-hand-o-down content-mrg" style="font-size:24px;color:white"></i>
+    </div>
     <div class="content-mrg">
         <div class="box">
             <div class="text" onclick=redirectJS("test")>Sand Box</div>
@@ -67,8 +70,6 @@ function redirectJS(orgType){
             <div class="text" onclick=domainChanger()>My Custom Domain</div>
         </div>
     </div>
-
-
 </div>
 </body>
 

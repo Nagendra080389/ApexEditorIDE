@@ -30,6 +30,8 @@
      border-radius: 10px;
 }
  .content-mrg {
+     padding: 0;
+     margin: 35px 0 15px;
      -webkit-animation: fadein 4s;
     /* Safari, Chrome and Opera > 12.1 */
      -moz-animation: fadein 4s;
@@ -84,28 +86,19 @@
          opacity: 1;
     }
 }
- body.background-body{
-     background-image: url('/img/lightning.jpg');
+ @media only screen and (min-width: 400px) {
+     body {
+         background-image: url('/img/lightning.jpg');
+         background-size: cover;
+    }
 }
  div#cloudtent{
      position: absolute;
-     width: 76%;
-     top: 126px;
-     left: 170px;
+     top: 10%;
+     left: 0;
+     right: 0;
+     margin: auto;
      text-align: center;
-}
- .content-mrg{
-     padding: 0;
-     margin: 35px 0 15px;
-}
- .we-create {
-     font-family: 'Montserrat',sans-serif;
-     font-size:30px;
-     color: #FFFFFF;
-     text-transform: uppercase;
-     font-weight: 400;
-     display: inline-block;
-     width: 100% 
 }
  h1{
      font-family: 'Montserrat',sans-serif;
@@ -115,28 +108,60 @@
      margin: 0 0 22px 0;
      color: #fff;
 }
-
-.box {
-    background-color: skyblue;
-    width: 30%;
-    display:inline-block;
-    margin:10px 0;
-    border-radius:5px;
-    cursor: pointer;
-}
-.text {
-    text-transform: uppercase;
-    font-family: 'Montserrat', sans-serif;
-    padding: 10px 0;
-    font-weight:bold;
-    text-align:center;
-}
-#container {
-    white-space:nowrap;
-    text-align:center;
+ .we-create{
+         margin: 60px auto 0;
+         font-size: 2.5em;
+         font-weight: 500;
+         line-height: 1.38;
+         text-align: center;
+         color: rgb(255, 255, 255);
 }
 
+.we-create1{
+        margin: 30px auto 0;
+        font-size: 1.2em;
+        line-height: 1.68;
+        text-align: center;
+        color: rgb(147, 147, 147);
+}
+ #clickhere{
+     font-family: 'Montserrat', sans-serif;
+}
+ .box {
+     background-color: skyblue;
+     width: 30%;
+     display:inline-block;
+     margin:10px 0;
+     border-radius:5px;
+     cursor: pointer;
+     -webkit-animation: fadein 8s;
+    /* Safari, Chrome and Opera > 12.1 */
+     -moz-animation: fadein 8s;
+    /* Firefox < 16 */
+     -ms-animation: fadein 8s;
+    /* Internet Explorer */
+     -o-animation: fadein 8s;
+    /* Opera < 12.1 */
+     animation: fadein 8s;
+}
+ .text {
+     text-transform: uppercase;
+     font-family: 'Montserrat', sans-serif;
+     padding: 10px 0;
+     font-weight:bold;
+     text-align:center;
+}
+ #container {
+     white-space:nowrap;
+     text-align:center;
+}
  .no-mrg{
      margin:0px;
+}
+ @media screen and (max-width:800px) {
+     .box {
+         width:100%;
+        /* The width is 100%, when the viewport is 800px or smaller */
+    }
 }
  
