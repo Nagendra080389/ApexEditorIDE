@@ -86,7 +86,7 @@
          opacity: 1;
     }
 }
- @media only screen and (min-width: 400px) {
+ @media only screen and (min-width: 300px) {
      body {
          background-image: url('/img/lightning.jpg');
          background-size: cover;
