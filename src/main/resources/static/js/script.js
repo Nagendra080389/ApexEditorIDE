@@ -56,47 +56,71 @@ var ExcludedIntelliSenseTriggerKeys = {
     "220": "backslash",
     "222": "quote"
 }
-app.controller('OrderFormController', function($scope, $http) {
+app.controller('OrderFormController', function($scope, $http, $filter, $window) {
     document.getElementById('saveBtn').style.visibility = 'hidden';
     var namesFromOption = [];
     $scope.isPaneShown = true;
-    $http.get("/getCurrentUser").success(function(data) {
-        $scope.currentUser = data;
+    $http.get("/getCurrentUser").then(userCallback, userErrorCallback);
+
+    function userCallback(response) {
+        $scope.currentUser = response.data;
         var x = document.getElementById("snackbar");
-        x.innerHTML = 'Welcome ' + data.display_name;
+        x.innerHTML = 'Welcome ' + response.data.display_name;
         x.className = "show";
         // After 3 seconds, remove the show class from DIV
         setTimeout(function() {
             x.className = x.className.replace("show", "");
         }, 5000);
-    }).error(function(data) {
+    }
+
+    function userErrorCallback(error) {
         var x = document.getElementById("snackbar");
-        x.innerHTML = data;
+        x.innerHTML = error;
         x.className = "show";
         // After 3 seconds, remove the show class from DIV
         setTimeout(function() {
             x.className = x.className.replace("show", "");
         }, 10000);
-    });
-    $http.post("/getAllApexClasses").success(function(data) {
+    }
+    /*$http.get("/getCurrentUser").success(function(data) {
+
+    }).error(function(data) {
+
+    });*/
+    $http.post("/getAllApexClasses").then(classesCallback, classesErrorCallback);
+
+    function classesCallback(response) {
         var foundClass = [];
-        for (var index = 0; index < data.length; ++index) {
-            foundClass.push(data[index]);
-            namesFromOption.push(data[index].name)
+        for (var index = 0; index < response.data.length; ++index) {
+            foundClass.push(response.data[index]);
+            namesFromOption.push(response.data[index].name)
         }
         $scope.names = foundClass;
         $scope.isPaneShown = false;
-    }).error(function(data) {
+    }
+
+    function classesErrorCallback(error) {
         var x = document.getElementById("snackbar");
-        x.innerHTML = data;
+        x.innerHTML = error;
         x.className = "show";
         // After 3 seconds, remove the show class from DIV
         setTimeout(function() {
             x.className = x.className.replace("show", "");
         }, 10000);
         $scope.isPaneShown = false;
-    });
+    }
+    /*$scope.openInNewTab = function(event) {
+        if (event.ctrlKey) {
+            alert("ctrl clicked")
+        }
+    }*/
     $scope.retrieveSelectedClass = function(newValue, oldValue) {
+        var windowsEvent = $window;
+        if(windowsEvent.event.ctrlKey){
+            //var selectedOptionValue = windowsEvent.event.target.textContent;
+            //$scope.selectedName = newValue;
+
+        }
         $scope.isPaneShown = true;
         if ($scope.selectedName === undefined) {
             $scope.isPaneShown = false;
@@ -107,7 +131,14 @@ app.controller('OrderFormController', function($scope, $http) {
                 if (!globalEditor1.isClean()) {
                     var r = confirm("You have unsaved changes, are you sure you want to proceed ?");
                     if (r != true) {
-                        $scope.selectedName = oldValue;
+                        var oldValueSelected = {};
+                        if (angular.isUndefined(oldValueSelected.id) && oldValue.indexOf('"id"') !== -1) {
+                            oldValueSelected = JSON.parse(oldValue);
+                        }
+                        var possibleOldValues = $filter('filter')($scope.names, {
+                            id: oldValueSelected.id
+                        }, true);
+                        $scope.selectedName = possibleOldValues[0];
                         $scope.isPaneShown = false;
                         return;
                     }
@@ -137,9 +168,11 @@ app.controller('OrderFormController', function($scope, $http) {
                         return;
                     }
                     $scope.isPaneShown = true;
-                    $http.post("/createFile", value).success(function(data) {
-                        if (data) {
-                            $scope.apexClassWrapper = data;
+                    $http.post("/createFile", value).then(createFileCallback, createFileErrorCallback);
+
+                    function createFileCallback(response) {
+                        if (response.data) {
+                            $scope.apexClassWrapper = response.data;
                             if (globalEditor1) {
                                 globalEditor1.toTextArea();
                             }
@@ -178,24 +211,33 @@ app.controller('OrderFormController', function($scope, $http) {
                             document.getElementById('saveBtn').style.visibility = 'visible';
                             $scope.isPaneShown = false;
                         }
-                    }).error(function(data) {
+                    }
+
+                    function createFileErrorCallback(error) {
                         $scope.isPaneShown = false;
                         var x = document.getElementById("snackbar");
-                        x.innerHTML = data;
+                        x.innerHTML = error;
                         x.className = "show";
                         // After 3 seconds, remove the show class from DIV
                         setTimeout(function() {
                             x.className = x.className.replace("show", "");
                         }, 10000);
-                    });
+                    }
                 }
-            });
+            })
         } else {
             if (globalEditor1) {
                 if (!globalEditor1.isClean()) {
                     var r = confirm("You have unsaved changes, are you sure you want to proceed ?");
                     if (r != true) {
-                        $scope.selectedName = oldValue;
+                        var oldValueSelected = {};
+                        if (angular.isUndefined(oldValueSelected.id) && oldValue.indexOf('"id"') !== -1) {
+                            oldValueSelected = JSON.parse(oldValue);
+                        }
+                        var possibleOldValues = $filter('filter')($scope.names, {
+                            id: oldValueSelected.id
+                        }, true);
+                        $scope.selectedName = possibleOldValues[0];
                         $scope.isPaneShown = false;
                         return;
                     }
@@ -207,7 +249,9 @@ app.controller('OrderFormController', function($scope, $http) {
             var config = {
                 params: data
             };
-            $http.get("/getApexBody", config).then(function(response) {
+            $http.get("/getApexBody", config).then(getApexBodyCallback, getApexBodyErrorCallback);
+
+            function getApexBodyCallback(response) {
                 if (response.data) {
                     $scope.apexClassWrapper = response.data;
                     if (globalEditor1) {
@@ -248,7 +292,14 @@ app.controller('OrderFormController', function($scope, $http) {
                     document.getElementById('saveBtn').style.visibility = 'visible';
                     $scope.isPaneShown = false;
                 }
-            });
+            }
+
+            function getApexBodyErrorCallback(error) {
+                //error code
+            }
+            /*$http.get("/getApexBody", config).then(function(response) {
+
+            });*/
         }
     }
     $scope.postdata = function(apexClassWrapper) {
@@ -260,12 +311,14 @@ app.controller('OrderFormController', function($scope, $http) {
             id: apexClassWrapper.id,
             originalBodyFromOrg: apexClassWrapper.originalBodyFromOrg
         };
-        $http.post("/modifyApexBody", dataObj).success(function(data) {
-            $scope.apexClassWrapper = data;
-            var errors = data.pmdStructures;
+        $http.post('/modifyApexBody', dataObj).then(modifyCallback, modifyErrorCallback);
+
+        function modifyCallback(response) {
+            $scope.apexClassWrapper = response.data;
+            var errors = response.data.pmdStructures;
             if (Object.keys(errors).length > 0) {
                 $scope.isPaneShown = false;
-                if (data.isCompilationError) {
+                if (response.data.isCompilationError) {
                     for (var i = 0; i < widgets.length; ++i) {
                         globalEditor1.removeLineWidget(widgets[i]);
                     }
@@ -307,7 +360,9 @@ app.controller('OrderFormController', function($scope, $http) {
                 $('#myModalWithoutError').modal('show');
                 document.getElementById('saveBtn').style.visibility = 'hidden';
             }
-        }).error(function(data) {
+        }
+
+        function modifyErrorCallback(error) {
             $scope.isPaneShown = false;
             var x = document.getElementById("snackbar");
             x.innerHTML = data;
@@ -316,7 +371,8 @@ app.controller('OrderFormController', function($scope, $http) {
             setTimeout(function() {
                 x.className = x.className.replace("show", "");
             }, 10000);
-        });
+        }
+        //$http.post("/modifyApexBody", dataObj).success(function(data) {}).error(function(data) {});
     };
     $scope.deployWithErrors = function(apexClassWrapper) {
         $scope.isPaneShown = true;
@@ -352,17 +408,19 @@ app.controller('OrderFormController', function($scope, $http) {
             //originalBodyFromOrg: apexClassWrapper.originalBodyFromOrg
             originalBodyFromOrg: globalMergeEditor != undefined ? globalMergeEditor.rightOriginal().getValue() : apexClassWrapper.originalBodyFromOrg
         };
-        $http.post("/saveModifiedApexBody", dataObj).success(function(data) {
-            if (data.dataNotMatching) {
+        $http.post('/saveModifiedApexBody', dataObj).then(saveCallback, saveErrorCallback);
+
+        function saveCallback(response) {
+            if (response.data.dataNotMatching) {
                 $scope.isPaneShown = false;
-                $scope.apexClassWrapper = data;
+                $scope.apexClassWrapper = response.data;
                 $('.code-helper').select2({
                     disabled: true
                 });
                 $('#diffView').modal('show');
                 var value, orig1, orig2, dv, hilight = true;
-                orig1 = data.body;
-                orig2 = data.modifiedApexClassWrapper.body;
+                orig1 = response.data.body;
+                orig2 = response.data.modifiedApexClassWrapper.body;
                 var target = document.getElementById("mergemodal");
                 target.innerHTML = "";
                 setTimeout(function() {
@@ -375,15 +433,16 @@ app.controller('OrderFormController', function($scope, $http) {
                         highlightDifferences: hilight
                     });
                     globalMergeEditor = dv;
-                }, 2000);
+                }, 100);
             } else {
                 $('.code-helper').select2({
                     disabled: false
                 });
                 $scope.isPaneShown = false;
-                console.log('Success : ' + data);
+                console.log('Success : ' + response.data);
                 var x = document.getElementById("snackbar");
                 x.innerHTML = "Saved Successfully !";
+                globalEditor1.markClean();
                 x.className = "show";
                 // After 3 seconds, remove the show class from DIV
                 setTimeout(function() {
@@ -391,7 +450,9 @@ app.controller('OrderFormController', function($scope, $http) {
                 }, 3000);
                 document.getElementById('saveBtn').style.visibility = 'visible';
             }
-        }).error(function(data) {
+        }
+
+        function saveErrorCallback(error) {
             $scope.isPaneShown = false;
             var x = document.getElementById("snackbar");
             x.innerHTML = data;
@@ -400,7 +461,7 @@ app.controller('OrderFormController', function($scope, $http) {
             setTimeout(function() {
                 x.className = x.className.replace("show", "");
             }, 10000);
-        });
+        }
     }
     $scope.replaceMerged = function() {
         $('.code-helper').select2({
@@ -436,8 +497,6 @@ $(document).ready(function() {
         placeholder: 'Select a command to begin'
     });
 });
-
-
 app.directive('loadingPane', function($timeout, $window) {
     return {
         restrict: 'A',
