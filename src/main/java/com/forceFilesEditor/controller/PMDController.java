@@ -276,6 +276,11 @@ public class PMDController {
         String username = null;
         String display_name = null;
         String email = null;
+        User user = new User();
+        if(cookies == null){
+            user.setError("No cookies found");
+            return gson.toJson(user);
+        }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("ACCESS_TOKEN")) {
                 accessToken = cookie.getValue();
@@ -292,19 +297,21 @@ public class PMDController {
         String responseUserName = getMethod.getResponseBodyAsString();
         JsonParser parser = new JsonParser();
 
-        JsonObject jsonObject = parser.parse(responseUserName).getAsJsonObject();
+        JsonObject jsonObject = null;
 
         try {
+            jsonObject = parser.parse(responseUserName).getAsJsonObject();
             username = jsonObject.get("username").getAsString();
             display_name = jsonObject.get("display_name").getAsString();
             email = jsonObject.get("email").getAsString();
         }catch (Exception e){
-            e.printStackTrace();
+            user.setError(e.getMessage());
+            return gson.toJson(user);
         }finally {
             getMethod.releaseConnection();
         }
 
-        User user = new User();
+
         user.setDisplay_name(display_name);
         user.setEmail(email);
         user.setUsername(username);
@@ -391,4 +398,6 @@ public class PMDController {
         response.sendRedirect("/index.html");
 
     }
+
+
 }
