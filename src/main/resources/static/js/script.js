@@ -141,8 +141,8 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
     $scope.retrieveSelectedClass = function(newValue, oldValue) {
         var windowsEvent = $window;
         if(windowsEvent.event.ctrlKey){
-            $window.open('/html/apexEditor.html/?name='+newValue.name,'_blank');
-
+            $window.open('/html/apexEditor.html?name='+newValue.name,'_blank');
+            return;
         }
         $scope.isPaneShown = true;
         if ($scope.selectedName === undefined) {
@@ -155,11 +155,11 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     var r = confirm("You have unsaved changes, are you sure you want to proceed ?");
                     if (r != true) {
                         var oldValueSelected = {};
-                        if (angular.isUndefined(oldValueSelected.id) && oldValue.indexOf('"id"') !== -1) {
+                        if (angular.isUndefined(oldValueSelected.id) && oldValue.indexOf('"name"') !== -1) {
                             oldValueSelected = JSON.parse(oldValue);
                         }
                         var possibleOldValues = $filter('filter')($scope.names, {
-                            id: oldValueSelected.id
+                            name: oldValueSelected.name
                         }, true);
                         $scope.selectedName = possibleOldValues[0];
                         $scope.isPaneShown = false;
@@ -254,11 +254,11 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     var r = confirm("You have unsaved changes, are you sure you want to proceed ?");
                     if (r != true) {
                         var oldValueSelected = {};
-                        if (angular.isUndefined(oldValueSelected.id) && oldValue.indexOf('"id"') !== -1) {
+                        if (angular.isUndefined(oldValueSelected.id) && oldValue.indexOf('"name"') !== -1) {
                             oldValueSelected = JSON.parse(oldValue);
                         }
                         var possibleOldValues = $filter('filter')($scope.names, {
-                            id: oldValueSelected.id
+                            name: oldValueSelected.name
                         }, true);
                         $scope.selectedName = possibleOldValues[0];
                         $scope.isPaneShown = false;
