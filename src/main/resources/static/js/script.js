@@ -141,7 +141,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
     $scope.retrieveSelectedClass = function(newValue, oldValue) {
         var windowsEvent = $window;
         if(windowsEvent.event.ctrlKey){
-            $window.open("'/html/apexEditor.html/?name='"+newValue.name+",'_blank'")
+            $window.open('/html/apexEditor.html/?name='+newValue.name,'_blank');
 
         }
         $scope.isPaneShown = true;
