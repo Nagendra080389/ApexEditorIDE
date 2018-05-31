@@ -1,5 +1,6 @@
 package com.forceFilesEditor.algo;
 
+import com.forceFilesEditor.CustomRuleSet.GetCredentialsIfRunningFromWP;
 import com.forceFilesEditor.model.*;
 import com.forceFilesEditor.pmd.PmdReviewService;
 import com.google.gson.Gson;
@@ -35,7 +36,6 @@ import java.io.*;
 import java.util.*;
 
 public class MetadataLoginUtil {
-    public static final String FILE_NAME = "C:\\JenkinsPOC\\Jenkins\\ConfigurationFileForIDE.txt";
 
     static PartnerConnection partnerConnection;
     static MetadataConnection metadataConnection;
@@ -402,9 +402,13 @@ public class MetadataLoginUtil {
     public static Map<String, SymbolTable> generateSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies,
                                                                OutputStream outputStream, Gson gson, HttpServletResponse response) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
 
+        Map<String, SymbolTable> stringSymbolTableMap = new HashMap<>();
 
         String accessToken = null;
         String instanceUrlForQuery = null;
+        if(cookies == null){
+            return stringSymbolTableMap;
+        }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("ACCESS_TOKEN")) {
                 accessToken = cookie.getValue();
@@ -419,7 +423,6 @@ public class MetadataLoginUtil {
 
         String path = "/services/data/v41.0/tooling/query/?q=";
 
-        Map<String, SymbolTable> stringSymbolTableMap = new HashMap<>();
 
         String apexClassBodytooling = "Select+SymbolTable+From+ApexClass";
         HttpClient httpclient=new HttpClient();

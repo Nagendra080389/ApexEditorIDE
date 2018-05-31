@@ -268,8 +268,8 @@
                 for (var i = 0; i < arrayLength; i++) {
                     words.push(data[i].name);
                 }
-            }).fail(function() {
-                console.log('error getAllApexClasses');
+            }).fail(function(errorReport) {
+                console.log('error getAllApexClasses '+errorReport);
             });
             oboe('/generateSystemSymbolTable').done(function(data) {
                 if (data) {
