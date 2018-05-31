@@ -56,21 +56,32 @@ var ExcludedIntelliSenseTriggerKeys = {
     "220": "backslash",
     "222": "quote"
 }
-app.controller('OrderFormController', function($scope, $http, $filter, $window) {
+app.config(['$locationProvider', function($locationProvider) {
+    $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false
+    })
+}])
+app.controller('OrderFormController', function($scope, $http, $filter, $window, $location) {
+    console.log('$scope.selectedName -> ' + $scope.selectedName);
     document.getElementById('saveBtn').style.visibility = 'hidden';
     var namesFromOption = [];
     $scope.isPaneShown = true;
     $http.get("/getCurrentUser").then(userCallback, userErrorCallback);
-
     function userCallback(response) {
-        $scope.currentUser = response.data;
-        var x = document.getElementById("snackbar");
-        x.innerHTML = 'Welcome ' + response.data.display_name;
-        x.className = "show";
-        // After 3 seconds, remove the show class from DIV
-        setTimeout(function() {
-            x.className = x.className.replace("show", "");
-        }, 5000);
+        if (response.data.error && (response.data.error.indexOf('Bad_OAuth_Token') || response.data.error.indexOf('No cookies found'))) {
+            alert(response.data.error + ', Please relogin!');
+            $window.location.href = '/index.html';
+        } else {
+            $scope.currentUser = response.data;
+            var x = document.getElementById("snackbar");
+            x.innerHTML = 'Welcome ' + response.data.display_name;
+            x.className = "show";
+            // After 3 seconds, remove the show class from DIV
+            setTimeout(function() {
+                x.className = x.className.replace("show", "");
+            }, 5000);
+        }
     }
 
     function userErrorCallback(error) {
@@ -91,12 +102,25 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window) 
 
     function classesCallback(response) {
         var foundClass = [];
-        for (var index = 0; index < response.data.length; ++index) {
-            foundClass.push(response.data[index]);
-            namesFromOption.push(response.data[index].name)
+        if (response.data) {
+            for (var index = 0; index < response.data.length; ++index) {
+                foundClass.push(response.data[index]);
+                namesFromOption.push(response.data[index].name)
+            }
+            $scope.names = foundClass;
+            $scope.isPaneShown = false;
         }
-        $scope.names = foundClass;
-        $scope.isPaneShown = false;
+        var paramValue = $location.search();
+        if (paramValue.name) {
+            var newSelectedValue = {};
+            if (angular.isUndefined(newSelectedValue.id)) {
+                newSelectedValue = paramValue;
+            }
+            var possibleNewValues = $filter('filter')($scope.names, {
+                name: newSelectedValue.name
+            }, true);
+            $scope.selectedName = possibleNewValues[0];
+        }
     }
 
     function classesErrorCallback(error) {
@@ -117,9 +141,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window) 
     $scope.retrieveSelectedClass = function(newValue, oldValue) {
         var windowsEvent = $window;
         if(windowsEvent.event.ctrlKey){
-            //var selectedOptionValue = windowsEvent.event.target.textContent;
-            //$scope.selectedName = newValue;
-            $window.open('/html/apexEditor.html/?name=NewDemoClass2','_blank')
+            $window.open("'/html/apexEditor.html/?name='"+newValue.name+",'_blank'")
 
         }
         $scope.isPaneShown = true;
