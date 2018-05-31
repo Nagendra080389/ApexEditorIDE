@@ -1,6 +1,5 @@
 package com.forceFilesEditor.algo;
 
-import com.forceFilesEditor.CustomRuleSet.GetCredentialsIfRunningFromWP;
 import com.forceFilesEditor.model.*;
 import com.forceFilesEditor.pmd.PmdReviewService;
 import com.google.gson.Gson;
