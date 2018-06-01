@@ -27,6 +27,60 @@
     <link href="../css/codemirror/merge.css" rel="stylesheet"/>
     <link href="../css/codemirror/matchesonscrollbar.css" rel="stylesheet"/>
     <link href="../css/codemirror/dialog.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/3024-day.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/3024-night.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/ambiance.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/ambiance-mobile.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/base16-dark.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/base16-light.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/bespin.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/blackboard.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/cobalt.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/colorforth.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/darcula.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/dracula.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/duotone-dark.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/duotone-light.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/eclipse.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/elegant.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/erlang-dark.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/gruvbox-dark.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/hopscotch.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/icecoder.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/idea.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/isotope.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/lesser-dark.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/liquibyte.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/lucario.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/material.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/mbo.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/mdn-like.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/midnight.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/monokai.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/neat.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/neo.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/night.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/oceanic-next.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/panda-syntax.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/paraiso-dark.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/paraiso-light.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/pastel-on-dark.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/railscasts.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/rubyblue.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/seti.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/shadowfox.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/solarized.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/ssms.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/the-matrix.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/tomorrow-night-bright.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/tomorrow-night-eighties.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/ttcn.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/twilight.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/vibrant-ink.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/xq-dark.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/xq-light.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/yeti.css" rel="stylesheet"/>
+    <link href="../css/codemirror/theme/zenburn.css" rel="stylesheet"/>
 
 
     <script src="../js/oboe-browser.min.js"></script>
@@ -166,6 +220,11 @@
 </div>
 <nav class="navbar navbar-default navbar-fixed-bottom">
     <div id="saveBtn" ng-click="postdata(apexClassWrapper)">Save</div>
+    <div id="themeDiv">
+        <select ng-model="selectedTheme" ng-change="selectTheme()" id="select" ng-options="item for item in themeNames">
+            <option value="">Select Theme</option>
+        </select>
+    </div>
 </nav>
 </body>
 </html>
