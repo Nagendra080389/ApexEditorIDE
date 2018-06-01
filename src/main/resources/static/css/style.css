@@ -461,6 +461,17 @@
      background:black;
      cursor: pointer;
 }
+
+#themeDiv {
+     float: right;
+     display:block;
+     width: 16em;
+     height:2em;
+     line-height:2;
+     text-align:center;
+     text-decoration:none;
+     font-weight: 600 !important;
+}
  .unselectable {
      -moz-user-select: -moz-none;
      -khtml-user-select: none;

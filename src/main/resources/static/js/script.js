@@ -67,6 +67,8 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
     document.getElementById('saveBtn').style.visibility = 'hidden';
     var namesFromOption = [];
     $scope.isPaneShown = true;
+    var foundTheme = ['3024-day', '3024-night', 'abcdef', 'ambiance', 'ambiance-mobile', 'base16-dark', 'base16-light', 'bespin', 'blackboard', 'cobalt', 'colorforth', 'darcula', 'dracula', 'duotone-dark', 'duotone-light', 'eclipse', 'elegant', 'erlang-dark', 'gruvbox-dark', 'hopscotch', 'icecoder', 'idea', 'isotope', 'lesser-dark', 'liquibyte', 'lucario', 'material', 'mbo', 'mdn-like', 'midnight', 'monokai', 'neat', 'neo', 'night', 'oceanic-next', 'panda-syntax', 'paraiso-dark', 'paraiso-light', 'pastel-on-dark', 'railscasts', 'rubyblue', 'seti', 'shadowfox', 'solarized', 'ssms', 'the-matrix', 'tomorrow-night-bright', 'tomorrow-night-eighties', 'ttcn', 'twilight', 'vibrant-ink', 'xq-dark', 'xq-light', 'yeti', 'zenburn'];
+    $scope.themeNames = foundTheme;
     $http.get("/getCurrentUser").then(userCallback, userErrorCallback);
     function userCallback(response) {
         if (response.data.error && (response.data.error.indexOf('Bad_OAuth_Token') || response.data.error.indexOf('No cookies found'))) {
@@ -93,11 +95,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             x.className = x.className.replace("show", "");
         }, 10000);
     }
-    /*$http.get("/getCurrentUser").success(function(data) {
-
-    }).error(function(data) {
-
-    });*/
     $http.post("/getAllApexClasses").then(classesCallback, classesErrorCallback);
 
     function classesCallback(response) {
@@ -122,6 +119,45 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             $scope.selectedName = possibleNewValues[0];
         }
     }
+    var urlNameValue = $location.search()
+    if (urlNameValue && urlNameValue.name) {
+        if (urlNameValue.name !== 'New Apex Class....') {
+            var data = {
+                apexClassName: urlNameValue.name
+            };
+            var config = {
+                params: data
+            };
+            $http.get("/getApexBody", config).then(getApexBodyCallback, getApexBodyErrorCallback);
+        } else {
+            bootbox.prompt({
+                title: 'Enter Class Name',
+                placeholder: 'Enter Class Name',
+                buttons: {
+                    confirm: {
+                        label: 'Create'
+                    }
+                },
+                callback: function(value) {
+                    if (value == null) {
+                        return;
+                    }
+                    if ($.inArray(value, namesFromOption) > -1) {
+                        var x = document.getElementById("snackbar");
+                        x.innerHTML = "Class with same name already exists";
+                        x.className = "show";
+                        // After 4 seconds, remove the show class from DIV
+                        setTimeout(function() {
+                            x.className = x.className.replace("show", "");
+                        }, 4000);
+                        return;
+                    }
+                    $scope.isPaneShown = true;
+                    $http.post("/createFile", value).then(createFileCallback, createFileErrorCallback);
+                }
+            })
+        }
+    }
 
     function classesErrorCallback(error) {
         var x = document.getElementById("snackbar");
@@ -133,38 +169,36 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         }, 10000);
         $scope.isPaneShown = false;
     }
-    /*$scope.openInNewTab = function(event) {
-        if (event.ctrlKey) {
-            alert("ctrl clicked")
-        }
-    }*/
     $scope.retrieveSelectedClass = function(newValue, oldValue) {
         var windowsEvent = $window;
-        if(windowsEvent.event.ctrlKey){
-            $window.open('/html/apexEditor.html?name='+newValue.name,'_blank');
-            return;
-        }
         $scope.isPaneShown = true;
         if ($scope.selectedName === undefined) {
             $scope.isPaneShown = false;
             return;
         }
+        var possibleOldValues = [];
+        var oldValueSelected = {};
+        if (angular.isUndefined(oldValueSelected.id) && oldValue.indexOf('"name"') !== -1) {
+            oldValueSelected = JSON.parse(oldValue);
+        }
+        possibleOldValues = $filter('filter')($scope.names, {
+            name: oldValueSelected.name
+        }, true);
         if ($scope.selectedName.groupName === 'Create New') {
             if (globalEditor1) {
                 if (!globalEditor1.isClean()) {
                     var r = confirm("You have unsaved changes, are you sure you want to proceed ?");
                     if (r != true) {
-                        var oldValueSelected = {};
-                        if (angular.isUndefined(oldValueSelected.id) && oldValue.indexOf('"name"') !== -1) {
-                            oldValueSelected = JSON.parse(oldValue);
-                        }
-                        var possibleOldValues = $filter('filter')($scope.names, {
-                            name: oldValueSelected.name
-                        }, true);
                         $scope.selectedName = possibleOldValues[0];
                         $scope.isPaneShown = false;
                         return;
                     }
+                }
+                if (windowsEvent.event.ctrlKey) {
+                    $window.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
+                    $scope.selectedName = possibleOldValues[0];
+                    $scope.isPaneShown = false;
+                    return;
                 }
             }
             $scope.isPaneShown = false;
@@ -192,79 +226,32 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     }
                     $scope.isPaneShown = true;
                     $http.post("/createFile", value).then(createFileCallback, createFileErrorCallback);
-
-                    function createFileCallback(response) {
-                        if (response.data) {
-                            $scope.apexClassWrapper = response.data;
-                            if (globalEditor1) {
-                                globalEditor1.toTextArea();
-                            }
-                            setTimeout(function(test) {
-                                var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
-                                    lineNumbers: true,
-                                    matchBrackets: true,
-                                    styleActiveLine: true,
-                                    extraKeys: {
-                                        ".": function(editor) {
-                                            setTimeout(function() {
-                                                editor.execCommand("autocomplete");
-                                            }, 100);
-                                            throw CodeMirror.Pass; // tell CodeMirror we didn't handle the key
-                                        }
-                                    },
-                                    gutters: ["CodeMirror-lint-markers"],
-                                    lint: true,
-                                    mode: "text/x-apex"
-                                });
-                                editor.markClean();
-                                editor.on("keyup", function(cm, event) {
-                                    var keyCode = event.keyCode || event.which;
-                                    if (!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
-                                        if (timeout) clearTimeout(timeout);
-                                        timeout = setTimeout(function() {
-                                            editor.showHint({
-                                                hint: CodeMirror.hint.auto,
-                                                completeSingle: false
-                                            });
-                                        }, 150);
-                                    }
-                                });
-                                globalEditor1 = $('.CodeMirror')[0].CodeMirror;
-                            }), 2000
-                            document.getElementById('saveBtn').style.visibility = 'visible';
-                            $scope.isPaneShown = false;
-                        }
-                    }
-
-                    function createFileErrorCallback(error) {
-                        $scope.isPaneShown = false;
-                        var x = document.getElementById("snackbar");
-                        x.innerHTML = error;
-                        x.className = "show";
-                        // After 3 seconds, remove the show class from DIV
-                        setTimeout(function() {
-                            x.className = x.className.replace("show", "");
-                        }, 10000);
-                    }
                 }
             })
         } else {
+            var possibleOldValues = [];
+            var oldValueSelected = {};
+            if (angular.isUndefined(oldValueSelected.id) && oldValue.indexOf('"name"') !== -1) {
+                oldValueSelected = JSON.parse(oldValue);
+            }
+            possibleOldValues = $filter('filter')($scope.names, {
+                name: oldValueSelected.name
+            }, true);
             if (globalEditor1) {
                 if (!globalEditor1.isClean()) {
                     var r = confirm("You have unsaved changes, are you sure you want to proceed ?");
                     if (r != true) {
-                        var oldValueSelected = {};
-                        if (angular.isUndefined(oldValueSelected.id) && oldValue.indexOf('"name"') !== -1) {
-                            oldValueSelected = JSON.parse(oldValue);
-                        }
-                        var possibleOldValues = $filter('filter')($scope.names, {
-                            name: oldValueSelected.name
-                        }, true);
                         $scope.selectedName = possibleOldValues[0];
                         $scope.isPaneShown = false;
                         return;
                     }
                 }
+            }
+            if (windowsEvent.event.ctrlKey) {
+                $window.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
+                $scope.selectedName = possibleOldValues[0];
+                $scope.isPaneShown = false;
+                return;
             }
             var data = {
                 apexClassName: $scope.selectedName.name
@@ -273,56 +260,121 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 params: data
             };
             $http.get("/getApexBody", config).then(getApexBodyCallback, getApexBodyErrorCallback);
+        }
+    }
 
-            function getApexBodyCallback(response) {
-                if (response.data) {
-                    $scope.apexClassWrapper = response.data;
-                    if (globalEditor1) {
-                        globalEditor1.toTextArea();
+    function createFileCallback(response) {
+        if (response.data) {
+            $scope.apexClassWrapper = response.data;
+            if (globalEditor1) {
+                globalEditor1.toTextArea();
+            }
+            setTimeout(function(test) {
+                var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
+                    lineNumbers: true,
+                    matchBrackets: true,
+                    styleActiveLine: true,
+                    extraKeys: {
+                        ".": function(editor) {
+                            setTimeout(function() {
+                                editor.execCommand("autocomplete");
+                            }, 100);
+                            throw CodeMirror.Pass; // tell CodeMirror we didn't handle the key
+                        }
+                    },
+                    gutters: ["CodeMirror-lint-markers"],
+                    lint: true,
+                    mode: "text/x-apex"
+                });
+                editor.markClean();
+                editor.on("keyup", function(cm, event) {
+                    var keyCode = event.keyCode || event.which;
+                    if (!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
+                        if (timeout) clearTimeout(timeout);
+                        timeout = setTimeout(function() {
+                            editor.showHint({
+                                hint: CodeMirror.hint.auto,
+                                completeSingle: false
+                            });
+                        }, 150);
                     }
-                    setTimeout(function(test) {
-                        var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
-                            lineNumbers: true,
-                            matchBrackets: true,
-                            styleActiveLine: true,
-                            extraKeys: {
-                                ".": function(editor) {
-                                    setTimeout(function() {
-                                        editor.execCommand("autocomplete");
-                                    }, 100);
-                                    throw CodeMirror.Pass; // tell CodeMirror we didn't handle the key
-                                }
-                            },
-                            gutters: ["CodeMirror-lint-markers"],
-                            lint: true,
-                            mode: "text/x-apex"
-                        });
-                        editor.markClean();
-                        editor.on("keyup", function(cm, event) {
-                            var keyCode = event.keyCode || event.which;
-                            if (!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
-                                if (timeout) clearTimeout(timeout);
-                                timeout = setTimeout(function() {
-                                    editor.showHint({
-                                        hint: CodeMirror.hint.auto,
-                                        completeSingle: false
-                                    });
-                                }, 150);
-                            }
-                        });
-                        globalEditor1 = $('.CodeMirror')[0].CodeMirror;
-                    }), 2000
-                    document.getElementById('saveBtn').style.visibility = 'visible';
-                    $scope.isPaneShown = false;
+                });
+                globalEditor1 = $('.CodeMirror')[0].CodeMirror;
+            }), 2000
+            document.getElementById('saveBtn').style.visibility = 'visible';
+            $scope.isPaneShown = false;
+        }
+    }
+
+    function createFileErrorCallback(error) {
+        $scope.isPaneShown = false;
+        var x = document.getElementById("snackbar");
+        x.innerHTML = error;
+        x.className = "show";
+        // After 3 seconds, remove the show class from DIV
+        setTimeout(function() {
+            x.className = x.className.replace("show", "");
+        }, 10000);
+    }
+
+    function getApexBodyCallback(response) {
+        if (response.data) {
+            $scope.apexClassWrapper = response.data;
+            if (globalEditor1) {
+                globalEditor1.toTextArea();
+            }
+            setTimeout(function(test) {
+                var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
+                    lineNumbers: true,
+                    matchBrackets: true,
+                    styleActiveLine: true,
+                    extraKeys: {
+                        ".": function(editor) {
+                            setTimeout(function() {
+                                editor.execCommand("autocomplete");
+                            }, 100);
+                            throw CodeMirror.Pass; // tell CodeMirror we didn't handle the key
+                        }
+                    },
+                    gutters: ["CodeMirror-lint-markers"],
+                    lint: true,
+                    mode: "text/x-apex"
+                });
+                editor.markClean();
+                editor.on("keyup", function(cm, event) {
+                    var keyCode = event.keyCode || event.which;
+                    if (!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
+                        if (timeout) clearTimeout(timeout);
+                        timeout = setTimeout(function() {
+                            editor.showHint({
+                                hint: CodeMirror.hint.auto,
+                                completeSingle: false
+                            });
+                        }, 150);
+                    }
+                });
+                globalEditor1 = $('.CodeMirror')[0].CodeMirror;
+                if (localStorage && localStorage.getItem('apexEditorTheme')) {
+                    globalEditor1.setOption("theme", localStorage.getItem('apexEditorTheme'));
                 }
-            }
+                //globalEditor1.(localStorage.getItem('apexEditorTheme'));
+            }), 2000
+            document.getElementById('saveBtn').style.visibility = 'visible';
+            $scope.isPaneShown = false;
+        }
+    }
 
-            function getApexBodyErrorCallback(error) {
-                //error code
-            }
-            /*$http.get("/getApexBody", config).then(function(response) {
-
-            });*/
+    function getApexBodyErrorCallback(error) {
+        //error code
+    }
+    $scope.selectTheme = function() {
+        if (globalEditor1) {
+            globalEditor1.setOption("theme", $scope.selectedTheme);
+            localStorage.setItem('apexEditorTheme', $scope.selectedTheme);
+        }
+        if (globalMergeEditor) {
+            globalMergeEditor.setOption("theme", $scope.selectedTheme);
+            localStorage.setItem('apexEditorTheme', $scope.selectedTheme);
         }
     }
     $scope.postdata = function(apexClassWrapper) {
@@ -456,6 +508,9 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         highlightDifferences: hilight
                     });
                     globalMergeEditor = dv;
+                    if (localStorage && localStorage.getItem('apexEditorTheme')) {
+                        dv.setOption("theme", localStorage.getItem('apexEditorTheme'));
+                    }
                 }, 100);
             } else {
                 $('.code-helper').select2({
@@ -519,6 +574,9 @@ $(document).ready(function() {
     $('.code-helper').select2({
         placeholder: 'Select a command to begin'
     });
+});
+$(window).on("unload", function() {
+    localStorage.clear();
 });
 app.directive('loadingPane', function($timeout, $window) {
     return {
