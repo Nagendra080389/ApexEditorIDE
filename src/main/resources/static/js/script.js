@@ -376,10 +376,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             globalEditor1.setOption("theme", $scope.selectedTheme);
             localStorage.setItem('apexEditorTheme', $scope.selectedTheme);
         }
-        if (globalMergeEditor) {
-            globalMergeEditor.setOption("theme", $scope.selectedTheme);
-            localStorage.setItem('apexEditorTheme', $scope.selectedTheme);
-        }
     }
     $scope.postdata = function(apexClassWrapper) {
         $scope.isPaneShown = true;
@@ -512,9 +508,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         highlightDifferences: hilight
                     });
                     globalMergeEditor = dv;
-                    if (localStorage && localStorage.getItem('apexEditorTheme')) {
-                        dv.setOption("theme", localStorage.getItem('apexEditorTheme'));
-                    }
                 }, 100);
             } else {
                 $('.code-helper').select2({
