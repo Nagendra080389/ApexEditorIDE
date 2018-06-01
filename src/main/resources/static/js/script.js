@@ -579,9 +579,7 @@ $(document).ready(function() {
         placeholder: 'Select a command to begin'
     });
 });
-$(window).on("unload", function() {
-    localStorage.clear();
-});
+
 app.directive('loadingPane', function($timeout, $window) {
     return {
         restrict: 'A',
