@@ -70,6 +70,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
     var foundTheme = ['3024-day', '3024-night', 'abcdef', 'ambiance', 'ambiance-mobile', 'base16-dark', 'base16-light', 'bespin', 'blackboard', 'cobalt', 'colorforth', 'darcula', 'dracula', 'duotone-dark', 'duotone-light', 'eclipse', 'elegant', 'erlang-dark', 'gruvbox-dark', 'hopscotch', 'icecoder', 'idea', 'isotope', 'lesser-dark', 'liquibyte', 'lucario', 'material', 'mbo', 'mdn-like', 'midnight', 'monokai', 'neat', 'neo', 'night', 'oceanic-next', 'panda-syntax', 'paraiso-dark', 'paraiso-light', 'pastel-on-dark', 'railscasts', 'rubyblue', 'seti', 'shadowfox', 'solarized', 'ssms', 'the-matrix', 'tomorrow-night-bright', 'tomorrow-night-eighties', 'ttcn', 'twilight', 'vibrant-ink', 'xq-dark', 'xq-light', 'yeti', 'zenburn'];
     $scope.themeNames = foundTheme;
     $http.get("/getCurrentUser").then(userCallback, userErrorCallback);
+
     function userCallback(response) {
         if (response.data.error && (response.data.error.indexOf('Bad_OAuth_Token') || response.data.error.indexOf('No cookies found'))) {
             alert(response.data.error + ', Please relogin!');
@@ -299,6 +300,9 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         }, 150);
                     }
                 });
+                if (localStorage && localStorage.getItem('apexEditorTheme')) {
+                    editor.setOption("theme", localStorage.getItem('apexEditorTheme'));
+                }
                 globalEditor1 = $('.CodeMirror')[0].CodeMirror;
             }), 2000
             document.getElementById('saveBtn').style.visibility = 'visible';
