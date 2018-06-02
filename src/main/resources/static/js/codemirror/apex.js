@@ -288,7 +288,6 @@
                     message: errorReport,
                 });
             });
-            document.getElementById('symbolTableBtn').style.visibility = 'hidden';
             if (localStorage.getItem('hintTable') == null) {
                 oboe('/generateCustomSymbolTable').done(function(data) {
                     if (data) {
