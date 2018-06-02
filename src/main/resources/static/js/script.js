@@ -113,6 +113,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             $scope.names = foundClass;
             $scope.isPaneShown = false;
         }
+        iziToast.info({
+            title: 'Apex Classes Loaded',
+            position: 'topRight',
+        });
         var paramValue = $location.search();
         if (paramValue.name) {
             var newSelectedValue = {};
@@ -509,7 +513,9 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 $scope.isPaneShown = false;
                 console.log('Success : ' + response.data);
                 iziToast.success({
+                    timeout: 5000,
                     title: 'OK',
+                    position: 'bottomLeft',
                     message: 'Saved Successfully !',
                 });
                 document.getElementById('saveBtn').style.visibility = 'visible';
