@@ -56,6 +56,16 @@ var ExcludedIntelliSenseTriggerKeys = {
     "220": "backslash",
     "222": "quote"
 }
+iziToast.settings({
+    timeout: 3000,
+    // default timeout
+    resetOnHover: true,
+    // icon: '', // icon class
+    transitionIn: 'flipInX',
+    transitionOut: 'flipOutX',
+    position: 'topRight',
+    // bottomRight, bottomLeft, topRight, topLeft, topCenter, bottomCenter, center
+});
 app.config(['$locationProvider', function($locationProvider) {
     $locationProvider.html5Mode({
         enabled: true,
@@ -77,24 +87,19 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             $window.location.href = '/index.html';
         } else {
             $scope.currentUser = response.data;
-            var x = document.getElementById("snackbar");
-            x.innerHTML = 'Welcome ' + response.data.display_name;
-            x.className = "show";
-            // After 3 seconds, remove the show class from DIV
-            setTimeout(function() {
-                x.className = x.className.replace("show", "");
-            }, 5000);
+            iziToast.info({
+                title: 'Welcome ' + response.data.display_name,
+                message: 'Welcome!',
+                position: 'topCenter',
+            });
         }
     }
 
     function userErrorCallback(error) {
-        var x = document.getElementById("snackbar");
-        x.innerHTML = error;
-        x.className = "show";
-        // After 3 seconds, remove the show class from DIV
-        setTimeout(function() {
-            x.className = x.className.replace("show", "");
-        }, 10000);
+        iziToast.error({
+            title: 'Error',
+            message: error,
+        });
     }
     $http.post("/getAllApexClasses").then(classesCallback, classesErrorCallback);
 
@@ -144,13 +149,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         return;
                     }
                     if ($.inArray(value, namesFromOption) > -1) {
-                        var x = document.getElementById("snackbar");
-                        x.innerHTML = "Class with same name already exists";
-                        x.className = "show";
-                        // After 4 seconds, remove the show class from DIV
-                        setTimeout(function() {
-                            x.className = x.className.replace("show", "");
-                        }, 4000);
+                        iziToast.error({
+                            title: 'Error',
+                            message: 'Class with same name already exists',
+                        });
                         return;
                     }
                     $scope.isPaneShown = true;
@@ -161,13 +163,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
     }
 
     function classesErrorCallback(error) {
-        var x = document.getElementById("snackbar");
-        x.innerHTML = error;
-        x.className = "show";
-        // After 3 seconds, remove the show class from DIV
-        setTimeout(function() {
-            x.className = x.className.replace("show", "");
-        }, 10000);
+        iziToast.error({
+            title: 'Error',
+            message: error,
+        });
         $scope.isPaneShown = false;
     }
     $scope.retrieveSelectedClass = function(newValue, oldValue) {
@@ -185,6 +184,9 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         possibleOldValues = $filter('filter')($scope.names, {
             name: oldValueSelected.name
         }, true);
+        if ($scope.selectedName === null) {
+            return;
+        }
         if ($scope.selectedName.groupName === 'Create New') {
             if (globalEditor1) {
                 if (!globalEditor1.isClean()) {
@@ -216,13 +218,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         return;
                     }
                     if ($.inArray(value, namesFromOption) > -1) {
-                        var x = document.getElementById("snackbar");
-                        x.innerHTML = "Class with same name already exists";
-                        x.className = "show";
-                        // After 4 seconds, remove the show class from DIV
-                        setTimeout(function() {
-                            x.className = x.className.replace("show", "");
-                        }, 4000);
+                        iziToast.error({
+                            title: 'Error',
+                            message: 'Class with same name already exists',
+                        });
                         return;
                     }
                     $scope.isPaneShown = true;
@@ -312,13 +311,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
 
     function createFileErrorCallback(error) {
         $scope.isPaneShown = false;
-        var x = document.getElementById("snackbar");
-        x.innerHTML = error;
-        x.className = "show";
-        // After 3 seconds, remove the show class from DIV
-        setTimeout(function() {
-            x.className = x.className.replace("show", "");
-        }, 10000);
+        iziToast.error({
+            title: 'Error',
+            message: error,
+        });
     }
 
     function getApexBodyCallback(response) {
@@ -439,13 +435,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
 
         function modifyErrorCallback(error) {
             $scope.isPaneShown = false;
-            var x = document.getElementById("snackbar");
-            x.innerHTML = data;
-            x.className = "show";
-            // After 3 seconds, remove the show class from DIV
-            setTimeout(function() {
-                x.className = x.className.replace("show", "");
-            }, 10000);
+            iziToast.error({
+                title: 'Error',
+                message: error,
+            });
         }
         //$http.post("/modifyApexBody", dataObj).success(function(data) {}).error(function(data) {});
     };
@@ -515,27 +508,23 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 });
                 $scope.isPaneShown = false;
                 console.log('Success : ' + response.data);
-                var x = document.getElementById("snackbar");
-                x.innerHTML = "Saved Successfully !";
-                globalEditor1.markClean();
-                x.className = "show";
-                // After 3 seconds, remove the show class from DIV
-                setTimeout(function() {
-                    x.className = x.className.replace("show", "");
-                }, 3000);
+                iziToast.success({
+                    title: 'OK',
+                    message: 'Saved Successfully !',
+                });
                 document.getElementById('saveBtn').style.visibility = 'visible';
+                if (globalEditor1) {
+                    globalEditor1.markClean();
+                }
             }
         }
 
         function saveErrorCallback(error) {
             $scope.isPaneShown = false;
-            var x = document.getElementById("snackbar");
-            x.innerHTML = data;
-            x.className = "show";
-            // After 3 seconds, remove the show class from DIV
-            setTimeout(function() {
-                x.className = x.className.replace("show", "");
-            }, 10000);
+            iziToast.error({
+                title: 'Error',
+                message: error,
+            });
         }
     }
     $scope.replaceMerged = function() {
@@ -562,16 +551,56 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         });
         document.getElementById('saveBtn').style.visibility = 'visible';
     })
-
-    $scope.logout = function(){
+    $scope.logout = function() {
         $http.get("/logout").then(logoutCallBack, logoutErrorCallback);
     }
 
-    function logoutCallBack(){
+    function logoutCallBack() {
         $window.location.href = "/index.html";
     };
-    function logoutErrorCallback(){};
 
+    function logoutErrorCallback() {};
+    /*$scope.generateCustomSymbolTable = function() {
+        iziToast.info({
+            timeout: 10000,
+            title: 'Custom Symbol Table',
+            message: 'Generating Custom Symbol Table, this is a background process and will not affect your editing operations',
+        });
+        localStorage.removeItem('hintTable');
+        document.getElementById('symbolTableBtn').style.visibility = 'hidden';
+        var customSymbols = [];
+        if (localStorage.getItem('hintTable') == null) {
+            oboe('/generateCustomSymbolTable').done(function(data) {
+                if (data) {
+                    if (data == 'LastByte') {
+                        document.getElementById('symbolTableBtn').style.visibility = 'visible';
+                        iziToast.success({
+                            timeout: 5000,
+                            title: 'OK',
+                            position: 'bottomLeft',
+                            message: 'Symbol Table Generated Successfully!'
+                        });
+                        return;
+                    }
+                    customSymbols.push(data)
+                    if (localStorage.getItem('hintTable')) {
+                        var pushedWords = JSON.parse(localStorage.getItem('hintTable'));
+                        pushedWords.push(data);
+                        localStorage.setItem('hintTable', JSON.stringify(pushedWords));
+                    } else {
+                        localStorage.setItem('hintTable', JSON.stringify(customSymbols));
+                    }
+                }
+            }).fail(function(errorReport) {
+                console.log(errorReport);
+                document.getElementById('symbolTableBtn').style.visibility = 'visible';
+                iziToast.error({
+                    title: 'Failed to generate Custom Symbol table',
+                    message: errorReport,
+                });
+            });
+        }
+    }*/
 });
 
 function testAnim(x) {
@@ -582,7 +611,6 @@ $(document).ready(function() {
         placeholder: 'Select a command to begin'
     });
 });
-
 app.directive('loadingPane', function($timeout, $window) {
     return {
         restrict: 'A',
