@@ -562,6 +562,16 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         });
         document.getElementById('saveBtn').style.visibility = 'visible';
     })
+
+    $scope.logout = function(){
+        $http.get("/logout").then(logoutCallBack, logoutErrorCallback);
+    }
+
+    function logoutCallBack(){
+        $window.location.href = "/index.html";
+    };
+    function logoutErrorCallback(){};
+
 });
 
 function testAnim(x) {
