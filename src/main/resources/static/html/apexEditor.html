@@ -209,7 +209,7 @@
     </div>
     <div ng-model="currentUser" id="userContainer">{{currentUser.email}}
         <div class="dropdown-content">
-            <a href="/logout">Logout</a>
+            <a data-ng-click="logout()">Logout</a>
         </div>
     </div>
     <div id="snackbar"></div>
@@ -220,6 +220,7 @@
 </div>
 <nav class="navbar navbar-default navbar-fixed-bottom">
     <div id="saveBtn" ng-click="postdata(apexClassWrapper)">Save</div>
+    <!--<div id="symbolTableBtn">Generate Symbol Table</div>-->
     <div id="themeDiv">
         <select ng-model="selectedTheme" ng-change="selectTheme()" id="select" ng-options="item for item in themeNames">
             <option value="">Select Theme</option>
