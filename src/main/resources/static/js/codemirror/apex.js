@@ -317,35 +317,6 @@
                     });
                 });
             }
-            if (localStorage.getItem('hintTable') == null) {
-                oboe('/generateCustomSymbolTable').done(function(data) {
-                    if (data) {
-                        if (data == 'LastByte') {
-                            iziToast.success({
-                                timeout: 5000,
-                                title: 'OK',
-                                position: 'bottomLeft',
-                                message: 'Symbol Table Generated Successfully!'
-                            });
-                            return;
-                        }
-                        words.push(data)
-                        if (localStorage.getItem('hintTable')) {
-                            var pushedWords = JSON.parse(localStorage.getItem('hintTable'));
-                            pushedWords.push(data);
-                            localStorage.setItem('hintTable', JSON.stringify(pushedWords));
-                        } else {
-                            localStorage.setItem('hintTable', JSON.stringify(words));
-                        }
-                    }
-                }).fail(function(errorReport) {
-                    console.log(errorReport);
-                    iziToast.error({
-                        title: 'Failed to generate Custom Symbol table',
-                        message: errorReport,
-                    });
-                });
-            }
             $('#loaderImage').hide();
         }
         add(mode.keywords);
