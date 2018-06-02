@@ -322,12 +322,14 @@ public class PMDController {
     @RequestMapping("/generateCustomSymbolTable")
     public StreamingResponseBody generateCustomSymbolTable(HttpServletResponse response, HttpServletRequest request) {
         response.addHeader("Content-Type", MediaType.APPLICATION_JSON);
+        Gson gson = new GsonBuilder().create();
         return new StreamingResponseBody() {
             @Override
             public void writeTo(OutputStream outputStream) throws IOException {
                 try {
-                    PMDController.this.generateCustomSymbolTable(response, request, outputStream);
+                    PMDController.this.generateCustomSymbolTable(response, request, outputStream,gson);
                 }finally {
+                    outputStream.write(gson.toJson("LastByte").getBytes());
                     IOUtils.closeQuietly(outputStream);
                 }
             }
@@ -366,10 +368,9 @@ public class PMDController {
         return "";
     }
 
-    private String generateCustomSymbolTable(HttpServletResponse response, HttpServletRequest request, OutputStream outputStream) {
+    private String generateCustomSymbolTable(HttpServletResponse response, HttpServletRequest request, OutputStream outputStream, Gson gson) {
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
-        Gson gson = new GsonBuilder().create();
         Cookie[] cookies = request.getCookies();
         try {
             MetadataLoginUtil.generateSymbolTable(partnerURL, toolingURL, cookies,outputStream,gson,response);

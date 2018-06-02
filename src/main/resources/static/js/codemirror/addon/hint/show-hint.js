@@ -411,6 +411,9 @@
         resolve: resolveAutoHints
     });
     CodeMirror.registerHelper("hint", "fromList", function(cm, options) {
+        if (localStorage.getItem('hintTable')) {
+            options.words = JSON.parse(localStorage.getItem('hintTable');
+        }
         var cur = cm.getCursor();
         var token = cm.getTokenAt(cur);
         var orgch = cur.ch;
@@ -464,7 +467,7 @@
                         found.push(word);
                     }
                 } else if (!(typeof word === 'string' || word instanceof String)) {
-                    if (token.state.context.info && token.state.context.info.toLowerCase() == word.className.toLowerCase()) {
+                    if (word.className && token.state.context.info && token.state.context.info.toLowerCase() == word.className.toLowerCase()) {
                         for (var j = 0; j < word.methodsNames.length; j++) {
                             if (word.methodsNames[j].toLowerCase().slice(0, term.length) == term.toLowerCase()) {
                                 methodCompletion = true;
