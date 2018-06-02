@@ -81,7 +81,9 @@
     <link href="../css/codemirror/theme/xq-light.css" rel="stylesheet"/>
     <link href="../css/codemirror/theme/yeti.css" rel="stylesheet"/>
     <link href="../css/codemirror/theme/zenburn.css" rel="stylesheet"/>
+    <link href="../css/iziToast/iziToast.min.css" rel="stylesheet">
 
+    <script src="../js/iziToast/iziToast.min.js"></script>
 
     <script src="../js/oboe-browser.min.js"></script>
     <script src="../js/script.js"></script>
@@ -108,6 +110,7 @@
     <style type="text/css">
       .lint-error {font-family: arial; font-size: 70%; background: #ffa; color: #a00; padding: 2px 5px 3px; }
       .lint-error-icon {color: white; background-color: red; font-weight: bold; border-radius: 50%; padding: 0 3px; margin-right: 7px;}
+
     </style>
 </head>
 
@@ -202,7 +205,8 @@
 
 <nav class="navbar navbar-default navbar-fixed-top">
     <div id="container">
-        <select ng-model="selectedName" ng-change="retrieveSelectedClass(selectedName, '{{selectedName}}')" ng-options="(item.name||item) group by item.groupName for item in names"
+        <select ng-model="selectedName" ng-change="retrieveSelectedClass(selectedName, '{{selectedName}}')"
+                ng-options="(item.name||item) group by item.groupName for item in names"
                 class="code-helper" id="code-helperId">
             <option value="">Select Option</option>
         </select>
@@ -212,15 +216,15 @@
             <a data-ng-click="logout()">Logout</a>
         </div>
     </div>
-    <div id="snackbar"></div>
 </nav>
-<div style="padding: 1px; position: absolute; margin: 0px; left: 0px; right: 0px; top: 30px; bottom: 30px; width: 100%; height: auto; " loading-pane="isPaneShown">
+<div style="padding: 1px; position: absolute; margin: 0px; left: 0px; right: 0px; top: 30px; bottom: 30px; width: 100%; height: auto; "
+     loading-pane="isPaneShown">
     <textarea ng-model="apexClassWrapper.body" id="apexBody" name="apexBody" style="display: none;" readonly="true">{{apexClassWrapper.body}}</textarea>
 
 </div>
 <nav class="navbar navbar-default navbar-fixed-bottom">
     <div id="saveBtn" ng-click="postdata(apexClassWrapper)">Save</div>
-    <!--<div id="symbolTableBtn">Generate Symbol Table</div>-->
+    <!--<div id="symbolTableBtn" ng-click="generateCustomSymbolTable()">Generate Symbol Table</div>-->
     <div id="themeDiv">
         <select ng-model="selectedTheme" ng-change="selectTheme()" id="select" ng-options="item for item in themeNames">
             <option value="">Select Theme</option>

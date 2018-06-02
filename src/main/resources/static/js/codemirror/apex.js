@@ -268,8 +268,14 @@
                 for (var i = 0; i < arrayLength; i++) {
                     words.push(data[i].name);
                 }
+                iziToast.info({
+                    title: 'Apex Classes loaded',
+                });
             }).fail(function(errorReport) {
-                console.log('error getAllApexClasses '+errorReport);
+                console.log('error getAllApexClasses ' + errorReport);
+                iziToast.error({
+                    title: 'Failed to load all Apex Classes',
+                });
             });
             oboe('/generateSystemSymbolTable').done(function(data) {
                 if (data) {
@@ -277,14 +283,41 @@
                 }
             }).fail(function(errorReport) {
                 console.log(errorReport);
+                iziToast.error({
+                    title: 'Failed to generate System Symbol table',
+                    message: errorReport,
+                });
             });
-            oboe('/generateCustomSymbolTable').done(function(data) {
-                if (data) {
-                    words.push(data);
-                }
-            }).fail(function(errorReport) {
-                console.log(errorReport);
-            });
+            document.getElementById('symbolTableBtn').style.visibility = 'hidden';
+            if (localStorage.getItem('hintTable') == null) {
+                oboe('/generateCustomSymbolTable').done(function(data) {
+                    if (data) {
+                        if (data == 'LastByte') {
+                            iziToast.success({
+                                timeout: 5000,
+                                title: 'OK',
+                                position: 'bottomLeft',
+                                message: 'Symbol Table Generated Successfully!'
+                            });
+                            return;
+                        }
+                        words.push(data)
+                        if (localStorage.getItem('hintTable')) {
+                            var pushedWords = JSON.parse(localStorage.getItem('hintTable'));
+                            pushedWords.push(data);
+                            localStorage.setItem('hintTable', JSON.stringify(pushedWords));
+                        } else {
+                            localStorage.setItem('hintTable', JSON.stringify(words));
+                        }
+                    }
+                }).fail(function(errorReport) {
+                    console.log(errorReport);
+                    iziToast.error({
+                        title: 'Failed to generate Custom Symbol table',
+                        message: errorReport,
+                    });
+                });
+            }
             $('#loaderImage').hide();
         }
         add(mode.keywords);
