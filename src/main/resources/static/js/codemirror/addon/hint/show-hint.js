@@ -412,7 +412,7 @@
     });
     CodeMirror.registerHelper("hint", "fromList", function(cm, options) {
         if (localStorage.getItem('hintTable')) {
-            options.words = JSON.parse(localStorage.getItem('hintTable');
+            options.words = JSON.parse(localStorage.getItem('hintTable'));
         }
         var cur = cm.getCursor();
         var token = cm.getTokenAt(cur);
