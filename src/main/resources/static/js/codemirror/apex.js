@@ -298,16 +298,12 @@
                                 position: 'bottomLeft',
                                 message: 'Symbol Table Generated Successfully!'
                             });
+                            if (localStorage.getItem('hintTable')) {
+                                localStorage.setItem('hintTable', JSON.stringify(words));
+                            }
                             return;
                         }
                         words.push(data)
-                        if (localStorage.getItem('hintTable')) {
-                            var pushedWords = JSON.parse(localStorage.getItem('hintTable'));
-                            pushedWords.push(data);
-                            localStorage.setItem('hintTable', JSON.stringify(pushedWords));
-                        } else {
-                            localStorage.setItem('hintTable', JSON.stringify(words));
-                        }
                     }
                 }).fail(function(errorReport) {
                     console.log(errorReport);
