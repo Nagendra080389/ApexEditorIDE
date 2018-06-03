@@ -279,18 +279,18 @@ public class MetadataLoginUtil {
 
 
             // we create a member if we want to update and direttly ApexClass when we want to create
-
+            String[] split = apexClassName.split("\\+");
 
             ApexClass apexClass1 = new ApexClass();
             apexClass1.setBody("/** \n" +
-                    "Class Name -> " + apexClassName + "\n" +
+                    "Class Description -> " + split[1] + "\n" +
                     "**/\n" +
-                    "public class " + apexClassName + " {\n" +
+                    "public class " + split[0] + " {\n" +
                     "\n" +
                     "}");
             ApexClassWrapper apexClassWrapper = new ApexClassWrapper();
             apexClassWrapper.setBody(apexClass1.getBody());
-            apexClassWrapper.setName(apexClassName);
+            apexClassWrapper.setName(split[0]);
 
             con = new SObject[]{apexClass1};
 

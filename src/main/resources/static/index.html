@@ -16,32 +16,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!------ Include the above in your HEAD tag ---------->
 
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/iziToast/iziToast.min.css" rel="stylesheet">
+
+    <script src="../js/iziToast/iziToast.min.js"></script>
+
     <script src="../js/loginScript.js"></script>
 </head>
 <script>
-function domainChanger(){
-    bootbox.prompt({
+function domainChanger() {
+    iziToast.question({
+        timeout: false,
+        layout: 2,
+        drag: false,
+        close: false,
+        overlay: true,
         title: 'Enter Domain Name',
-        placeholder: 'Enter "exampleDomain" if domain name is https://exampleDomain.my.salesforce.com',
-        buttons: {
-            confirm: {
-                label: 'Submit'
-            }
-        },
-        callback: function(value){
-            if(!value){
-                alert('Please enter a domain name and click \'Submit\'');
-                return;
-            }
-            window.open('https://' + value + '.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9d8..z.hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz&redirect_uri=https://apexeditortooldev.herokuapp.com/auth&state=' + (value === 'test' ? 'a' : value+',CustomDomain'), '_self');
-        }
+        message: 'Enter "exampleDomain" if domain name is https://exampleDomain.my.salesforce.com',
+        position: 'center',
+        inputs: [
+            ['<input type="text" placeholder="Domain name only" required=true>', 'keyup', function(instance, toast, input, e) {
+                console.info(input.value);
+            }, true], // true to focus
+
+        ],
+        buttons: [
+            ['<button><b>Confirm</b></button>', function(instance, toast, button, e, inputs) {
+
+                if (inputs[0].value) {
+                    var value = inputs[0].value;
+                    instance.hide({
+                        transitionOut: 'fadeOut'
+                    }, toast, 'button');
+                    window.open('https://' + value + '.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9d8..z.hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz&redirect_uri=https://apexeditortooldev.herokuapp.com/auth&state=' + (value === 'test' ? 'a' : value + ',CustomDomain'), '_self');
+                }else{
+                    alert('Please enter a domain name');
+                }
+
+
+            }, false], // true to focus
+            ['<button><b>Cancel</b></button>', function(instance, toast, button, e, inputs) {
+                instance.hide({
+                    transitionOut: 'fadeOut'
+                }, toast, 'button');
+            }, false], // true to focus
+        ]
     });
 }
 
-function redirectJS(orgType){
+function redirectJS(orgType) {
     window.open('https://' + orgType + '.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9d8..z.hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz&redirect_uri=https://apexeditortooldev.herokuapp.com/auth&state=' + (orgType === 'test' ? 'a' : 'b'), '_self');
 }
+
 
 
 

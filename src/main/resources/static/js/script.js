@@ -82,6 +82,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 title: 'Welcome ' + response.data.display_name,
                 message: 'Welcome!',
                 position: 'topCenter',
+                layout: 2,
             });
         }
     }
@@ -132,30 +133,56 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             };
             $http.get("/getApexBody", config).then(getApexBodyCallback, getApexBodyErrorCallback);
         } else {
-            bootbox.prompt({
-                title: 'Enter Class Name',
-                placeholder: 'Enter Class Name',
-                buttons: {
-                    confirm: {
-                        label: 'Create'
-                    }
-                },
-                callback: function(value) {
-                    if (value == null) {
-                        return;
-                    }
-                    if ($.inArray(value, namesFromOption) > -1) {
-                        iziToast.error({
-                            title: 'Error',
-                            message: 'Class with same name already exists',
-                            position: 'topRight',
-                        });
-                        return;
-                    }
-                    $scope.isPaneShown = true;
-                    $http.post("/createFile", value).then(createFileCallback, createFileErrorCallback);
-                }
-            })
+            iziToast.question({
+                timeout: false,
+                layout: 2,
+                drag: false,
+                close: false,
+                overlay: true,
+                title: 'New Class Details',
+                message: 'Enter Class Name and Description',
+                position: 'center',
+                inputs: [
+                    ['<input type="text" id="classNameId" placeholder="ClassName" required=true>', 'keyup', function(instance, toast, input, e) {
+                        console.info(input.value);
+                    },
+                    true], // true to focus
+                    ['<input type="text" placeholder="Enter Class description" required=true>', 'keyup', function(instance, toast, input, e) {
+                        console.info(input.value);
+                    },
+                    false]
+                ],
+                buttons: [
+                    ['<button><b>Confirm</b></button>', function(instance, toast, button, e, inputs) {
+                        if (inputs[0].value && inputs[1].value) {
+                            var nameAndDesc = inputs[0].value + '+' + inputs[1].value;
+                            if ($.inArray(inputs[0].value, namesFromOption) > -1) {
+                                iziToast.error({
+                                    timeout: false,
+                                    title: 'Error',
+                                    message: 'Class with same name already exists',
+                                    position: 'topRight',
+                                });
+                                return;
+                            }
+                            $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
+                            instance.hide({
+                                transitionOut: 'fadeOut'
+                            }, toast, 'button');
+                        } else {
+                            alert('Both Fields are mandatory');
+                        }
+                        $scope.isPaneShown = true;
+                    },
+                    false], // true to focus
+                    ['<button><b>Cancel</b></button>', function(instance, toast, button, e, inputs) {
+                        instance.hide({
+                            transitionOut: 'fadeOut'
+                        }, toast, 'button');
+                    },
+                    false], // true to focus
+                    ]
+            });
         }
     }
 
@@ -203,7 +230,57 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 }
             }
             $scope.isPaneShown = false;
-            bootbox.prompt({
+            iziToast.question({
+                timeout: false,
+                layout: 2,
+                drag: false,
+                close: false,
+                overlay: true,
+                title: 'New Class Details',
+                message: 'Enter Class Name and Description',
+                position: 'center',
+                inputs: [
+                    ['<input type="text" id="classNameId" placeholder="ClassName" required=true>', 'keyup', function(instance, toast, input, e) {
+                        console.info(input.value);
+                    },
+                    true], // true to focus
+                    ['<input type="text" placeholder="Enter Class description" required=true>', 'keyup', function(instance, toast, input, e) {
+                        console.info(input.value);
+                    },
+                    false]
+                ],
+                buttons: [
+                    ['<button><b>Confirm</b></button>', function(instance, toast, button, e, inputs) {
+                        if (inputs[0].value && inputs[1].value) {
+                            var nameAndDesc = inputs[0].value + '+' + inputs[1].value;
+                            if ($.inArray(inputs[0].value, namesFromOption) > -1) {
+                                iziToast.error({
+                                    timeout: 5000,
+                                    title: 'Error',
+                                    message: 'Class with same name already exists',
+                                    position: 'topRight',
+                                });
+                                return;
+                            }
+                            $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
+                            instance.hide({
+                                transitionOut: 'fadeOut'
+                            }, toast, 'button');
+                        } else {
+                            alert('Both Fields are mandatory');
+                        }
+                        $scope.isPaneShown = true;
+                    },
+                    false], // true to focus
+                    ['<button><b>Cancel</b></button>', function(instance, toast, button, e, inputs) {
+                        instance.hide({
+                            transitionOut: 'fadeOut'
+                        }, toast, 'button');
+                    },
+                    false], // true to focus
+                    ]
+            });
+            /*bootbox.prompt({
                 title: 'Enter Class Name',
                 placeholder: 'Enter Class Name',
                 buttons: {
@@ -226,7 +303,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     $scope.isPaneShown = true;
                     $http.post("/createFile", value).then(createFileCallback, createFileErrorCallback);
                 }
-            })
+            })*/
         } else {
             var possibleOldValues = [];
             var oldValueSelected = {};
@@ -565,10 +642,39 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
 
     function logoutErrorCallback() {};
     $scope.removeCustomSymbolTable = function() {
-        if (localStorage.getItem('hintTable')) {
-            localStorage.removeItem('hintTable');
-
-        }
+        iziToast.question({
+            timeout: false,
+            pauseOnHover: true,
+            close: false,
+            overlay: true,
+            toastOnce: true,
+            id: 'question',
+            zindex: 999,
+            title: 'Hey',
+            message: 'Are you sure about that?, after deleting Custom Sysmbol table you need to refresh the page to regenerate it.',
+            position: 'center',
+            buttons: [
+                ['<button><b>YES</b></button>', function(instance, toast) {
+                    instance.hide({
+                        transitionOut: 'fadeOut'
+                    }, toast, 'button');
+                    if (localStorage.getItem('hintTable')) {
+                        localStorage.removeItem('hintTable');
+                    }
+                },
+                true],
+                ['<button>NO</button>', function(instance, toast) {
+                    instance.hide({
+                        transitionOut: 'fadeOut'
+                    }, toast, 'button');
+                }], ],
+            onClosing: function(instance, toast, closedBy) {
+                console.info('Closing | closedBy: ' + closedBy);
+            },
+            onClosed: function(instance, toast, closedBy) {
+                console.info('Closed | closedBy: ' + closedBy);
+            }
+        });
     }
 });
 
