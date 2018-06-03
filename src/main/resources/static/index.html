@@ -22,7 +22,9 @@
     <script src="../js/iziToast/iziToast.min.js"></script>
 
     <script src="../js/loginScript.js"></script>
+
 </head>
+
 <script>
 function domainChanger() {
     iziToast.question({
@@ -68,35 +70,37 @@ function redirectJS(orgType) {
     window.open('https://' + orgType + '.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9d8..z.hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz&redirect_uri=https://apexeditortooldev.herokuapp.com/auth&state=' + (orgType === 'test' ? 'a' : 'b'), '_self');
 }
 
-
-
-
-
-
 </script>
 
-<body class="background-body">
+<body>
 
-<div id="cloudtent">
-    <div>
-        <h1 class="we-create">ApexEditor</h1>
-    </div>
-    <div id="clickhere">
-        <p class="we-create1">login here</p>
-        <i class="fa fa-hand-o-down content-mrg" style="font-size:24px;color:white"></i>
-    </div>
-    <div class="content-mrg">
-        <div class="box">
-            <div class="text" onclick=redirectJS("test")>Sand Box</div>
+
+<main>
+    <section class="cd-section" id="Welcome">
+        <div class="highlight bg">
+            <div class="core">
+                <h1>APEX EDITOR <span>v1.0.0</span></h1>
+                <p>Online Apex editor with proactive code review</p>
+                <span class="examples">Click Below</span>
+                <ul class="buttons">
+                    <li><a onclick=redirectJS("test") class="trigger-info">Sand Box</a></li>
+                    <li><a onclick=redirectJS("login") class="trigger-success">Production Box</a></li>
+                    <li><a onclick=domainChanger() class="trigger-warning">My Custom Domain</a></li>
+                    <li class="lava"></li>
+                </ul>
+                <div class="target" style="max-width: 500px"></div>
+            </div>
         </div>
-        <div class="box">
-            <div class="text" onclick=redirectJS("login")>Production Box</div>
-        </div>
-        <div class="box">
-            <div class="text" onclick=domainChanger()>My Custom Domain</div>
-        </div>
-    </div>
-</div>
+    </section>
+
+
+
+
+</main>
+<footer class="main">
+    <p>ApexEditor, Copyright &copy; 2017</p>
+    <p>Contact Us : <a href="mailto: nagesingh@deloitte.com;priyaverma@deloitte.com;prastiwari@deloitte.com">Mail Us</a>
+    </p>
+</footer>
 </body>
-
 </html>
