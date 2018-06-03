@@ -263,22 +263,17 @@
 
         function addServerSideHints() {
             $('#loaderImage').show();
-            /*oboe('/getAllApexClassesNames').done(function(data) {
-                var arrayLength = data.length;
-                for (var i = 0; i < arrayLength; i++) {
-                    words.push(data[i].name);
-                }
-                iziToast.info({
-                    title: 'Apex Classes loaded',
-                });
-            }).fail(function(errorReport) {
-                console.log('error getAllApexClasses ' + errorReport);
-                iziToast.error({
-                    title: 'Failed to load all Apex Classes',
-                });
-            });*/
             oboe('/generateSystemSymbolTable').done(function(data) {
                 if (data) {
+                    if (data == 'LastByte') {
+                        iziToast.success({
+                            timeout: 5000,
+                            title: 'OK',
+                            position: 'bottomLeft',
+                            message: 'System Symbol Table Generated Successfully!'
+                        });
+                        return;
+                    }
                     words.push(data);
                 }
             }).fail(function(errorReport) {
@@ -296,7 +291,7 @@
                                 timeout: 5000,
                                 title: 'OK',
                                 position: 'bottomLeft',
-                                message: 'Symbol Table Generated Successfully!'
+                                message: 'Custom Symbol Table Generated Successfully!'
                             });
                             if (localStorage.getItem('hintTable') === null) {
                                 localStorage.setItem('hintTable', JSON.stringify(words));

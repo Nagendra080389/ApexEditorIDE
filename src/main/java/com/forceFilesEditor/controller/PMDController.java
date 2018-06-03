@@ -90,12 +90,12 @@ public class PMDController {
 
     }
 
-    public String getReturnSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies, OutputStream outputStream)
+    public String getReturnSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies, OutputStream outputStream, Gson gson)
             throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
         MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
         List<String> strings = new ArrayList<>();
         try {
-            strings = metadataLoginUtil.returnSymbolTable(outputStream);
+            strings = metadataLoginUtil.returnSymbolTable(outputStream, gson);
         } catch (XMLStreamException e) {
             e.printStackTrace();
         } catch (JAXBException e) {
@@ -339,24 +339,26 @@ public class PMDController {
     @RequestMapping("/generateSystemSymbolTable")
     public StreamingResponseBody generateSystemSymbolTable(HttpServletResponse response, HttpServletRequest request) {
         response.addHeader("Content-Type", MediaType.APPLICATION_JSON);
+        Gson gson = new GsonBuilder().create();
         return new StreamingResponseBody() {
             @Override
             public void writeTo(OutputStream outputStream) throws IOException {
                 try {
-                    PMDController.this.generateSystemSymbolTable(response, request, outputStream);
+                    PMDController.this.generateSystemSymbolTable(response, request, outputStream, gson);
                 }finally {
+                    outputStream.write(gson.toJson("LastByte").getBytes());
                     IOUtils.closeQuietly(outputStream);
                 }
             }
         };
     }
 
-    private String generateSystemSymbolTable(HttpServletResponse response, HttpServletRequest request, OutputStream outputStream) {
+    private String generateSystemSymbolTable(HttpServletResponse response, HttpServletRequest request, OutputStream outputStream, Gson gson) {
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
         Cookie[] cookies = request.getCookies();
         try {
-            getReturnSymbolTable(partnerURL, toolingURL,cookies,outputStream);
+            getReturnSymbolTable(partnerURL, toolingURL,cookies,outputStream, gson);
 
         } catch (IOException e) {
             e.printStackTrace();

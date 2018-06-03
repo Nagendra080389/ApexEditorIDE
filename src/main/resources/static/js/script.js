@@ -56,16 +56,6 @@ var ExcludedIntelliSenseTriggerKeys = {
     "220": "backslash",
     "222": "quote"
 }
-iziToast.settings({
-    timeout: 3000,
-    // default timeout
-    resetOnHover: true,
-    // icon: '', // icon class
-    transitionIn: 'flipInX',
-    transitionOut: 'flipOutX',
-    position: 'topRight',
-    // bottomRight, bottomLeft, topRight, topLeft, topCenter, bottomCenter, center
-});
 app.config(['$locationProvider', function($locationProvider) {
     $locationProvider.html5Mode({
         enabled: true,
@@ -88,6 +78,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         } else {
             $scope.currentUser = response.data;
             iziToast.info({
+                icon: 'fa fa-user',
                 title: 'Welcome ' + response.data.display_name,
                 message: 'Welcome!',
                 position: 'topCenter',
@@ -99,6 +90,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         iziToast.error({
             title: 'Error',
             message: error,
+            position: 'topRight',
         });
     }
     $http.post("/getAllApexClasses").then(classesCallback, classesErrorCallback);
@@ -156,6 +148,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         iziToast.error({
                             title: 'Error',
                             message: 'Class with same name already exists',
+                            position: 'topRight',
                         });
                         return;
                     }
@@ -170,6 +163,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         iziToast.error({
             title: 'Error',
             message: error,
+            position: 'topRight',
         });
         $scope.isPaneShown = false;
     }
@@ -225,6 +219,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         iziToast.error({
                             title: 'Error',
                             message: 'Class with same name already exists',
+                            position: 'topRight',
                         });
                         return;
                     }
@@ -318,6 +313,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         iziToast.error({
             title: 'Error',
             message: error,
+            position: 'topRight',
         });
     }
 
@@ -442,6 +438,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             iziToast.error({
                 title: 'Error',
                 message: error,
+                position: 'topRight',
             });
         }
         //$http.post("/modifyApexBody", dataObj).success(function(data) {}).error(function(data) {});
@@ -530,6 +527,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             iziToast.error({
                 title: 'Error',
                 message: error,
+                position: 'topRight',
             });
         }
     }
@@ -566,47 +564,12 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
     };
 
     function logoutErrorCallback() {};
-    /*$scope.generateCustomSymbolTable = function() {
-        iziToast.info({
-            timeout: 10000,
-            title: 'Custom Symbol Table',
-            message: 'Generating Custom Symbol Table, this is a background process and will not affect your editing operations',
-        });
-        localStorage.removeItem('hintTable');
-        document.getElementById('symbolTableBtn').style.visibility = 'hidden';
-        var customSymbols = [];
-        if (localStorage.getItem('hintTable') == null) {
-            oboe('/generateCustomSymbolTable').done(function(data) {
-                if (data) {
-                    if (data == 'LastByte') {
-                        document.getElementById('symbolTableBtn').style.visibility = 'visible';
-                        iziToast.success({
-                            timeout: 5000,
-                            title: 'OK',
-                            position: 'bottomLeft',
-                            message: 'Symbol Table Generated Successfully!'
-                        });
-                        return;
-                    }
-                    customSymbols.push(data)
-                    if (localStorage.getItem('hintTable')) {
-                        var pushedWords = JSON.parse(localStorage.getItem('hintTable'));
-                        pushedWords.push(data);
-                        localStorage.setItem('hintTable', JSON.stringify(pushedWords));
-                    } else {
-                        localStorage.setItem('hintTable', JSON.stringify(customSymbols));
-                    }
-                }
-            }).fail(function(errorReport) {
-                console.log(errorReport);
-                document.getElementById('symbolTableBtn').style.visibility = 'visible';
-                iziToast.error({
-                    title: 'Failed to generate Custom Symbol table',
-                    message: errorReport,
-                });
-            });
+    $scope.removeCustomSymbolTable = function() {
+        if (localStorage.getItem('hintTable')) {
+            localStorage.removeItem('hintTable');
+
         }
-    }*/
+    }
 });
 
 function testAnim(x) {

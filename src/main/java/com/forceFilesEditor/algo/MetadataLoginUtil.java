@@ -546,8 +546,7 @@ public class MetadataLoginUtil {
         }
     }
 
-    public List<String> returnSymbolTable(OutputStream outputStream) throws IOException, XMLStreamException, JAXBException {
-        Gson gson = new GsonBuilder().create();
+    public List<String> returnSymbolTable(OutputStream outputStream, Gson gson) throws IOException, XMLStreamException, JAXBException {
         List<String> returnList = new ArrayList<>();
         JAXBContext jc = JAXBContext.newInstance(Completions.class);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
