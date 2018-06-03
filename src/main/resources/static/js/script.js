@@ -579,7 +579,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         highlightDifferences: hilight
                     });
                     globalMergeEditor = dv;
-                }, 100);
+                }, 1000);
             } else {
                 $('.code-helper').select2({
                     disabled: false
