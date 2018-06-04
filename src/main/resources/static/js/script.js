@@ -65,8 +65,7 @@ app.config(['$locationProvider', function($locationProvider) {
 app.controller('OrderFormController', function($scope, $http, $filter, $window, $location) {
     document.getElementById('saveBtn').style.visibility = 'hidden';
     var namesFromOption = [];
-    //$scope.isPaneShown = true;
-    $scope.iziModal('startLoading');
+    $scope.isPaneShown = true;
     var foundTheme = ['3024-day', '3024-night', 'abcdef', 'ambiance', 'ambiance-mobile', 'base16-dark', 'base16-light', 'bespin', 'blackboard', 'cobalt', 'colorforth', 'darcula', 'dracula', 'duotone-dark', 'duotone-light', 'eclipse', 'elegant', 'erlang-dark', 'gruvbox-dark', 'hopscotch', 'icecoder', 'idea', 'isotope', 'lesser-dark', 'liquibyte', 'lucario', 'material', 'mbo', 'mdn-like', 'midnight', 'monokai', 'neat', 'neo', 'night', 'oceanic-next', 'panda-syntax', 'paraiso-dark', 'paraiso-light', 'pastel-on-dark', 'railscasts', 'rubyblue', 'seti', 'shadowfox', 'solarized', 'ssms', 'the-matrix', 'tomorrow-night-bright', 'tomorrow-night-eighties', 'ttcn', 'twilight', 'vibrant-ink', 'xq-dark', 'xq-light', 'yeti', 'zenburn'];
     $scope.themeNames = foundTheme;
     $http.get("/getCurrentUser").then(userCallback, userErrorCallback);
@@ -104,8 +103,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 namesFromOption.push(response.data[index].name)
             }
             $scope.names = foundClass;
-            //$scope.isPaneShown = false;
-            $scope.iziModal('stopLoading');
+            $scope.isPaneShown = false;
         }
         iziToast.info({
             title: 'Apex Classes Loaded',
