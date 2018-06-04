@@ -205,7 +205,7 @@
 </div>
 
 
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar navbar-default navbar-fixed-top bg">
     <div id="container">
         <select ng-model="selectedName" ng-change="retrieveSelectedClass(selectedName, '{{selectedName}}')"
                 ng-options="(item.name||item) group by item.groupName for item in names"
@@ -224,7 +224,7 @@
     <textarea ng-model="apexClassWrapper.body" id="apexBody" name="apexBody" style="display: none;" readonly="true">{{apexClassWrapper.body}}</textarea>
 
 </div>
-<nav class="navbar navbar-default navbar-fixed-bottom">
+<nav class="navbar navbar-default navbar-fixed-bottom bg">
     <div id="saveBtn" ng-click="postdata(apexClassWrapper)">Save</div>
     <div id="symbolTableBtn" ng-click="removeCustomSymbolTable()">Remove Symbol Table</div>
     <div id="themeDiv">

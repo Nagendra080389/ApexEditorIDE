@@ -612,3 +612,7 @@
   height: 100%;
   background: url("/img/89.gif") center center no-repeat;
 }
+
+.bg{
+  background: linear-gradient(to right, rgb(95, 44, 130), rgb(73, 160, 157));
+}
