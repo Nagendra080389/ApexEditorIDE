@@ -231,12 +231,12 @@ body{
   opacity: 0;
 }
 .buttons li:nth-child(1).active ~ li.lava { left: 0; width: 85px; opacity: 1}
-.buttons li:nth-child(2).active ~ li.lava { left: 85px; width: 130px; opacity: 1}
+.buttons li:nth-child(2).active ~ li.lava { left: 85px; width: 120px; opacity: 1}
 .buttons li:nth-child(3).active ~ li.lava { left: 210px; width: 132px; opacity: 1}
 
 
 .buttons li:nth-child(1):hover ~ li.lava{ left: 0; width: 85px; opacity: 1}
-.buttons li:nth-child(2):hover ~ li.lava { left: 85px; width: 130px; opacity: 1}
+.buttons li:nth-child(2):hover ~ li.lava { left: 85px; width: 120px; opacity: 1}
 .buttons li:nth-child(3):hover ~ li.lava { left: 210px; width: 132px; opacity: 1}
 
 
