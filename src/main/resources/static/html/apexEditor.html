@@ -107,11 +107,11 @@
     <script src="../js/codemirror/addon/search/searchcursor.js"></script>
     <script src="../js/codemirror/addon/search/dialog.js"></script>
     <script src="../js/codemirror/addon/selection/active-line.js"></script>
-    <script src="../js/jquery.autocomplete.min.js"></script>
     <!--Default theme-->
     <style type="text/css">
       .lint-error {font-family: arial; font-size: 70%; background: #ffa; color: #a00; padding: 2px 5px 3px; }
       .lint-error-icon {color: white; background-color: red; font-weight: bold; border-radius: 50%; padding: 0 3px; margin-right: 7px;}
+
 
     </style>
 </head>
@@ -204,6 +204,18 @@
     </div>
 </div>
 
+<div id="queryEditorModal" data-izimodal-fullscreen="true" data-izimodal-title="QueryEditor"
+     style="z-index: 9999; border-radius: 3px; border-bottom: 3px solid rgb(136, 160, 185); overflow: hidden; max-width: 600px;">
+    <div class="iziModal-wrap">
+        <div class="iziModal-content" style="padding: 20px;">
+            <input id="query-source" class="label-in-input ui-autocomplete-input label-in-input-active" placeholder="enter a soql query…"
+                   style="width: 100%;height: 25px; font-size: 14px; position: relative" autocomplete="off" ng-model="query">
+            <button class="btn btn-fetch">Query</button>
+
+        </div>
+    </div>
+</div>
+
 
 <nav class="navbar navbar-default navbar-fixed-top bg">
     <div id="container">
@@ -222,11 +234,11 @@
 <div style="padding: 1px; position: absolute; margin: 0px; left: 0px; right: 0px; top: 30px; bottom: 30px; width: 100%; height: auto; "
      loading-pane="isPaneShown">
     <textarea ng-model="apexClassWrapper.body" id="apexBody" name="apexBody" style="display: none;" readonly="true">{{apexClassWrapper.body}}</textarea>
-
 </div>
 <nav class="navbar navbar-default navbar-fixed-bottom bg">
     <div id="saveBtn" ng-click="postdata(apexClassWrapper)">Save</div>
-    <div id="symbolTableBtn" ng-click="removeCustomSymbolTable()">Remove Symbol Table</div>
+    <div id="symbolTableBtn" ng-click="removeCustomSymbolTable()">Refresh CustomSymbolTable</div>
+    <!--<div id="queryEditor">QueryEditor</div>-->
     <div id="themeDiv">
         <select ng-model="selectedTheme" ng-change="selectTheme()" id="select" ng-options="item for item in themeNames">
             <option value="">Select Theme</option>

@@ -115,7 +115,7 @@ body{
 .bg{
   min-height: 5px;
 
-  background: linear-gradient(to right, rgb(95, 44, 130), rgb(73, 160, 157));
+  background: linear-gradient(to right, rgb(136, 160, 185), black);
 }
 .highlight header{
   padding:25px 30px;

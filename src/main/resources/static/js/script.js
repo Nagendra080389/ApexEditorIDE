@@ -103,8 +103,8 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 namesFromOption.push(response.data[index].name)
             }
             $scope.names = foundClass;
-            $scope.isPaneShown = false;
         }
+        $scope.isPaneShown = false;
         iziToast.info({
             title: 'Apex Classes Loaded',
             position: 'topRight',
@@ -279,30 +279,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     false], // true to focus
                     ]
             });
-            /*bootbox.prompt({
-                title: 'Enter Class Name',
-                placeholder: 'Enter Class Name',
-                buttons: {
-                    confirm: {
-                        label: 'Create'
-                    }
-                },
-                callback: function(value) {
-                    if (value == null) {
-                        return;
-                    }
-                    if ($.inArray(value, namesFromOption) > -1) {
-                        iziToast.error({
-                            title: 'Error',
-                            message: 'Class with same name already exists',
-                            position: 'topRight',
-                        });
-                        return;
-                    }
-                    $scope.isPaneShown = true;
-                    $http.post("/createFile", value).then(createFileCallback, createFileErrorCallback);
-                }
-            })*/
         } else {
             var possibleOldValues = [];
             var oldValueSelected = {};
@@ -647,6 +623,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             close: false,
             overlay: true,
             toastOnce: true,
+            backgroundColor: 'rgb(136, 160, 185)',
             id: 'question',
             zindex: 999,
             title: 'Hey',
@@ -680,9 +657,46 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
 function testAnim(x) {
     $('.modal .modal-dialog').attr('class', 'modal-dialog  ' + x + '  animated');
 };
+$(document).on('click', '#queryEditor', function(event) {
+    event.preventDefault();
+    $('#queryEditorModal').iziModal('open');
+});
 $(document).ready(function() {
     $('.code-helper').select2({
         placeholder: 'Select a command to begin'
+    });
+    $("#queryEditorModal").iziModal({
+        history: true,
+        icon: 'icon-star',
+        timeoutProgressbar: true,
+        timeoutProgressbarColor: 'white',
+        arrowKeys: true,
+        width: 600,
+        padding: 20,
+        restoreDefaultContent: true,
+        loop: true,
+        fullscreen: false,
+    });
+    $("#queryEditorModal").on('click', '.btn-fetch', function(event) {
+        event.preventDefault();
+        $("#queryEditorModal").iziModal('startLoading');
+        fetch('https://api.github.com/repos/dolce/izimodal', {
+            method: 'get' // opcional
+        }).then(function(response) {
+            response.json().then(function(result) {
+                console.log("FullName: " + result.full_name);
+                console.log("URL: " + result.html_url);
+                console.log("Forks: " + result.forks);
+                console.log("Stars: " + result.stargazers_count);
+                $("#queryEditorModal .iziModal-content").html("<li><b>Repository</b>: " + result.full_name + "</li><b><li>URL</b>: <a href='" + result.html_url + "' target='blank'> " + result.html_url + "</a></li><b><li>Forks</b>: " + result.forks + "</li><b><li>Stars</b>: " + result.stargazers_count + "</li><b><li>Watchers</b>: " + result.watchers_count + "</li>");
+                $("#queryEditorModal").iziModal('stopLoading');
+            });
+        }).
+        catch (function(err) {
+            $("#modal-default").iziModal('stopLoading');
+            console.error(err);
+            $("#modal-default .iziModal-content").html(err);
+        });
     });
 });
 app.directive('loadingPane', function($timeout, $window) {

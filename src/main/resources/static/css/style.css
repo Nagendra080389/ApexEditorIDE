@@ -465,7 +465,7 @@
 #symbolTableBtn {
      float: left;
      display:inline-block;
-     width:12em;
+     width:15em;
      height:2em;
      color: rgba(255,255,255,0.75);
      line-height:2;
@@ -473,6 +473,25 @@
      text-decoration:none;
      font-weight: 600 !important;
 }
+
+#queryEditor {
+     float: left;
+     display:inline-block;
+     width:10em;
+     height:2em;
+     color: rgba(255,255,255,0.75);
+     line-height:2;
+     text-align:center;
+     text-decoration:none;
+     font-weight: 600 !important;
+}
+
+#queryEditor:hover{
+     background:black;
+     cursor: pointer;
+}
+
+
  #symbolTableBtn:hover{
      background:black;
      cursor: pointer;
@@ -614,5 +633,5 @@
 }
 
 .bg{
-  background: linear-gradient(to right, rgb(95, 44, 130), rgb(73, 160, 157));
+  background: rgb(136, 160, 185);
 }
