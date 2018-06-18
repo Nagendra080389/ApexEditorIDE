@@ -19,7 +19,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
     <link href="../css/style.css" rel="stylesheet"/>
@@ -190,6 +189,21 @@
     </div>
 </div>
 
+<div id="enterClass" data-iziModal-group="grupo1">
+    <button data-iziModal-close class="icon-close">x</button>
+    <header>
+        <a href="" class="active">New Class</a>
+    </header>
+    <section>
+        <input type="text" placeholder="Enter name">
+        <textarea name="description" placeholder="Enter class description here..."></textarea>
+        <footer>
+            <button data-iziModal-close>Cancel</button>
+            <button class="submit">Create</button>
+        </footer>
+    </section>
+</div>
+
 <div id="diffView" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div id="mergemodal"></div>
@@ -208,8 +222,10 @@
      style="z-index: 9999; border-radius: 3px; border-bottom: 3px solid rgb(136, 160, 185); overflow: hidden; max-width: 600px;">
     <div class="iziModal-wrap">
         <div class="iziModal-content" style="padding: 20px;">
-            <input id="query-source" class="label-in-input ui-autocomplete-input label-in-input-active" placeholder="enter a soql query…"
-                   style="width: 100%;height: 25px; font-size: 14px; position: relative" autocomplete="off" ng-model="query">
+            <input id="query-source" class="label-in-input ui-autocomplete-input label-in-input-active"
+                   placeholder="enter a soql query…"
+                   style="width: 100%;height: 25px; font-size: 14px; position: relative" autocomplete="off"
+                   ng-model="query">
             <button class="btn btn-fetch">Query</button>
 
         </div>
@@ -225,9 +241,13 @@
             <option value="">Select Option</option>
         </select>
     </div>
-    <div ng-model="currentUser" id="userContainer">{{currentUser.email}}
-        <div class="dropdown-content">
-            <a data-ng-click="logout()">Logout</a>
+    <div id="detailsWrapper">
+        <div ng-model="currentUser" id="domainContainer">{{currentUser.domainName}}</div>
+        <div ng-model="currentUser" id="emailContainer">{{currentUser.email}}
+            <div class="dropdown-content">
+                <a data-ng-click="logout()">View RuleEngine</a>
+                <a data-ng-click="logout()">Logout</a>
+            </div>
         </div>
     </div>
 </nav>

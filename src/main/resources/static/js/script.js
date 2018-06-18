@@ -68,7 +68,17 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
     $scope.isPaneShown = true;
     var foundTheme = ['3024-day', '3024-night', 'abcdef', 'ambiance', 'ambiance-mobile', 'base16-dark', 'base16-light', 'bespin', 'blackboard', 'cobalt', 'colorforth', 'darcula', 'dracula', 'duotone-dark', 'duotone-light', 'eclipse', 'elegant', 'erlang-dark', 'gruvbox-dark', 'hopscotch', 'icecoder', 'idea', 'isotope', 'lesser-dark', 'liquibyte', 'lucario', 'material', 'mbo', 'mdn-like', 'midnight', 'monokai', 'neat', 'neo', 'night', 'oceanic-next', 'panda-syntax', 'paraiso-dark', 'paraiso-light', 'pastel-on-dark', 'railscasts', 'rubyblue', 'seti', 'shadowfox', 'solarized', 'ssms', 'the-matrix', 'tomorrow-night-bright', 'tomorrow-night-eighties', 'ttcn', 'twilight', 'vibrant-ink', 'xq-dark', 'xq-light', 'yeti', 'zenburn'];
     $scope.themeNames = foundTheme;
-    $http.get("/getCurrentUser").then(userCallback, userErrorCallback);
+    if (localStorage.getItem('organization_id') && localStorage.getItem('display_name') && localStorage.getItem('displayEmail') && localStorage.getItem('domainName')) {
+        var localUser = {
+            email: localStorage.getItem('displayEmail'),
+            display_name: localStorage.getItem('displayEmail'),
+            domainName: localStorage.getItem('domainName'),
+            orgId: localStorage.getItem('organization_id'),
+        };
+        $scope.currentUser = localUser;
+    } else {
+        $http.get("/getCurrentUser").then(userCallback, userErrorCallback);
+    }
 
     function userCallback(response) {
         if (response.data.error && (response.data.error.indexOf('Bad_OAuth_Token') || response.data.error.indexOf('No cookies found'))) {
@@ -76,6 +86,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             $window.location.href = '/index.html';
         } else {
             $scope.currentUser = response.data;
+            localStorage.setItem('organization_id', response.data.orgId);
+            localStorage.setItem('display_name', response.data.display_name);
+            localStorage.setItem('displayEmail', response.data.email);
+            localStorage.setItem('domainName', response.data.domainName);
             iziToast.info({
                 icon: 'fa fa-user',
                 title: 'Welcome ' + response.data.display_name,
@@ -134,7 +148,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         } else {
             iziToast.question({
                 timeout: false,
-                layout: 2,
+                layout: 1,
                 drag: false,
                 close: false,
                 overlay: true,
@@ -155,6 +169,9 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     ['<button><b>Confirm</b></button>', function(instance, toast, button, e, inputs) {
                         if (inputs[0].value && inputs[1].value) {
                             var nameAndDesc = inputs[0].value + '+' + inputs[1].value;
+                            if (localStorage.getItem('display_name')) {
+                                nameAndDesc = nameAndDesc + '+' + localStorage.getItem('display_name');
+                            }
                             if ($.inArray(inputs[0].value, namesFromOption) > -1) {
                                 iziToast.error({
                                     timeout: false,
@@ -229,7 +246,8 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 }
             }
             $scope.isPaneShown = false;
-            iziToast.question({
+            $('#enterClass').iziModal('open');
+            /*iziToast.question({
                 timeout: false,
                 layout: 2,
                 drag: false,
@@ -252,6 +270,9 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     ['<button><b>Confirm</b></button>', function(instance, toast, button, e, inputs) {
                         if (inputs[0].value && inputs[1].value) {
                             var nameAndDesc = inputs[0].value + '+' + inputs[1].value;
+                            if (localStorage.getItem('display_name')) {
+                                nameAndDesc = nameAndDesc + '+' + localStorage.getItem('display_name');
+                            }
                             if ($.inArray(inputs[0].value, namesFromOption) > -1) {
                                 iziToast.error({
                                     timeout: 5000,
@@ -278,7 +299,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     },
                     false], // true to focus
                     ]
-            });
+            });*/
         } else {
             var possibleOldValues = [];
             var oldValueSelected = {};
@@ -317,6 +338,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
     function createFileCallback(response) {
         if (response.data) {
             $scope.apexClassWrapper = response.data;
+            $(document).prop('title', response.data.name);
             if (globalEditor1) {
                 globalEditor1.toTextArea();
             }
@@ -324,6 +346,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
                     lineNumbers: true,
                     matchBrackets: true,
+                    lineWrapping: true,
                     styleActiveLine: true,
                     extraKeys: {
                         ".": function(editor) {
@@ -339,6 +362,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 });
                 editor.markClean();
                 editor.on("keyup", function(cm, event) {
+                    $(document).prop('title', response.data.name + '  *');
                     var keyCode = event.keyCode || event.which;
                     if (!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
                         if (timeout) clearTimeout(timeout);
@@ -372,6 +396,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
     function getApexBodyCallback(response) {
         if (response.data) {
             $scope.apexClassWrapper = response.data;
+            $(document).prop('title', response.data.name);
             if (globalEditor1) {
                 globalEditor1.toTextArea();
             }
@@ -379,6 +404,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 var editor = CodeMirror.fromTextArea(document.getElementById('apexBody'), {
                     lineNumbers: true,
                     matchBrackets: true,
+                    lineWrapping: true,
                     styleActiveLine: true,
                     extraKeys: {
                         ".": function(editor) {
@@ -394,6 +420,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 });
                 editor.markClean();
                 editor.on("keyup", function(cm, event) {
+                    $(document).prop('title', response.data.name + '  *');
                     var keyCode = event.keyCode || event.which;
                     if (!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
                         if (timeout) clearTimeout(timeout);
@@ -559,6 +586,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 $('.code-helper').select2({
                     disabled: false
                 });
+                $(document).prop('title', response.data.name);
                 $scope.isPaneShown = false;
                 console.log('Success : ' + response.data);
                 iziToast.success({
@@ -608,6 +636,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         document.getElementById('saveBtn').style.visibility = 'visible';
     })
     $scope.logout = function() {
+        localStorage.clear();
         $http.get("/logout").then(logoutCallBack, logoutErrorCallback);
     }
 
@@ -697,6 +726,11 @@ $(document).ready(function() {
             console.error(err);
             $("#modal-default .iziModal-content").html(err);
         });
+    });
+    /* Instantiating iziModal */
+    $("#enterClass").iziModal({
+        overlayClose: false,
+        overlayColor: 'rgba(0, 0, 0, 0.6)'
     });
 });
 app.directive('loadingPane', function($timeout, $window) {

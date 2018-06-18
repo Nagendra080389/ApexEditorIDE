@@ -5,6 +5,8 @@ public class User {
     private String username;
     private String display_name;
     private String error;
+    private String orgId;
+    private String domainName;
 
     public String getEmail() {
         return email;
@@ -36,5 +38,21 @@ public class User {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
+    public String getDomainName() {
+        return domainName;
+    }
+
+    public void setDomainName(String domainName) {
+        this.domainName = domainName;
     }
 }

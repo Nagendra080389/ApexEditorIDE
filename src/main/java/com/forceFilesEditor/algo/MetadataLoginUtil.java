@@ -19,6 +19,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.coyote.http2.ConnectionException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -283,6 +284,8 @@ public class MetadataLoginUtil {
 
             ApexClass apexClass1 = new ApexClass();
             apexClass1.setBody("/** \n" +
+                    "Created By -> " + split[2] + "\n" +
+                    "Created Date -> " + new Date() + "\n" +
                     "Class Description -> " + split[1] + "\n" +
                     "**/\n" +
                     "public class " + split[0] + " {\n" +

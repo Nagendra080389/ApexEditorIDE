@@ -276,6 +276,8 @@ public class PMDController {
         String username = null;
         String display_name = null;
         String email = null;
+        String orgId = null;
+        String customDomain = null;
         User user = new User();
         if(cookies == null){
             user.setError("No cookies found");
@@ -304,6 +306,10 @@ public class PMDController {
             username = jsonObject.get("username").getAsString();
             display_name = jsonObject.get("display_name").getAsString();
             email = jsonObject.get("email").getAsString();
+            orgId = jsonObject.get("organization_id").getAsString();
+            if(!jsonObject.get("urls").isJsonNull()) {
+                customDomain = jsonObject.get("urls").getAsJsonObject().get("custom_domain").getAsString();
+            }
         }catch (Exception e){
             user.setError(e.getMessage());
             return gson.toJson(user);
@@ -315,6 +321,8 @@ public class PMDController {
         user.setDisplay_name(display_name);
         user.setEmail(email);
         user.setUsername(username);
+        user.setOrgId(orgId);
+        user.setDomainName(customDomain);
 
         return gson.toJson(user);
     }
