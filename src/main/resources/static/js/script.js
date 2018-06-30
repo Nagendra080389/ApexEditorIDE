@@ -247,6 +247,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             }
             $scope.isPaneShown = false;
             $('#enterClass').iziModal('open');
+            $("#enterClass").on('click', '.submit', function(event) {
+                    event.preventDefault();
+                    alert('Create Clicked');
+             });
             /*iziToast.question({
                 timeout: false,
                 layout: 2,
