@@ -168,8 +168,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
                     $('#enterClass').iziModal('close');
                 } else {
-                    var fx = "wobble",
-                        $modal = $(this).closest('.iziModal');
+                    var fx = "wobble", $modal = $(this).closest('.iziModal');
                     //wobble shake
                     alert('Both Fields are mandatory');
                     if (!$modal.hasClass(fx)) {
@@ -246,11 +245,12 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     if (localStorage.getItem('display_name')) {
                         nameAndDesc = nameAndDesc + '+' + localStorage.getItem('display_name');
                     }
-                    $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
+                    var $modal = $(this).closest('.iziModal');
+                    $modal.startLoading();
+                    $http.post("/createFile", nameAndDesc).then(createFileCallback($modal), createFileErrorCallback);
                     $('#enterClass').iziModal('close');
                 } else {
-                    var fx = "wobble",
-                        $modal = $(this).closest('.iziModal');
+                    var fx = "wobble", $modal = $(this).closest('.iziModal');
                     //wobble shake
                     alert('Both Fields are mandatory');
                     if (!$modal.hasClass(fx)) {
@@ -296,7 +296,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         }
     }
 
-    function createFileCallback(response) {
+    function createFileCallback(response, modal) {
         if (response.data) {
             $scope.apexClassWrapper = response.data;
             $(document).prop('title', response.data.name);
@@ -342,6 +342,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             }), 2000
             document.getElementById('saveBtn').style.visibility = 'visible';
             $scope.isPaneShown = false;
+            modal.stopLoading();
         }
     }
 
