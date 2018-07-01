@@ -262,6 +262,8 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         return;
                     }
                     var nameAndDesc = $('#classNameId').val() + '+' + $('#classDescId').val();
+                    $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
+                    $('#enterClass').iziModal('close');
                 } else {
                     var fx = "wobble",
                         $modal = $(this).closest('.iziModal');
