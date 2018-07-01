@@ -146,58 +146,39 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             };
             $http.get("/getApexBody", config).then(getApexBodyCallback, getApexBodyErrorCallback);
         } else {
-            iziToast.question({
-                timeout: false,
-                layout: 1,
-                drag: false,
-                close: false,
-                overlay: true,
-                title: 'New Class Details',
-                message: 'Enter Class Name and Description',
-                position: 'center',
-                inputs: [
-                    ['<input type="text" id="classNameId" placeholder="ClassName" required=true>', 'keyup', function(instance, toast, input, e) {
-                        console.info(input.value);
-                    },
-                    true], // true to focus
-                    ['<input type="text" placeholder="Enter Class description" required=true>', 'keyup', function(instance, toast, input, e) {
-                        console.info(input.value);
-                    },
-                    false]
-                ],
-                buttons: [
-                    ['<button><b>Confirm</b></button>', function(instance, toast, button, e, inputs) {
-                        if (inputs[0].value && inputs[1].value) {
-                            var nameAndDesc = inputs[0].value + '+' + inputs[1].value;
-                            if (localStorage.getItem('display_name')) {
-                                nameAndDesc = nameAndDesc + '+' + localStorage.getItem('display_name');
-                            }
-                            if ($.inArray(inputs[0].value, namesFromOption) > -1) {
-                                iziToast.error({
-                                    timeout: false,
-                                    title: 'Error',
-                                    message: 'Class with same name already exists',
-                                    position: 'topRight',
-                                });
-                                return;
-                            }
-                            $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
-                            instance.hide({
-                                transitionOut: 'fadeOut'
-                            }, toast, 'button');
-                        } else {
-                            alert('Both Fields are mandatory');
-                        }
-                        $scope.isPaneShown = true;
-                    },
-                    false], // true to focus
-                    ['<button><b>Cancel</b></button>', function(instance, toast, button, e, inputs) {
-                        instance.hide({
-                            transitionOut: 'fadeOut'
-                        }, toast, 'button');
-                    },
-                    false], // true to focus
-                    ]
+            $('#enterClass').iziModal('open');
+            $("#enterClass").on('click', '.submit', function(event) {
+                event.preventDefault();
+                var className = $('#classNameId').val();
+                var classDesc = $('#classDescId').val();
+                if (classDesc && className && className != "" && classDesc != "") {
+                    if ($.inArray(className, namesFromOption) > -1) {
+                        iziToast.error({
+                            timeout: 5000,
+                            title: 'Error',
+                            message: 'Class with same name already exists',
+                            position: 'topRight',
+                        });
+                        return;
+                    }
+                    var nameAndDesc = $('#classNameId').val() + '+' + $('#classDescId').val();
+                    if (localStorage.getItem('display_name')) {
+                        nameAndDesc = nameAndDesc + '+' + localStorage.getItem('display_name');
+                    }
+                    $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
+                    $('#enterClass').iziModal('close');
+                } else {
+                    var fx = "wobble",
+                        $modal = $(this).closest('.iziModal');
+                    //wobble shake
+                    alert('Both Fields are mandatory');
+                    if (!$modal.hasClass(fx)) {
+                        $modal.addClass(fx);
+                        setTimeout(function() {
+                            $modal.removeClass(fx);
+                        }, 1500);
+                    }
+                }
             });
         }
     }
@@ -280,59 +261,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     }
                 }
             });
-            /*iziToast.question({
-                timeout: false,
-                layout: 2,
-                drag: false,
-                close: false,
-                overlay: true,
-                title: 'New Class Details',
-                message: 'Enter Class Name and Description',
-                position: 'center',
-                inputs: [
-                    ['<input type="text" id="classNameId" placeholder="ClassName" required=true>', 'keyup', function(instance, toast, input, e) {
-                        console.info(input.value);
-                    },
-                    true], // true to focus
-                    ['<input type="text" placeholder="Enter Class description" required=true>', 'keyup', function(instance, toast, input, e) {
-                        console.info(input.value);
-                    },
-                    false]
-                ],
-                buttons: [
-                    ['<button><b>Confirm</b></button>', function(instance, toast, button, e, inputs) {
-                        if (inputs[0].value && inputs[1].value) {
-                            var nameAndDesc = inputs[0].value + '+' + inputs[1].value;
-                            if (localStorage.getItem('display_name')) {
-                                nameAndDesc = nameAndDesc + '+' + localStorage.getItem('display_name');
-                            }
-                            if ($.inArray(inputs[0].value, namesFromOption) > -1) {
-                                iziToast.error({
-                                    timeout: 5000,
-                                    title: 'Error',
-                                    message: 'Class with same name already exists',
-                                    position: 'topRight',
-                                });
-                                return;
-                            }
-                            $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
-                            instance.hide({
-                                transitionOut: 'fadeOut'
-                            }, toast, 'button');
-                        } else {
-                            alert('Both Fields are mandatory');
-                        }
-                        $scope.isPaneShown = true;
-                    },
-                    false], // true to focus
-                    ['<button><b>Cancel</b></button>', function(instance, toast, button, e, inputs) {
-                        instance.hide({
-                            transitionOut: 'fadeOut'
-                        }, toast, 'button');
-                    },
-                    false], // true to focus
-                    ]
-            });*/
         } else {
             var possibleOldValues = [];
             var oldValueSelected = {};
