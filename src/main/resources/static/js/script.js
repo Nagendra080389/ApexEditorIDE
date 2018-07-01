@@ -262,6 +262,9 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         return;
                     }
                     var nameAndDesc = $('#classNameId').val() + '+' + $('#classDescId').val();
+                    if (localStorage.getItem('display_name')) {
+                        nameAndDesc = nameAndDesc + '+' + localStorage.getItem('display_name');
+                    }
                     $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
                     $('#enterClass').iziModal('close');
                 } else {

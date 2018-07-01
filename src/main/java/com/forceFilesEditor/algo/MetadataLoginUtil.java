@@ -280,6 +280,7 @@ public class MetadataLoginUtil {
 
 
             // we create a member if we want to update and direttly ApexClass when we want to create
+            System.out.println(apexClassName);
             String[] split = apexClassName.split("\\+");
 
             ApexClass apexClass1 = new ApexClass();
