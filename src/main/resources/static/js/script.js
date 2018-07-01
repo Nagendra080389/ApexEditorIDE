@@ -248,9 +248,33 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             $scope.isPaneShown = false;
             $('#enterClass').iziModal('open');
             $("#enterClass").on('click', '.submit', function(event) {
-                    event.preventDefault();
-                    alert('Create Clicked');
-             });
+                event.preventDefault();
+                var className = $('#classNameId').val();
+                var classDesc = $('#classDescId').val();
+                if (classDesc && className && className != "" && classDesc != "") {
+                    if ($.inArray(className, namesFromOption) > -1) {
+                        iziToast.error({
+                            timeout: 5000,
+                            title: 'Error',
+                            message: 'Class with same name already exists',
+                            position: 'topRight',
+                        });
+                        return;
+                    }
+                    var nameAndDesc = $('#classNameId').val() + '+' + $('#classDescId').val();
+                } else {
+                    var fx = "wobble",
+                        $modal = $(this).closest('.iziModal');
+                    //wobble shake
+                    alert('Both Fields are mandatory');
+                    if (!$modal.hasClass(fx)) {
+                        $modal.addClass(fx);
+                        setTimeout(function() {
+                            $modal.removeClass(fx);
+                        }, 1500);
+                    }
+                }
+            });
             /*iziToast.question({
                 timeout: false,
                 layout: 2,
