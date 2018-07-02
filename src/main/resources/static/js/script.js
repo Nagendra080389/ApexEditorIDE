@@ -245,9 +245,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     if (localStorage.getItem('display_name')) {
                         nameAndDesc = nameAndDesc + '+' + localStorage.getItem('display_name');
                     }
-                    var $modal = $(this).closest('.iziModal');
-                    $modal.startLoading();
-                    $http.post("/createFile", nameAndDesc).then(createFileCallback($modal), createFileErrorCallback);
+                    $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
                     $('#enterClass').iziModal('close');
                 } else {
                     var fx = "wobble", $modal = $(this).closest('.iziModal');
@@ -296,7 +294,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         }
     }
 
-    function createFileCallback(response, modal) {
+    function createFileCallback(response) {
         if (response.data) {
             $scope.apexClassWrapper = response.data;
             $(document).prop('title', response.data.name);
@@ -342,7 +340,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             }), 2000
             document.getElementById('saveBtn').style.visibility = 'visible';
             $scope.isPaneShown = false;
-            modal.stopLoading();
         }
     }
 
