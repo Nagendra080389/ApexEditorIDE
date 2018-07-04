@@ -65,7 +65,6 @@ app.config(['$locationProvider', function($locationProvider) {
 app.controller('OrderFormController', function($scope, $http, $filter, $window, $location) {
     document.getElementById('saveBtn').style.visibility = 'hidden';
     var namesFromOption = [];
-    $scope.isPaneShown = true;
     var foundTheme = ['3024-day', '3024-night', 'abcdef', 'ambiance', 'ambiance-mobile', 'base16-dark', 'base16-light', 'bespin', 'blackboard', 'cobalt', 'colorforth', 'darcula', 'dracula', 'duotone-dark', 'duotone-light', 'eclipse', 'elegant', 'erlang-dark', 'gruvbox-dark', 'hopscotch', 'icecoder', 'idea', 'isotope', 'lesser-dark', 'liquibyte', 'lucario', 'material', 'mbo', 'mdn-like', 'midnight', 'monokai', 'neat', 'neo', 'night', 'oceanic-next', 'panda-syntax', 'paraiso-dark', 'paraiso-light', 'pastel-on-dark', 'railscasts', 'rubyblue', 'seti', 'shadowfox', 'solarized', 'ssms', 'the-matrix', 'tomorrow-night-bright', 'tomorrow-night-eighties', 'ttcn', 'twilight', 'vibrant-ink', 'xq-dark', 'xq-light', 'yeti', 'zenburn'];
     $scope.themeNames = foundTheme;
     if (localStorage.getItem('organization_id') && localStorage.getItem('display_name') && localStorage.getItem('displayEmail') && localStorage.getItem('domainName')) {
@@ -118,7 +117,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             }
             $scope.names = foundClass;
         }
-        $scope.isPaneShown = false;
         iziToast.info({
             title: 'Apex Classes Loaded',
             position: 'topRight',
@@ -168,7 +166,8 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
                     $('#enterClass').iziModal('close');
                 } else {
-                    var fx = "wobble", $modal = $(this).closest('.iziModal');
+                    var fx = "wobble",
+                        $modal = $(this).closest('.iziModal');
                     //wobble shake
                     alert('Both Fields are mandatory');
                     if (!$modal.hasClass(fx)) {
@@ -188,13 +187,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             message: error,
             position: 'topRight',
         });
-        $scope.isPaneShown = false;
     }
     $scope.retrieveSelectedClass = function(newValue, oldValue) {
         var windowsEvent = $window;
-        $scope.isPaneShown = true;
         if ($scope.selectedName === undefined) {
-            $scope.isPaneShown = false;
             return;
         }
         var possibleOldValues = [];
@@ -214,18 +210,15 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     var r = confirm("You have unsaved changes, are you sure you want to proceed ?");
                     if (r != true) {
                         $scope.selectedName = possibleOldValues[0];
-                        $scope.isPaneShown = false;
                         return;
                     }
                 }
                 if (windowsEvent.event.ctrlKey) {
                     $window.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
                     $scope.selectedName = possibleOldValues[0];
-                    $scope.isPaneShown = false;
                     return;
                 }
             }
-            $scope.isPaneShown = false;
             $('#enterClass').iziModal('open');
             $("#enterClass").on('click', '.submit', function(event) {
                 event.preventDefault();
@@ -246,11 +239,11 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         nameAndDesc = nameAndDesc + '+' + localStorage.getItem('display_name');
                     }
                     Pace.start();
-                        $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
-
+                    $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
                     $('#enterClass').iziModal('close');
                 } else {
-                    var fx = "wobble", $modal = $(this).closest('.iziModal');
+                    var fx = "wobble",
+                        $modal = $(this).closest('.iziModal');
                     //wobble shake
                     alert('Both Fields are mandatory');
                     if (!$modal.hasClass(fx)) {
@@ -275,7 +268,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     var r = confirm("You have unsaved changes, are you sure you want to proceed ?");
                     if (r != true) {
                         $scope.selectedName = possibleOldValues[0];
-                        $scope.isPaneShown = false;
                         return;
                     }
                 }
@@ -283,7 +275,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             if (windowsEvent.event.ctrlKey) {
                 $window.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
                 $scope.selectedName = possibleOldValues[0];
-                $scope.isPaneShown = false;
                 return;
             }
             var data = {
@@ -342,12 +333,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 globalEditor1 = $('.CodeMirror')[0].CodeMirror;
             }), 2000
             document.getElementById('saveBtn').style.visibility = 'visible';
-            $scope.isPaneShown = false;
         }
     }
 
     function createFileErrorCallback(error) {
-        $scope.isPaneShown = false;
         iziToast.error({
             title: 'Error',
             message: error,
@@ -401,7 +390,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 //globalEditor1.(localStorage.getItem('apexEditorTheme'));
             }), 2000
             document.getElementById('saveBtn').style.visibility = 'visible';
-            $scope.isPaneShown = false;
         }
     }
 
@@ -415,7 +403,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         }
     }
     $scope.postdata = function(apexClassWrapper) {
-        $scope.isPaneShown = true;
         apexClassWrapper.body = globalEditor1.getValue();
         var dataObj = {
             name: apexClassWrapper.name,
@@ -429,7 +416,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             $scope.apexClassWrapper = response.data;
             var errors = response.data.pmdStructures;
             if (Object.keys(errors).length > 0) {
-                $scope.isPaneShown = false;
                 if (response.data.isCompilationError) {
                     for (var i = 0; i < widgets.length; ++i) {
                         globalEditor1.removeLineWidget(widgets[i]);
@@ -461,7 +447,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     document.getElementById('saveBtn').style.visibility = 'hidden';
                 }
             } else {
-                $scope.isPaneShown = false;
                 for (var i = 0; i < widgets.length; ++i) {
                     globalEditor1.removeLineWidget(widgets[i]);
                 }
@@ -475,7 +460,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         }
 
         function modifyErrorCallback(error) {
-            $scope.isPaneShown = false;
             iziToast.error({
                 title: 'Error',
                 message: error,
@@ -485,7 +469,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         //$http.post("/modifyApexBody", dataObj).success(function(data) {}).error(function(data) {});
     };
     $scope.deployWithErrors = function(apexClassWrapper) {
-        $scope.isPaneShown = true;
         $('#myModal').modal('hide');
         $('#myModalWithoutError').modal('hide');
         $('.code-helper').select2({
@@ -522,7 +505,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
 
         function saveCallback(response) {
             if (response.data.dataNotMatching) {
-                $scope.isPaneShown = false;
                 $scope.apexClassWrapper = response.data;
                 $('.code-helper').select2({
                     disabled: true
@@ -549,7 +531,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     disabled: false
                 });
                 $(document).prop('title', response.data.name);
-                $scope.isPaneShown = false;
                 console.log('Success : ' + response.data);
                 iziToast.success({
                     timeout: 5000,
@@ -565,7 +546,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         }
 
         function saveErrorCallback(error) {
-            $scope.isPaneShown = false;
             iziToast.error({
                 title: 'Error',
                 message: error,
@@ -694,78 +674,4 @@ $(document).ready(function() {
         overlayClose: false,
         overlayColor: 'rgba(0, 0, 0, 0.6)'
     });
-});
-app.directive('loadingPane', function($timeout, $window) {
-    return {
-        restrict: 'A',
-        link: function(scope, element, attr) {
-            var directiveId = 'loadingPane';
-            var targetElement;
-            var paneElement;
-            var throttledPosition;
-
-            function init(element) {
-                targetElement = element;
-                paneElement = angular.element('<div>');
-                paneElement.addClass('loading-pane');
-                if (attr['id']) {
-                    paneElement.attr('data-target-id', attr['id']);
-                }
-                var spinnerImage = angular.element('<div>');
-                spinnerImage.addClass('spinner-image');
-                spinnerImage.appendTo(paneElement);
-                angular.element('body').append(paneElement);
-                setZIndex();
-                //reposition window after a while, just in case if:
-                // - watched scope property will be set to true from the beginning
-                // - and initial position of the target element will be shifted during page rendering
-                $timeout(position, 100);
-                $timeout(position, 200);
-                $timeout(position, 300);
-                throttledPosition = _.throttle(position, 50);
-                angular.element($window).scroll(throttledPosition);
-                angular.element($window).resize(throttledPosition);
-            }
-
-            function updateVisibility(isVisible) {
-                if (isVisible) {
-                    show();
-                } else {
-                    hide();
-                }
-            }
-
-            function setZIndex() {
-                var paneZIndex = 500;
-                paneElement.css('zIndex', paneZIndex).find('.spinner-image').css('zIndex', paneZIndex + 1);
-            }
-
-            function position() {
-                paneElement.css({
-                    'left': targetElement.offset().left,
-                    'top': targetElement.offset().top - $(window).scrollTop(),
-                    'width': targetElement.outerWidth(),
-                    'height': targetElement.outerHeight()
-                });
-            }
-
-            function show() {
-                paneElement.show();
-                position();
-            }
-
-            function hide() {
-                paneElement.hide();
-            }
-            init(element);
-            scope.$watch(attr[directiveId], function(newVal) {
-                updateVisibility(newVal);
-            });
-            scope.$on('$destroy', function cleanup() {
-                paneElement.remove();
-                $(window).off('scroll', throttledPosition);
-                $(window).off('resize', throttledPosition);
-            });
-        }
-    };
 });
