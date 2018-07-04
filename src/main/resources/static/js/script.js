@@ -238,7 +238,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     if (localStorage.getItem('display_name')) {
                         nameAndDesc = nameAndDesc + '+' + localStorage.getItem('display_name');
                     }
-                    Pace.start();
                     $http.post("/createFile", nameAndDesc).then(createFileCallback, createFileErrorCallback);
                     $('#enterClass').iziModal('close');
                 } else {
@@ -289,7 +288,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
 
     function createFileCallback(response) {
         if (response.data) {
-            Pace.stop();
             $scope.apexClassWrapper = response.data;
             $(document).prop('title', response.data.name);
             if (globalEditor1) {
