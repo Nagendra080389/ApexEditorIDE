@@ -57,11 +57,6 @@ var ExcludedIntelliSenseTriggerKeys = {
     "222": "quote"
 }
 
-paceOptions = {
-   ajax: {
-         trackMethods: ['GET', 'POST']
-   }
-}
 app.config(['$locationProvider', function($locationProvider) {
     $locationProvider.html5Mode({
         enabled: true,
