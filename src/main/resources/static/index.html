@@ -1,35 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>ApexEditor Login</title>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.29/angular.min.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Cookie|Open+Sans:400,700" rel="stylesheet"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-    <link href="../css/login/loginStyle.css" rel="stylesheet"/>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!------ Include the above in your HEAD tag ---------->
+    <title>Apex Editor</title>
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap core CSS -->
+    <link href="js/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="js/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- Plugin CSS -->
+    <link href="js/vendor/magnific-popup/magnific-popup.css" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles for this template -->
+    <link href="css/freelancer.min.css" rel="stylesheet">
+    <link href="css/loginStyle.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.3.0/css/iziToast.min.css" rel="stylesheet">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.3.0/js/iziToast.min.js"></script>
 
-
-
 </head>
+
+<body id="page-top">
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top">Apex Editor</a>
+        <button class="navbar-toggler navbar-toggler-right text-uppercase bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            Menu
+            <i class="fa fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#portfolio">Login</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Header -->
+<header class="masthead bg-primary text-white text-center">
+    <div class="container">
+        <img class="img-fluid mb-5 d-block mx-auto" src="img/profile.png" alt="">
+        <h1 class="text-uppercase mb-0">Apex Editor</h1>
+        <hr class="star-light">
+        <h2 class="font-weight-light mb-0">Fastest way to Code better</h2>
+    </div>
+</header>
+
+<!-- Portfolio Grid Section -->
+<section class="portfolio" id="portfolio">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-secondary mb-0">Login</h2>
+        <hr class="star-dark mb-5">
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary" onclick=redirectJS("test")>Sandbox</button>
+            <button type="button" class="btn btn-primary" onclick=redirectJS("login")>Production</button>
+            <button type="button" class="btn btn-primary" onclick=domainChanger()>Custom Domain</button>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="bg-primary text-white mb-0" id="about">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-white">About</h2>
+        <hr class="star-light mb-5">
+        <div class="row">
+            <div class="col-lg-4 ml-auto">
+                <p class="lead">Apex Editor is a web based Code Editor tool which seamlessly reviews your code while you are deploying it on the sever. This helps developer to code better and faster.</p>
+            </div>
+            <div class="col-lg-4 mr-auto">
+                <p class="lead">Whether you're a student looking to showcase your work, a professional looking to attract clients, or a graphic artist looking to share your projects, this template is the perfect starting point!</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- Footer -->
+<footer class="footer text-center">
+    <div class="container">
+        <div class="row">
+
+
+        </div>
+    </div>
+</footer>
+
+<div class="copyright py-4 text-center text-white">
+    <div class="container">
+        <small>Copyright &copy; Apex Editor 2018</small>
+    </div>
+</div>
+
+
+<!-- Bootstrap core JavaScript -->
+<script src="js/vendor/jquery/jquery.min.js"></script>
+<script src="js/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <script>
 function domainChanger() {
     iziToast.question({
         timeout: false,
         layout: 2,
-        backgroundColor: 'rgb(136, 160, 185)',
+        backgroundColor: '#55b2e8',
         drag: false,
         close: false,
         overlay: true,
@@ -72,35 +163,13 @@ function redirectJS(orgType) {
 
 </script>
 
-<body>
+<!-- Plugin JavaScript -->
+<script src="js/vendor/jquery-easing/jquery.easing.min.js"></script>
+<script src="js/vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
 
+<!-- Custom scripts for this template -->
+<script src="js/freelancer.min.js"></script>
 
-<main>
-    <section class="cd-section" id="Welcome">
-        <div class="highlight bg">
-            <div class="core">
-                <h1>APEX EDITOR <span>v1.0.0</span></h1>
-                <p>Online Apex editor with proactive code review</p>
-                <span class="examples">Click Below</span>
-                <ul class="buttons">
-                    <li><a onclick=redirectJS("test") class="trigger-info">Sand Box</a></li>
-                    <li><a onclick=redirectJS("login") class="trigger-success">Production Box</a></li>
-                    <li><a onclick=domainChanger() class="trigger-warning">My Custom Domain</a></li>
-                    <li class="lava"></li>
-                </ul>
-                <div class="target" style="max-width: 500px"></div>
-            </div>
-        </div>
-    </section>
-
-
-
-
-</main>
-<footer class="main">
-    <p>ApexEditor, Copyright &copy; 2017</p>
-    <p>Contact Us : <a href="mailto: nagesingh@deloitte.com;priyaverma@deloitte.com;prastiwari@deloitte.com">Mail Us</a>
-    </p>
-</footer>
 </body>
+
 </html>
