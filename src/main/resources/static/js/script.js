@@ -109,10 +109,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             window.dataLayer = window.dataLayer || [];
 
             function gtag() {
-                dataLayer.push(dataLayer.push({
-                    'username': response.data.display_name,
-                    'orgId': response.data.orgId
-                }););
+                dataLayer.push({
+                    'username': localUser.display_name,
+                    'orgId': localUser.orgId
+                });
             }
             gtag('js', new Date());
             gtag('config', 'UA-123660266-1');
