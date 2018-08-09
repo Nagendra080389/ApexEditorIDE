@@ -78,7 +78,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         window.dataLayer = window.dataLayer || [];
 
         function gtag() {
-            dataLayer.push(localUser.display_name);
+            dataLayer.push({
+                'username': localUser.display_name,
+                'orgId': localUser.orgId
+            });
         }
         gtag('js', new Date());
         gtag('config', 'UA-123660266-1');
@@ -106,7 +109,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             window.dataLayer = window.dataLayer || [];
 
             function gtag() {
-                dataLayer.push(response.data.display_name);
+                dataLayer.push(dataLayer.push({
+                    'username': localUser.display_name,
+                    'orgId': localUser.orgId
+                }););
             }
             gtag('js', new Date());
             gtag('config', 'UA-123660266-1');
