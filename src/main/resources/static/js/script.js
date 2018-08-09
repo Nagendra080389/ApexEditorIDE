@@ -110,8 +110,8 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
 
             function gtag() {
                 dataLayer.push(dataLayer.push({
-                    'username': localUser.display_name,
-                    'orgId': localUser.orgId
+                    'username': response.data.display_name,
+                    'orgId': response.data.orgId
                 }););
             }
             gtag('js', new Date());
