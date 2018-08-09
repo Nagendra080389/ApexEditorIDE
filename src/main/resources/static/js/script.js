@@ -56,7 +56,6 @@ var ExcludedIntelliSenseTriggerKeys = {
     "220": "backslash",
     "222": "quote"
 }
-
 app.config(['$locationProvider', function($locationProvider) {
     $locationProvider.html5Mode({
         enabled: true,
@@ -76,6 +75,13 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             orgId: localStorage.getItem('organization_id'),
         };
         $scope.currentUser = localUser;
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(localUser.display_name);
+        }
+        gtag('js', new Date());
+        gtag('config', 'UA-123660266-1');
     } else {
         $http.get("/getCurrentUser").then(userCallback, userErrorCallback);
     }
@@ -97,6 +103,13 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 position: 'topCenter',
                 layout: 2,
             });
+            window.dataLayer = window.dataLayer || [];
+
+            function gtag() {
+                dataLayer.push(response.data.display_name);
+            }
+            gtag('js', new Date());
+            gtag('config', 'UA-123660266-1');
         }
     }
 
