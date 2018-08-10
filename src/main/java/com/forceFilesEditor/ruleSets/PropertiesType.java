@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 
 
 /**
@@ -37,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "propertiesType", propOrder = {
     "property"
 })
-public class PropertiesType {
+public class PropertiesType implements Serializable {
 
     @XmlElement(required = true)
     protected PropertyType property;

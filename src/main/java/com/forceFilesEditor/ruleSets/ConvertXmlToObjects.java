@@ -3,6 +3,7 @@ package com.forceFilesEditor.ruleSets;
 import com.forceFilesEditor.algo.MetadataLoginUtil;
 import com.forceFilesEditor.model.Completions;
 import com.forceFilesEditor.model.Type;
+import org.springframework.stereotype.Component;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -14,8 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+@Component
 public class ConvertXmlToObjects {
-    public RulesetType convert(String[] args) throws JAXBException, IOException {
+    public RulesetType convert() throws JAXBException, IOException {
         //1. We need to create JAXContext instance
         JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
 

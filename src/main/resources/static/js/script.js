@@ -599,6 +599,15 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         localStorage.clear();
         $http.get("/logout").then(logoutCallBack, logoutErrorCallback);
     }
+    $scope.modifyRuleEngine = function() {
+        $http.get("/modifyRuleEngine").then(modifyRuleEngineCallBack, modifyRuleEngineErrorCallback);
+    }
+
+    function modifyRuleEngineCallBack(response) {
+        console.log(response);
+    };
+
+    function modifyRuleEngineErrorCallback() {};
 
     function logoutCallBack() {
         $window.location.href = "/index.html";

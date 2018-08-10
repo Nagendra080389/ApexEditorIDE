@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 
 
 /**
@@ -50,7 +51,7 @@ import javax.xml.bind.annotation.XmlType;
     "priority",
     "properties"
 })
-public class RuleType {
+public class RuleType implements Serializable {
 
     @XmlElement(required = true)
     protected String priority;

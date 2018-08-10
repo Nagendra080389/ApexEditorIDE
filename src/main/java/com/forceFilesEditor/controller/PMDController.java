@@ -1,6 +1,8 @@
 package com.forceFilesEditor.controller;
 
 import com.forceFilesEditor.model.User;
+import com.forceFilesEditor.ruleSets.ConvertXmlToObjects;
+import com.forceFilesEditor.ruleSets.RulesetType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.forceFilesEditor.algo.MetadataLoginUtil;
@@ -14,10 +16,10 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.io.IOUtils;
 import org.apache.coyote.http2.ConnectionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-import sun.nio.cs.UTF_32;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -37,6 +39,8 @@ import java.util.*;
 @RestController
 public class PMDController {
 
+    @Autowired
+    private ConvertXmlToObjects convertXmlToObjects;
 
     private Map<String, List<String>> stringListHashMap = new HashMap<>();
     private volatile Map<String, SymbolTable> symbolTableMap = new HashMap<>();
@@ -408,6 +412,11 @@ public class PMDController {
 
         response.sendRedirect("/index.html");
 
+    }
+
+    @RequestMapping(value = "/modifyRuleEngine", method = RequestMethod.GET)
+    public RulesetType modifyRuleEngine(HttpServletResponse response, HttpServletRequest request) throws Exception {
+        return convertXmlToObjects.convert();
     }
 
 
