@@ -658,8 +658,9 @@ function testAnim(x) {
 };
 /*$(document).on('click', '#queryEditor', function(event) {
     event.preventDefault();
-    $('#queryEditorModal').iziModal('open');*/
+    $('#queryEditorModal').iziModal('open');
 });
+*/
 $(document).ready(function() {
     $('.code-helper').select2({
         placeholder: 'Select a command to begin'
