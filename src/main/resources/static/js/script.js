@@ -656,15 +656,15 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
 function testAnim(x) {
     $('.modal .modal-dialog').attr('class', 'modal-dialog  ' + x + '  animated');
 };
-$(document).on('click', '#queryEditor', function(event) {
+/*$(document).on('click', '#queryEditor', function(event) {
     event.preventDefault();
-    $('#queryEditorModal').iziModal('open');
+    $('#queryEditorModal').iziModal('open');*/
 });
 $(document).ready(function() {
     $('.code-helper').select2({
         placeholder: 'Select a command to begin'
     });
-    $("#queryEditorModal").iziModal({
+    /*$("#queryEditorModal").iziModal({
         history: true,
         icon: 'icon-star',
         timeoutProgressbar: true,
@@ -676,7 +676,7 @@ $(document).ready(function() {
         loop: true,
         fullscreen: false,
     });
-
+*/
     $("#ruleEngine").iziModal({
             history: true,
             icon: 'icon-star',
@@ -690,7 +690,7 @@ $(document).ready(function() {
             fullscreen: false,
         });
 
-    $("#queryEditorModal").on('click', '.btn-fetch', function(event) {
+    /*$("#queryEditorModal").on('click', '.btn-fetch', function(event) {
         event.preventDefault();
         $("#queryEditorModal").iziModal('startLoading');
         fetch('https://api.github.com/repos/dolce/izimodal', {
@@ -710,7 +710,7 @@ $(document).ready(function() {
             console.error(err);
             $("#modal-default .iziModal-content").html(err);
         });
-    });
+    });*/
     /* Instantiating iziModal */
     $("#enterClass").iziModal({
         overlayClose: false,
