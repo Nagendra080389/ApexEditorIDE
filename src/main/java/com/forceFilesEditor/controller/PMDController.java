@@ -2,6 +2,8 @@ package com.forceFilesEditor.controller;
 
 import com.forceFilesEditor.model.User;
 import com.forceFilesEditor.ruleSets.ConvertXmlToObjects;
+import com.forceFilesEditor.ruleSets.RuleSetWrapper;
+import com.forceFilesEditor.ruleSets.RuleType;
 import com.forceFilesEditor.ruleSets.RulesetType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -414,9 +416,19 @@ public class PMDController {
 
     }
 
-    @RequestMapping(value = "/modifyRuleEngine", method = RequestMethod.GET)
-    public RulesetType modifyRuleEngine(HttpServletResponse response, HttpServletRequest request) throws Exception {
-        return convertXmlToObjects.convert();
+    @RequestMapping(value = "/getRuleEngine", method = RequestMethod.GET)
+    public List<RuleSetWrapper> getRuleEngine() throws Exception {
+        List<RuleSetWrapper> ruleSetWrappers = new ArrayList<>();
+        RuleSetWrapper ruleSetWrapper = null;
+        RulesetType rulesetType = convertXmlToObjects.convert();
+        if(rulesetType != null && rulesetType.getRule() != null && !rulesetType.getRule().isEmpty())
+        for (RuleType ruleType : rulesetType.getRule()) {
+            ruleSetWrapper = new RuleSetWrapper();
+            ruleSetWrapper.setRuleType(ruleType);
+            ruleSetWrapper.setActive(true);
+            ruleSetWrappers.add(ruleSetWrapper);
+        }
+        return ruleSetWrappers;
     }
 
 
