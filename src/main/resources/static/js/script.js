@@ -604,7 +604,8 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
     }
 
     function getRuleEngineCallBack(response) {
-        console.log(response);
+        $scope.ruleEngineData = response.data;
+        $('#ruleEngine').iziModal('open');
     };
 
     function getRuleEngineErrorCallback() {};
@@ -675,6 +676,20 @@ $(document).ready(function() {
         loop: true,
         fullscreen: false,
     });
+
+    $("#ruleEngine").iziModal({
+            history: true,
+            icon: 'icon-star',
+            timeoutProgressbar: true,
+            timeoutProgressbarColor: 'white',
+            arrowKeys: true,
+            width: 600,
+            padding: 20,
+            restoreDefaultContent: true,
+            loop: true,
+            fullscreen: false,
+        });
+
     $("#queryEditorModal").on('click', '.btn-fetch', function(event) {
         event.preventDefault();
         $("#queryEditorModal").iziModal('startLoading');
