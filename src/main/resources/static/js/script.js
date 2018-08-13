@@ -56,6 +56,19 @@ var ExcludedIntelliSenseTriggerKeys = {
     "220": "backslash",
     "222": "quote"
 }
+app.directive('stringToNumber', function() {
+    return {
+        require: 'ngModel',
+        link: function(scope, element, attrs, ngModel) {
+            ngModel.$parsers.push(function(value) {
+                return '' + value;
+            });
+            ngModel.$formatters.push(function(value) {
+                return parseFloat(value);
+            });
+        }
+    };
+});
 app.config(['$locationProvider', function($locationProvider) {
     $locationProvider.html5Mode({
         enabled: true,
@@ -600,15 +613,37 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         $http.get("/logout").then(logoutCallBack, logoutErrorCallback);
     }
     $scope.getRuleEngine = function() {
-        $http.get("/getRuleEngine").then(getRuleEngineCallBack, getRuleEngineErrorCallback);
+        var data = {
+            orgId: localStorage.getItem('organization_id')
+        };
+        var config = {
+            params: data
+        };
+        $http.get("/getRuleEngine", config).then(getRuleEngineCallBack, getRuleEngineErrorCallback);
+    }
+    $scope.modifyRuleEngine = function(ruleEngineData,rulesetType,rulePriorities) {
+        var modifiedRuleSets = {
+            ruleSetWrapper : ruleEngineData,
+            rulesetType : rulesetType,
+            listOfPriorities : rulePriorities,
+            orgId:localStorage.getItem('organization_id')
+        }
+
+        $http.post("/modifyRuleEngine", modifiedRuleSets).then(modifyRuleEngineCallBack, modifyRuleEngineErrorCallback);
     }
 
     function getRuleEngineCallBack(response) {
-        $scope.ruleEngineData = response.data;
-        $('#ruleEngine').iziModal('open');
+        $scope.ruleEngineData = response.data.ruleSetWrapper;
+        $scope.rulesetType = response.data.rulesetType;
+        $scope.rulePriorities = response.data.listOfPriorities;
+        $('#ruleEngine').modal('show');
     };
 
     function getRuleEngineErrorCallback() {};
+
+    function modifyRuleEngineCallBack() {};
+
+    function modifyRuleEngineErrorCallback() {};
 
     function logoutCallBack() {
         $window.location.href = "/index.html";
@@ -678,19 +713,6 @@ $(document).ready(function() {
         fullscreen: false,
     });
 */
-    $("#ruleEngine").iziModal({
-            history: true,
-            icon: 'icon-star',
-            timeoutProgressbar: true,
-            timeoutProgressbarColor: 'white',
-            arrowKeys: true,
-            width: 600,
-            padding: 20,
-            restoreDefaultContent: true,
-            loop: true,
-            fullscreen: false,
-        });
-
     /*$("#queryEditorModal").on('click', '.btn-fetch', function(event) {
         event.preventDefault();
         $("#queryEditorModal").iziModal('startLoading');

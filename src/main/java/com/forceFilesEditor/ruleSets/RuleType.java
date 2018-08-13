@@ -51,7 +51,7 @@ import java.io.Serializable;
     "priority",
     "properties"
 })
-public class RuleType implements Serializable {
+public class RuleType implements Serializable, Comparable<RuleType>{
 
     @XmlElement(required = true)
     protected String priority;
@@ -157,4 +157,13 @@ public class RuleType implements Serializable {
         this.ref = value;
     }
 
+    @Override
+    public int compareTo(RuleType o) {
+        if(Integer.valueOf(this.getPriority()) == Integer.valueOf(o.getPriority()))
+            return 0;
+        else if(Integer.valueOf(this.getPriority()) > Integer.valueOf(o.getPriority()))
+            return 1;
+        else
+            return -1;
+    }
 }

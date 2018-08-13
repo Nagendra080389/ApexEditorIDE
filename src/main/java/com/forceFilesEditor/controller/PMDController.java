@@ -1,10 +1,9 @@
 package com.forceFilesEditor.controller;
 
+import com.forceFilesEditor.dao.RuleSetsDomainMongoRepository;
+import com.forceFilesEditor.model.RuleSetsDomain;
 import com.forceFilesEditor.model.User;
-import com.forceFilesEditor.ruleSets.ConvertXmlToObjects;
-import com.forceFilesEditor.ruleSets.RuleSetWrapper;
-import com.forceFilesEditor.ruleSets.RuleType;
-import com.forceFilesEditor.ruleSets.RulesetType;
+import com.forceFilesEditor.ruleSets.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.forceFilesEditor.algo.MetadataLoginUtil;
@@ -13,6 +12,8 @@ import com.forceFilesEditor.model.ApexClassWrapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sforce.soap.tooling.SymbolTable;
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections.SetUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -44,6 +45,9 @@ public class PMDController {
     @Autowired
     private ConvertXmlToObjects convertXmlToObjects;
 
+    @Autowired
+    private RuleSetsDomainMongoRepository ruleSetsDomainMongoRepository;
+
     private Map<String, List<String>> stringListHashMap = new HashMap<>();
     private volatile Map<String, SymbolTable> symbolTableMap = new HashMap<>();
 
@@ -62,14 +66,14 @@ public class PMDController {
         Gson gson = new GsonBuilder().create();
         try {
 
-            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL,cookies, response);
+            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL, cookies, response);
             List<String> allClassesInString = new ArrayList<>();
 
             for (ApexClassWrapper allApexClass : allApexClasses) {
                 allClassesInString.add(allApexClass.getName());
             }
 
-            stringListHashMap.put("suggestions",allClassesInString);
+            stringListHashMap.put("suggestions", allClassesInString);
 
             return gson.toJson(allApexClasses);
 
@@ -87,7 +91,7 @@ public class PMDController {
         Cookie[] cookies = request.getCookies();
         Gson gson = new GsonBuilder().create();
         try {
-            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL,cookies, response);
+            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL, cookies, response);
             return gson.toJson(allApexClasses);
 
         } catch (Exception e) {
@@ -118,7 +122,7 @@ public class PMDController {
         String toolingURL = this.toolingURL;
         Cookie[] cookies = request.getCookies();
         try {
-            if(!apexClassName.equals("New Apex Class....")) {
+            if (!apexClassName.equals("New Apex Class....")) {
                 ApexClassWrapper main = MetadataLoginUtil.getApexBody(apexClassName, partnerURL, toolingURL, cookies);
                 Gson gson = new GsonBuilder().create();
                 return gson.toJson(main);
@@ -131,17 +135,17 @@ public class PMDController {
     }
 
     @RequestMapping(value = "/modifyApexBody", method = RequestMethod.POST)
-    public String modifyApexBody(@RequestBody ApexClassWrapper apexClassWrapper,HttpServletResponse response, HttpServletRequest request) throws Exception {
+    public String modifyApexBody(@RequestBody ApexClassWrapper apexClassWrapper, HttpServletResponse response, HttpServletRequest request) throws Exception {
 
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
         Cookie[] cookies = request.getCookies();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         try {
-            if(apexClassWrapper == null) return null;
+            if (apexClassWrapper == null) return null;
             MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
-            ApexClassWrapper modifiedClass = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL,cookies, false);
-            if(modifiedClass.isCompilationError()){
+            ApexClassWrapper modifiedClass = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL, cookies, false);
+            if (modifiedClass.isCompilationError()) {
                 return gson.toJson(modifiedClass);
             }
             return gson.toJson(modifiedClass);
@@ -153,17 +157,17 @@ public class PMDController {
     }
 
     @RequestMapping(value = "/saveModifiedApexBody", method = RequestMethod.POST)
-    public String saveModifiedApexBody(@RequestBody ApexClassWrapper apexClassWrapper,HttpServletResponse response, HttpServletRequest request) throws Exception {
+    public String saveModifiedApexBody(@RequestBody ApexClassWrapper apexClassWrapper, HttpServletResponse response, HttpServletRequest request) throws Exception {
 
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
         Cookie[] cookies = request.getCookies();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         try {
-            if(apexClassWrapper == null) return null;
+            if (apexClassWrapper == null) return null;
             MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
             ApexClassWrapper apexClassWrapper1 = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL, cookies, true);
-            if(apexClassWrapper1.isTimeStampNotMatching()){
+            if (apexClassWrapper1.isTimeStampNotMatching()) {
                 return gson.toJson(apexClassWrapper1);
             }
 
@@ -182,7 +186,7 @@ public class PMDController {
         Cookie[] cookies = request.getCookies();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         try {
-            ApexClassWrapper modifiedClass = MetadataLoginUtil.createFiles("",apexClassName ,partnerURL, toolingURL, cookies);
+            ApexClassWrapper modifiedClass = MetadataLoginUtil.createFiles("", apexClassName, partnerURL, toolingURL, cookies);
             return gson.toJson(modifiedClass);
         } catch (DeploymentException e) {
             return gson.toJson(e.getStackTrace());
@@ -190,27 +194,27 @@ public class PMDController {
 
     }
 
-    @RequestMapping(value = "/auth", method = RequestMethod.GET, params = {"code","state"})
+    @RequestMapping(value = "/auth", method = RequestMethod.GET, params = {"code", "state"})
     public void auth(@RequestParam String code, @RequestParam String state, ServletResponse response, ServletRequest request) throws Exception {
 
         String environment = null;
         if (state.equals("b")) {
             environment = "https://login.salesforce.com/services/oauth2/token";
-        } else if (state.contains("CustomDomain")){
-            environment = "https://"+state.split(",")[0]+".my.salesforce.com/services/oauth2/token";
+        } else if (state.contains("CustomDomain")) {
+            environment = "https://" + state.split(",")[0] + ".my.salesforce.com/services/oauth2/token";
         } else {
             environment = "https://test.salesforce.com/services/oauth2/token";
         }
 
-        System.out.println("environment -> "+environment);
+        System.out.println("environment -> " + environment);
         HttpClient httpClient = new HttpClient();
 
         PostMethod post = new PostMethod(environment);
         post.addParameter("code", code);
         post.addParameter("grant_type", "authorization_code");
-        post.addParameter("redirect_uri", "https://apexeditortooldev.herokuapp.com/auth");
-        post.addParameter("client_id", "3MVG9d8..z.hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz");
-        post.addParameter("client_secret", "7957205307299792687");
+        post.addParameter("redirect_uri", "https://4edcaffb.ngrok.io/auth");
+        post.addParameter("client_id", "3MVG9d8..z.hDcPLDlm9QqJ3hRa..IRUJdGRp4Shjuu01GT.H5KRjos_xlbZEtYGy55M6SzOOELg7sfD4T6Pl");
+        post.addParameter("client_secret", "1846517738759045110");
 
         httpClient.executeMethod(post);
         String responseBody = post.getResponseBodyAsString();
@@ -261,7 +265,7 @@ public class PMDController {
 
     }
 
-    @RequestMapping(value = "/auth", method = RequestMethod.GET, params = {"error", "error_description","state"})
+    @RequestMapping(value = "/auth", method = RequestMethod.GET, params = {"error", "error_description", "state"})
     public void authErrorHandle(@RequestParam String error, @RequestParam String error_description, @RequestParam String state,
                                 HttpServletResponse response, HttpServletRequest request) throws Exception {
 
@@ -285,7 +289,7 @@ public class PMDController {
         String orgId = null;
         String customDomain = null;
         User user = new User();
-        if(cookies == null){
+        if (cookies == null) {
             user.setError("No cookies found");
             return gson.toJson(user);
         }
@@ -300,7 +304,7 @@ public class PMDController {
         HttpClient httpClient = new HttpClient();
 
         GetMethod getMethod = new GetMethod(useridURL);
-        getMethod.addRequestHeader("Authorization", "Bearer "+accessToken);
+        getMethod.addRequestHeader("Authorization", "Bearer " + accessToken);
         httpClient.executeMethod(getMethod);
         String responseUserName = getMethod.getResponseBodyAsString();
         JsonParser parser = new JsonParser();
@@ -313,13 +317,13 @@ public class PMDController {
             display_name = jsonObject.get("display_name").getAsString();
             email = jsonObject.get("email").getAsString();
             orgId = jsonObject.get("organization_id").getAsString();
-            if(!jsonObject.get("urls").isJsonNull()) {
+            if (!jsonObject.get("urls").isJsonNull()) {
                 customDomain = jsonObject.get("urls").getAsJsonObject().get("custom_domain").getAsString();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             user.setError(e.getMessage());
             return gson.toJson(user);
-        }finally {
+        } finally {
             getMethod.releaseConnection();
         }
 
@@ -341,8 +345,8 @@ public class PMDController {
             @Override
             public void writeTo(OutputStream outputStream) throws IOException {
                 try {
-                    PMDController.this.generateCustomSymbolTable(response, request, outputStream,gson);
-                }finally {
+                    PMDController.this.generateCustomSymbolTable(response, request, outputStream, gson);
+                } finally {
                     outputStream.write(gson.toJson("LastByte").getBytes());
                     IOUtils.closeQuietly(outputStream);
                 }
@@ -359,7 +363,7 @@ public class PMDController {
             public void writeTo(OutputStream outputStream) throws IOException {
                 try {
                     PMDController.this.generateSystemSymbolTable(response, request, outputStream, gson);
-                }finally {
+                } finally {
                     outputStream.write(gson.toJson("LastByte").getBytes());
                     IOUtils.closeQuietly(outputStream);
                 }
@@ -372,7 +376,7 @@ public class PMDController {
         String toolingURL = this.toolingURL;
         Cookie[] cookies = request.getCookies();
         try {
-            getReturnSymbolTable(partnerURL, toolingURL,cookies,outputStream, gson);
+            getReturnSymbolTable(partnerURL, toolingURL, cookies, outputStream, gson);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -389,7 +393,7 @@ public class PMDController {
         String toolingURL = this.toolingURL;
         Cookie[] cookies = request.getCookies();
         try {
-            MetadataLoginUtil.generateSymbolTable(partnerURL, toolingURL, cookies,outputStream,gson,response);
+            MetadataLoginUtil.generateSymbolTable(partnerURL, toolingURL, cookies, outputStream, gson, response);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -417,18 +421,58 @@ public class PMDController {
     }
 
     @RequestMapping(value = "/getRuleEngine", method = RequestMethod.GET)
-    public List<RuleSetWrapper> getRuleEngine() throws Exception {
+    public RuleSetWrapperExposed getRuleEngine(@RequestParam String orgId) throws Exception {
+        RuleSetWrapperExposed ruleSetWrapperExposed = new RuleSetWrapperExposed();
+        RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByorgId(orgId);
         List<RuleSetWrapper> ruleSetWrappers = new ArrayList<>();
+        Set<String> listOfPriorities = new HashSet<>();
         RuleSetWrapper ruleSetWrapper = null;
-        RulesetType rulesetType = convertXmlToObjects.convert();
-        if(rulesetType != null && rulesetType.getRule() != null && !rulesetType.getRule().isEmpty())
-        for (RuleType ruleType : rulesetType.getRule()) {
-            ruleSetWrapper = new RuleSetWrapper();
-            ruleSetWrapper.setRuleType(ruleType);
-            ruleSetWrapper.setActive(true);
-            ruleSetWrappers.add(ruleSetWrapper);
+        RulesetType dbRuleSets = null;
+        if (byorgId == null) {
+            dbRuleSets = convertXmlToObjects.convertToObjects(null);
+        } else {
+            ruleSetWrappers = byorgId.getRuleSetWrappers();
+            dbRuleSets = new RulesetType();
         }
-        return ruleSetWrappers;
+        if (dbRuleSets != null && dbRuleSets.getRule() != null && !dbRuleSets.getRule().isEmpty()) {
+            Collections.sort(dbRuleSets.getRule());
+
+            for (RuleType ruleType : dbRuleSets.getRule()) {
+                ruleSetWrapper = new RuleSetWrapper();
+                ruleType.setRef(ruleType.getRef());
+                listOfPriorities.add(ruleType.getPriority());
+                ruleSetWrapper.setRuleType(ruleType);
+                ruleSetWrapper.setActive(true);
+                ruleSetWrappers.add(ruleSetWrapper);
+
+            }
+        }
+        ruleSetWrapperExposed.setListOfPriorities(listOfPriorities);
+        ruleSetWrapperExposed.setRuleSetWrapper(ruleSetWrappers);
+        ruleSetWrapperExposed.setRulesetType(dbRuleSets);
+
+        return ruleSetWrapperExposed;
+    }
+
+    @RequestMapping(value = "/modifyRuleEngine", method = RequestMethod.POST)
+    public void modifyRuleEngine(@RequestBody RuleSetWrapperExposed modifiedRuleSets) throws Exception {
+        List<RuleSetWrapper> ruleSetWrappers = new ArrayList<>();
+        List<RuleType> modifiedRuleTypes = new ArrayList<>();
+        List<RuleSetWrapper> ruleSetWrapper = modifiedRuleSets.getRuleSetWrapper();
+        for (RuleSetWrapper wrapper : ruleSetWrapper) {
+            if (wrapper.getActive()) {
+                modifiedRuleTypes.add(wrapper.getRuleType());
+            }
+        }
+        RulesetType rulesetType = modifiedRuleSets.getRulesetType();
+        rulesetType.setRule(modifiedRuleTypes);
+        String xmlString = convertXmlToObjects.convertFromObjects(modifiedRuleSets.getRulesetType());
+        RuleSetsDomain ruleSetsDomain = new RuleSetsDomain();
+        ruleSetsDomain.setOrgId(modifiedRuleSets.getOrgId());
+        ruleSetsDomain.setRuleSetXML(xmlString);
+        ruleSetsDomain.setRuleSetWrappers(modifiedRuleSets.getRuleSetWrapper());
+        ruleSetsDomainMongoRepository.save(ruleSetsDomain);
+
     }
 
 

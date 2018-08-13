@@ -53,6 +53,10 @@ public class RulesetType implements Serializable {
     @XmlAttribute(name = "name")
     protected String name;
 
+    public void setRule(List<RuleType> rule) {
+        this.rule = rule;
+    }
+
     /**
      * Gets the value of the description property.
      * 
