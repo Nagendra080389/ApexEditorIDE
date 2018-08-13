@@ -219,21 +219,27 @@ public class MetadataLoginUtil {
                     SourceCodeProcessor sourceCodeProcessor = new SourceCodeProcessor(pmdConfiguration);
                     RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(pmdConfiguration, new
                             ResourceLoader());
-                    RuleSets ruleSets = RulesetsFactoryUtils.getRuleSetsWithBenchmark(pmdConfiguration.getRuleSets(),
-                            ruleSetFactory);
-                    LOGGER.info("pmdConfiguration.getRuleSets() -> "+pmdConfiguration.getRuleSets());
-                    PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
-                    List<RuleViolation> review = pmdReviewService.review(apexClassWrapper.getBody(), apexClassWrapper
-                            .getName() + ".cls");
+                    try {
+                        RuleSets ruleSets = RulesetsFactoryUtils.getRuleSetsWithBenchmark(pmdConfiguration.getRuleSets(),
 
-                    for (RuleViolation ruleViolation : review) {
-                        PMDStructure pmdStructure = new PMDStructure();
-                        pmdStructure.setReviewFeedback(ruleViolation.getDescription());
-                        pmdStructure.setLineNumber(ruleViolation.getBeginLine());
-                        pmdStructure.setRuleName(ruleViolation.getRule().getName());
-                        pmdStructure.setRuleUrl(ruleViolation.getRule().getExternalInfoUrl());
-                        pmdStructure.setRulePriority(ruleViolation.getRule().getPriority().getPriority());
-                        pmdStructures.add(pmdStructure);
+                                ruleSetFactory);
+                        LOGGER.info("pmdConfiguration.getRuleSets() -> " + pmdConfiguration.getRuleSets());
+                        PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
+                        List<RuleViolation> review = pmdReviewService.review(apexClassWrapper.getBody(),
+                                apexClassWrapper
+                                .getName() + ".cls");
+
+                        for (RuleViolation ruleViolation : review) {
+                            PMDStructure pmdStructure = new PMDStructure();
+                            pmdStructure.setReviewFeedback(ruleViolation.getDescription());
+                            pmdStructure.setLineNumber(ruleViolation.getBeginLine());
+                            pmdStructure.setRuleName(ruleViolation.getRule().getName());
+                            pmdStructure.setRuleUrl(ruleViolation.getRule().getExternalInfoUrl());
+                            pmdStructure.setRulePriority(ruleViolation.getRule().getPriority().getPriority());
+                            pmdStructures.add(pmdStructure);
+                        }
+                    }catch (IllegalArgumentException e){
+                        LOGGER.error(e.getMessage());
                     }
                 }
             }

@@ -445,7 +445,8 @@ public class PMDController {
             dbRuleSets = convertXmlToObjects.convertToObjects(null);
         } else {
             ruleSetWrappers = byorgId.getRuleSetWrappers();
-            dbRuleSets = new RulesetType();
+            dbRuleSets = convertXmlToObjects.convertToObjects(byorgId.getRuleSetXML());
+            dbRuleSets.setRule(new ArrayList<>());
         }
         if (dbRuleSets != null && dbRuleSets.getRule() != null && !dbRuleSets.getRule().isEmpty()) {
             Collections.sort(dbRuleSets.getRule());
@@ -469,7 +470,6 @@ public class PMDController {
 
     @RequestMapping(value = "/modifyRuleEngine", method = RequestMethod.POST)
     public void modifyRuleEngine(@RequestBody RuleSetWrapperExposed modifiedRuleSets) throws Exception {
-        List<RuleSetWrapper> ruleSetWrappers = new ArrayList<>();
         List<RuleType> modifiedRuleTypes = new ArrayList<>();
         List<RuleSetWrapper> ruleSetWrapper = modifiedRuleSets.getRuleSetWrapper();
         for (RuleSetWrapper wrapper : ruleSetWrapper) {
