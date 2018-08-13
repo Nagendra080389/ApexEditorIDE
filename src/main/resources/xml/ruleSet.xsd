@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           targetNamespace="http://pmd.sourceforge.net/ruleset/2.0.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb ">
+  <xs:element name="ruleset" type="ns:rulesetType" xmlns:ns="http://pmd.sourceforge.net/ruleset/2.0.0"/>
+  <xs:complexType name="propertyType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+        <xs:attribute type="xs:string" name="value" use="optional">
+          <xs:annotation>
+            <xs:appinfo>
+              <jxb:property name="valueAttribute"/>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="ruleType">
+    <xs:sequence>
+      <xs:element name="priority">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="3"/>
+            <xs:enumeration value="2"/>
+            <xs:enumeration value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element type="ns:propertiesType" name="properties" minOccurs="0"
+                  xmlns:ns="http://pmd.sourceforge.net/ruleset/2.0.0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="message" use="optional"/>
+    <xs:attribute type="xs:string" name="ref" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="rulesetType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="description"/>
+      <xs:element type="ns:ruleType" name="rule" maxOccurs="unbounded" minOccurs="0"
+                  xmlns:ns="http://pmd.sourceforge.net/ruleset/2.0.0">
+        <xs:annotation>
+          <xs:documentation>COMPLEXITY PERFORMANCE NAMING TESTS SECURITY BRACES EMPTY</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="name"/>
+  </xs:complexType>
+  <xs:complexType name="propertiesType">
+    <xs:sequence>
+      <xs:element type="ns:propertyType" name="property" xmlns:ns="http://pmd.sourceforge.net/ruleset/2.0.0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
