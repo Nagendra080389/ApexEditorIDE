@@ -231,10 +231,6 @@
         <priority>2</priority>
     </rule>
 
-    <rule message="Avoid empty block statements." ref="category/apex/errorprone.xml/EmptyStatementBlock">
-        <priority>2</priority>
-    </rule>
-
     <rule message="Avoid empty block statements." ref="category/ecmascript/codestyle.xml/AssignmentInOperand">
         <priority>2</priority>
     </rule>
