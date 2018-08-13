@@ -1,19 +1,17 @@
 package com.forceFilesEditor.controller;
 
+import com.forceFilesEditor.algo.MetadataLoginUtil;
 import com.forceFilesEditor.dao.RuleSetsDomainMongoRepository;
+import com.forceFilesEditor.exception.DeploymentException;
+import com.forceFilesEditor.model.ApexClassWrapper;
 import com.forceFilesEditor.model.RuleSetsDomain;
 import com.forceFilesEditor.model.User;
 import com.forceFilesEditor.ruleSets.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.forceFilesEditor.algo.MetadataLoginUtil;
-import com.forceFilesEditor.exception.DeploymentException;
-import com.forceFilesEditor.model.ApexClassWrapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sforce.soap.tooling.SymbolTable;
-import org.apache.commons.collections.ListUtils;
-import org.apache.commons.collections.SetUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -32,7 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.*;
 
