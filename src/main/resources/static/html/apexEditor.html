@@ -257,8 +257,26 @@
                         </tr>
                     </table>
                     <footer>
-                        <button type="button" class="close" data-dismiss="modal">Cancel</button>
-                        <button class="submit" ng-click="modifyRuleEngine(ruleEngineData,rulesetType,rulePriorities)">Save</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-default" ng-click="modifyRuleEngine(ruleEngineData,rulesetType,rulePriorities)">Save</button>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="notAuthorised" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-body">
+                    <p align="center">You are not authorised to view this page, only admins/ Team-Leads are allowed to edit the rule engine.<br>
+                    Please contact your admin/ Team-Lead.
+                    </p>
+                    <footer>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </footer>
                 </div>
             </div>

@@ -1,12 +1,15 @@
 package com.forceFilesEditor.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String email;
     private String username;
     private String display_name;
     private String error;
     private String orgId;
     private String domainName;
+    private String userId;
 
     public String getEmail() {
         return email;
@@ -54,5 +57,13 @@ public class User {
 
     public void setDomainName(String domainName) {
         this.domainName = domainName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

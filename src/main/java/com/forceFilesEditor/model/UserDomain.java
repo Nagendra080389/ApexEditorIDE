@@ -10,7 +10,9 @@ import java.util.List;
 public class UserDomain implements Serializable {
     @Id
     private String Id;
+    private String orgId;
     private String userName;
+    private String userId;
     private List<PMDStructure> pmdStructures;
     private Boolean isAdmin;
 
@@ -20,6 +22,22 @@ public class UserDomain implements Serializable {
 
     public void setId(String id) {
         Id = id;
+    }
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getUserName() {

@@ -1,6 +1,7 @@
 package com.forceFilesEditor.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +15,6 @@ public class PMDStructure implements Serializable {
 
     public String body;
 
-    private Map<Integer, List<String>> lineNumberError = new HashMap<>();
-
     private Integer beginLine;
     private Integer endLine;
     private Integer numberOfDuplicates;
@@ -26,6 +25,8 @@ public class PMDStructure implements Serializable {
     private String ruleName;
     private String ruleUrl;
     private Integer rulePriority;
+    private Date createdDate;
+    private String className;
 
     public Integer getRulePriority() {
         return rulePriority;
@@ -83,14 +84,6 @@ public class PMDStructure implements Serializable {
         this.body = body;
     }
 
-    public Map<Integer, List<String>> getLineNumberError() {
-        return lineNumberError;
-    }
-
-    public void setLineNumberError(Map<Integer, List<String>> lineNumberError) {
-        this.lineNumberError = lineNumberError;
-    }
-
     public Integer getBeginLine() {
         return beginLine;
     }
@@ -131,4 +124,19 @@ public class PMDStructure implements Serializable {
         this.noOfDuplicatesFiles = noOfDuplicatesFiles;
     }
 
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
 }

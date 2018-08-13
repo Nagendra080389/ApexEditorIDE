@@ -4,5 +4,5 @@ import com.forceFilesEditor.model.RuleSetsDomain;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface RuleSetsDomainMongoRepository extends MongoRepository<RuleSetsDomain, Integer> {
-    RuleSetsDomain findByorgId(String orgId);
+    RuleSetsDomain findByOrgId(String orgId);
 }

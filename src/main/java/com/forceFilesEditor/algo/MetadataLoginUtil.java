@@ -36,7 +36,6 @@ import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.logging.Logger;
 
 public class MetadataLoginUtil {
 
@@ -204,7 +203,7 @@ public class MetadataLoginUtil {
                 if (!apexClassWrapper.isCompilationError()) {
                     PMDConfiguration pmdConfiguration = new PMDConfiguration();
                     pmdConfiguration.setReportFormat("text");
-                    RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByorgId(apexClassWrapper.getOrgId());
+                    RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByOrgId(apexClassWrapper.getOrgId());
                     String ruleSetXML = byorgId.getRuleSetXML();
                     LOGGER.info("ruleSetXML -> "+ruleSetXML);
                     InputStream stream = new ByteArrayInputStream(ruleSetXML.getBytes(StandardCharsets.UTF_8));

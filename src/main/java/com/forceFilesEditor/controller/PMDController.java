@@ -2,10 +2,12 @@ package com.forceFilesEditor.controller;
 
 import com.forceFilesEditor.algo.MetadataLoginUtil;
 import com.forceFilesEditor.dao.RuleSetsDomainMongoRepository;
+import com.forceFilesEditor.dao.UserDomainMongoRepository;
 import com.forceFilesEditor.exception.DeploymentException;
 import com.forceFilesEditor.model.ApexClassWrapper;
 import com.forceFilesEditor.model.RuleSetsDomain;
 import com.forceFilesEditor.model.User;
+import com.forceFilesEditor.model.UserDomain;
 import com.forceFilesEditor.ruleSets.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -46,6 +48,9 @@ public class PMDController {
 
     @Autowired
     private RuleSetsDomainMongoRepository ruleSetsDomainMongoRepository;
+
+    @Autowired
+    private UserDomainMongoRepository userDomainMongoRepository;
 
     private Map<String, List<String>> stringListHashMap = new HashMap<>();
     private volatile Map<String, SymbolTable> symbolTableMap = new HashMap<>();
@@ -299,6 +304,7 @@ public class PMDController {
         String email = null;
         String orgId = null;
         String customDomain = null;
+        String userId = null;
         User user = new User();
         if (cookies == null) {
             user.setError("No cookies found");
@@ -328,6 +334,7 @@ public class PMDController {
             display_name = jsonObject.get("display_name").getAsString();
             email = jsonObject.get("email").getAsString();
             orgId = jsonObject.get("organization_id").getAsString();
+            userId = jsonObject.get("user_id").getAsString();
             if (!jsonObject.get("urls").isJsonNull()) {
                 customDomain = jsonObject.get("urls").getAsJsonObject().get("custom_domain").getAsString();
             }
@@ -344,6 +351,16 @@ public class PMDController {
         user.setUsername(username);
         user.setOrgId(orgId);
         user.setDomainName(customDomain);
+        user.setUserId(userId);
+
+        UserDomain userDomain = new UserDomain();
+        userDomain.setAdmin(false);
+        userDomain.setPmdStructures(new ArrayList<>());
+        userDomain.setUserName(display_name);
+        userDomain.setOrgId(orgId);
+        userDomain.setUserId(userId);
+
+        userDomainMongoRepository.save(userDomain);
 
         return gson.toJson(user);
     }
@@ -433,10 +450,15 @@ public class PMDController {
 
     }
 
-    @RequestMapping(value = "/getRuleEngine", method = RequestMethod.GET)
-    public RuleSetWrapperExposed getRuleEngine(@RequestParam String orgId) throws Exception {
+    @RequestMapping(value = "/getRuleEngine", method = RequestMethod.POST)
+    public RuleSetWrapperExposed getRuleEngine(@RequestBody User userFromUI) throws Exception {
+        UserDomain byUserIdAndOrgId = userDomainMongoRepository.findByUserIdAndOrgId(userFromUI.getUserId(),
+                userFromUI.getOrgId());
+        if(!byUserIdAndOrgId.getAdmin()){
+            return null;
+        }
         RuleSetWrapperExposed ruleSetWrapperExposed = new RuleSetWrapperExposed();
-        RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByorgId(orgId);
+        RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByOrgId(userFromUI.getOrgId());
         List<RuleSetWrapper> ruleSetWrappers = new ArrayList<>();
         Set<String> listOfPriorities = new HashSet<>();
         RuleSetWrapper ruleSetWrapper = null;
@@ -480,7 +502,7 @@ public class PMDController {
         RulesetType rulesetType = modifiedRuleSets.getRulesetType();
         rulesetType.setRule(modifiedRuleTypes);
         String xmlString = convertXmlToObjects.convertFromObjects(modifiedRuleSets.getRulesetType());
-        RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByorgId(modifiedRuleSets.getOrgId());
+        RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByOrgId(modifiedRuleSets.getOrgId());
         RuleSetsDomain ruleSetsDomain = byorgId == null ? new RuleSetsDomain() : byorgId;
         ruleSetsDomain.setOrgId(modifiedRuleSets.getOrgId());
         ruleSetsDomain.setRuleSetXML(xmlString);

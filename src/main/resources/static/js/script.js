@@ -83,9 +83,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
     if (localStorage.getItem('organization_id') && localStorage.getItem('display_name') && localStorage.getItem('displayEmail') && localStorage.getItem('domainName')) {
         var localUser = {
             email: localStorage.getItem('displayEmail'),
-            display_name: localStorage.getItem('displayEmail'),
+            display_name: localStorage.getItem('display_name'),
             domainName: localStorage.getItem('domainName'),
             orgId: localStorage.getItem('organization_id'),
+            userId: localStorage.getItem('userId')
         };
         $scope.currentUser = localUser;
         window.dataLayer = window.dataLayer || [];
@@ -93,6 +94,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         function gtag() {
             dataLayer.push({
                 'username': localUser.display_name,
+                'userId': localUser.userId,
                 'orgId': localUser.orgId
             });
         }
@@ -112,6 +114,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             localStorage.setItem('display_name', response.data.display_name);
             localStorage.setItem('displayEmail', response.data.email);
             localStorage.setItem('domainName', response.data.domainName);
+            localStorage.setItem('userId', response.data.userId);
             iziToast.info({
                 icon: 'fa fa-user',
                 title: 'Welcome ' + response.data.display_name,
@@ -123,8 +126,9 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
 
             function gtag() {
                 dataLayer.push({
-                    'username': localUser.display_name,
-                    'orgId': localUser.orgId
+                    'username': response.data.display_name,
+                    'userId': response.data.userId,
+                    'orgId': response.data.orgId
                 });
             }
             gtag('js', new Date());
@@ -614,30 +618,31 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         $http.get("/logout").then(logoutCallBack, logoutErrorCallback);
     }
     $scope.getRuleEngine = function() {
-        var data = {
-            orgId: localStorage.getItem('organization_id')
+        var userObject = {
+            orgId: localStorage.getItem('organization_id'),
+            userId: localStorage.getItem('userId')
         };
-        var config = {
-            params: data
-        };
-        $http.get("/getRuleEngine", config).then(getRuleEngineCallBack, getRuleEngineErrorCallback);
+        $http.post("/getRuleEngine", userObject).then(getRuleEngineCallBack, getRuleEngineErrorCallback);
     }
-    $scope.modifyRuleEngine = function(ruleEngineData,rulesetType,rulePriorities) {
+    $scope.modifyRuleEngine = function(ruleEngineData, rulesetType, rulePriorities) {
         var modifiedRuleSets = {
-            ruleSetWrapper : ruleEngineData,
-            rulesetType : rulesetType,
-            listOfPriorities : rulePriorities,
-            orgId:localStorage.getItem('organization_id')
+            ruleSetWrapper: ruleEngineData,
+            rulesetType: rulesetType,
+            listOfPriorities: rulePriorities,
+            orgId: localStorage.getItem('organization_id')
         }
-
         $http.post("/modifyRuleEngine", modifiedRuleSets).then(modifyRuleEngineCallBack, modifyRuleEngineErrorCallback);
     }
 
     function getRuleEngineCallBack(response) {
-        $scope.ruleEngineData = response.data.ruleSetWrapper;
-        $scope.rulesetType = response.data.rulesetType;
-        $scope.rulePriorities = response.data.listOfPriorities;
-        $('#ruleEngine').modal('show');
+        if (response.data) {
+            $scope.ruleEngineData = response.data.ruleSetWrapper;
+            $scope.rulesetType = response.data.rulesetType;
+            $scope.rulePriorities = response.data.listOfPriorities;
+            $('#ruleEngine').modal('show');
+        }else{
+            $('#notAuthorised').modal('show');
+        }
     };
 
     function getRuleEngineErrorCallback() {};
