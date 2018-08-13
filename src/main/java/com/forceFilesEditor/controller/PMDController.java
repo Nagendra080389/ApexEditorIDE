@@ -469,6 +469,7 @@ public class PMDController {
         String xmlString = convertXmlToObjects.convertFromObjects(modifiedRuleSets.getRulesetType());
         RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByorgId(modifiedRuleSets.getOrgId());
         RuleSetsDomain ruleSetsDomain = byorgId == null ? new RuleSetsDomain() : byorgId;
+        ruleSetsDomain.setOrgId(modifiedRuleSets.getOrgId());
         ruleSetsDomain.setRuleSetXML(xmlString);
         ruleSetsDomain.setRuleSetWrappers(modifiedRuleSets.getRuleSetWrapper());
         ruleSetsDomainMongoRepository.save(ruleSetsDomain);
