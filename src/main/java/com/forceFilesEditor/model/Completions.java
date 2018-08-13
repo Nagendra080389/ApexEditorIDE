@@ -20,32 +20,32 @@ public class Completions {
     // Since the completions?type=apex seems to return more than we would like
     @VisibleForTesting
     public static final List<String> kosherNamespace = ImmutableList.of(
-        "ApexPages",
-        "Approval",
-        "Canvas",
-        "ChatterAnswers",
-        "ConnectApi",
-        "Database",
-        "Datacloud",
-        "Dom",
-        "Flow",
-        "KbManagement",
-        "Messaging",
-        "Process",
-        "QuickAction",
-        "Reports",
-        "Schema",
-        "Site",
-        "Support",
-        "System",
-        "UserProvisioning"
-     );
+            "ApexPages",
+            "Approval",
+            "Canvas",
+            "ChatterAnswers",
+            "ConnectApi",
+            "Database",
+            "Datacloud",
+            "Dom",
+            "Flow",
+            "KbManagement",
+            "Messaging",
+            "Process",
+            "QuickAction",
+            "Reports",
+            "Schema",
+            "Site",
+            "Support",
+            "System",
+            "UserProvisioning"
+    );
 
     @XmlElement(name = "namespace", required = true)
     public List<Namespace> namespace;
 
     public PatriciaTrie<AbstractCompletionProposalDisplayable> namespaceTrie;
-    
+
     public Namespace getSystemNamespace() {
         return (Namespace) namespaceTrie.get("system");
     }

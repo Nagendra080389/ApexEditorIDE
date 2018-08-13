@@ -21,7 +21,7 @@ public class PmdReviewService {
         this.ruleSets = ruleSets;
     }
 
-    public List<RuleViolation> review(String data, String fileName){
+    public List<RuleViolation> review(String data, String fileName) {
 
         InputStream stream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
         RuleContext ctx = new RuleContext();
@@ -38,7 +38,7 @@ public class PmdReviewService {
             }
         });
         try {
-            sourceCodeProcessor.processSourceCode(stream,ruleSets,ctx);
+            sourceCodeProcessor.processSourceCode(stream, ruleSets, ctx);
         } catch (PMDException e) {
             e.printStackTrace();
         }

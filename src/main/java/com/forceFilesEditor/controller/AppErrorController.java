@@ -18,7 +18,7 @@ import java.util.Map;
  * Basic Controller which is called for unhandled errors
  */
 @Controller
-public class AppErrorController implements ErrorController{
+public class AppErrorController implements ErrorController {
 
     /**
      * Error Attributes in the Application
@@ -29,6 +29,7 @@ public class AppErrorController implements ErrorController{
 
     /**
      * Controller for the Error Controller
+     *
      * @param errorAttributes
      */
     public AppErrorController(ErrorAttributes errorAttributes) {
@@ -37,6 +38,7 @@ public class AppErrorController implements ErrorController{
 
     /**
      * Supports the HTML Error View
+     *
      * @param request
      * @return
      */
@@ -47,6 +49,7 @@ public class AppErrorController implements ErrorController{
 
     /**
      * Supports other formats like JSON, XML
+     *
      * @param request
      * @return
      */
@@ -90,8 +93,7 @@ public class AppErrorController implements ErrorController{
         if (statusCode != null) {
             try {
                 return HttpStatus.valueOf(statusCode);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
             }
         }
         return HttpStatus.INTERNAL_SERVER_ERROR;

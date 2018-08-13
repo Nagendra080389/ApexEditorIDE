@@ -14,6 +14,7 @@ import java.util.List;
 @Component
 public class ConvertXmlToObjects {
     private final static QName _Ruleset_QNAME = new QName("http://pmd.sourceforge.net/ruleset/2.0.0", "ruleset");
+
     public RulesetType convertToObjects(String xmlFile) throws JAXBException, IOException {
         //1. We need to create JAXContext instance
         JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
@@ -21,10 +22,10 @@ public class ConvertXmlToObjects {
         //2. Use JAXBContext instance to create the Unmarshaller.
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
-        if(xmlFile != null){
+        if (xmlFile != null) {
             InputStream stream = new ByteArrayInputStream(xmlFile.getBytes(StandardCharsets.UTF_8));
             JAXBElement<RulesetType> unmarshalledObject =
-                    (JAXBElement<RulesetType>)unmarshaller.unmarshal(stream);
+                    (JAXBElement<RulesetType>) unmarshaller.unmarshal(stream);
             return unmarshalledObject.getValue();
         }
 
@@ -43,7 +44,7 @@ public class ConvertXmlToObjects {
         InputStream stream = new FileInputStream(ruleSetFilePath);
 
         JAXBElement<RulesetType> unmarshalledObject =
-                (JAXBElement<RulesetType>)unmarshaller.unmarshal(stream);
+                (JAXBElement<RulesetType>) unmarshaller.unmarshal(stream);
         return unmarshalledObject.getValue();
     }
 
@@ -57,7 +58,8 @@ public class ConvertXmlToObjects {
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE); // To format XML
 
             StringWriter sw = new StringWriter();
-            JAXBElement<RulesetType> rootElement = new JAXBElement<RulesetType>(_Ruleset_QNAME, RulesetType.class, null, rulesetType);
+            JAXBElement<RulesetType> rootElement = new JAXBElement<RulesetType>(_Ruleset_QNAME, RulesetType.class,
+                    null, rulesetType);
             m.marshal(rootElement, sw);
             xmlString = sw.toString();
 

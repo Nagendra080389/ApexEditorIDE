@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableMongoRepositories(basePackages = "com.forceFilesEditor.dao")
 public class PmdreviewApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PmdreviewApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PmdreviewApplication.class, args);
+    }
 }

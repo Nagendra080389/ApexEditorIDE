@@ -1,5 +1,6 @@
 package com.forceFilesEditor.algo;
 
+import com.forceFilesEditor.dao.RuleSetsDomainMongoRepository;
 import com.forceFilesEditor.model.*;
 import com.forceFilesEditor.pmd.PmdReviewService;
 import com.google.gson.Gson;
@@ -39,7 +40,8 @@ public class MetadataLoginUtil {
     static PartnerConnection partnerConnection;
     static MetadataConnection metadataConnection;
 
-    public static ApexClassWrapper getApexBody(String className, String partnerURL, String toolingURL, Cookie[] cookies) throws Exception {
+    public static ApexClassWrapper getApexBody(String className, String partnerURL, String toolingURL, Cookie[]
+            cookies) throws Exception {
 
         String instanceUrl = null;
         String accessToken = null;
@@ -66,7 +68,8 @@ public class MetadataLoginUtil {
                 throw new com.sforce.ws.ConnectionException("Cannot connect to Org");
             }
 
-            String apexClassBody = "SELECT Id,Body,LastModifiedDate, Name FROM APEXCLASS Where Name = '" + className + "'";
+            String apexClassBody = "SELECT Id,Body,LastModifiedDate, Name FROM APEXCLASS Where Name = '" + className
+                    + "'";
             QueryResult query = partnerConnection.query(apexClassBody);
 
             Object body = query.getRecords()[0].getField("Body");
@@ -87,7 +90,9 @@ public class MetadataLoginUtil {
 
     }
 
-    public ApexClassWrapper modifyApexBody(ApexClassWrapper apexClassWrapper, String partnerURL, String toolingURL, Cookie[] cookies, boolean save) throws Exception {
+    public ApexClassWrapper modifyApexBody(ApexClassWrapper apexClassWrapper, String partnerURL, String toolingURL,
+                                           Cookie[] cookies, boolean save, RuleSetsDomainMongoRepository
+                                                   ruleSetsDomainMongoRepository) throws Exception {
 
         String instanceUrl = null;
         String accessToken = null;
@@ -164,7 +169,8 @@ public class MetadataLoginUtil {
 
             while (true) {
 
-                com.sforce.soap.tooling.QueryResult containerSyncRequestCompile = toolingConnection.query("SELECT Id,State, DeployDetails, ErrorMsg FROM ContainerAsyncRequest where id = '" + id + "'");
+                com.sforce.soap.tooling.QueryResult containerSyncRequestCompile = toolingConnection.query("SELECT Id," +
+                        "State, DeployDetails, ErrorMsg FROM ContainerAsyncRequest where id = '" + id + "'");
                 ContainerAsyncRequest sObject1 = (ContainerAsyncRequest) containerSyncRequestCompile.getRecords()[0];
                 if ("Queued".equals(sObject1.getState())) {
                     Thread.sleep(5000);
@@ -205,13 +211,16 @@ public class MetadataLoginUtil {
                     pmdConfiguration.setRuleSets(ruleSetFilePath);
                     pmdConfiguration.setThreads(4);
                     SourceCodeProcessor sourceCodeProcessor = new SourceCodeProcessor(pmdConfiguration);
-                    RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(pmdConfiguration, new ResourceLoader());
-                    RuleSets ruleSets = RulesetsFactoryUtils.getRuleSetsWithBenchmark(pmdConfiguration.getRuleSets(), ruleSetFactory);
+                    RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(pmdConfiguration, new
+                            ResourceLoader());
+                    RuleSets ruleSets = RulesetsFactoryUtils.getRuleSetsWithBenchmark(pmdConfiguration.getRuleSets(),
+                            ruleSetFactory);
 
                     PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
-                    List<RuleViolation> review = pmdReviewService.review(apexClassWrapper.getBody(), apexClassWrapper.getName() + ".cls");
+                    List<RuleViolation> review = pmdReviewService.review(apexClassWrapper.getBody(), apexClassWrapper
+                            .getName() + ".cls");
 
-                        for (RuleViolation ruleViolation : review) {
+                    for (RuleViolation ruleViolation : review) {
                         PMDStructure pmdStructure = new PMDStructure();
                         pmdStructure.setReviewFeedback(ruleViolation.getDescription());
                         pmdStructure.setLineNumber(ruleViolation.getBeginLine());
@@ -248,7 +257,9 @@ public class MetadataLoginUtil {
     }
 
 
-    public static ApexClassWrapper createFiles(String type, String apexClassName, String partnerURL, String toolingURL, Cookie[] cookies) throws Exception {
+    public static ApexClassWrapper createFiles(String type, String apexClassName, String partnerURL, String toolingURL,
+                                               Cookie[] cookies, RuleSetsDomainMongoRepository
+                                                       ruleSetsDomainMongoRepository) throws Exception {
 
         String instanceUrl = null;
         String accessToken = null;
@@ -312,7 +323,8 @@ public class MetadataLoginUtil {
             List<PMDStructure> pmdStructures = new ArrayList<>();
 
             while (true) {
-                com.sforce.soap.tooling.QueryResult containerSyncRequestCompile = toolingConnection.query("SELECT Id,State, DeployDetails, ErrorMsg FROM ContainerAsyncRequest where id = '" + id + "'");
+                com.sforce.soap.tooling.QueryResult containerSyncRequestCompile = toolingConnection.query("SELECT Id," +
+                        "State, DeployDetails, ErrorMsg FROM ContainerAsyncRequest where id = '" + id + "'");
                 ContainerAsyncRequest sObject1 = (ContainerAsyncRequest) containerSyncRequestCompile.getRecords()[0];
                 if ("Queued".equals(sObject1.getState())) {
                     Thread.sleep(5000);
@@ -350,7 +362,9 @@ public class MetadataLoginUtil {
 
     }
 
-    public static List<ApexClassWrapper> getAllApexClasses(String partnerURL, String toolingURL, Cookie[] cookies, HttpServletResponse response) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
+    public static List<ApexClassWrapper> getAllApexClasses(String partnerURL, String toolingURL, Cookie[] cookies,
+                                                           HttpServletResponse response) throws IOException,
+            ConnectionException, com.sforce.ws.ConnectionException {
 
         String instanceUrl = null;
         String accessToken = null;
@@ -379,7 +393,8 @@ public class MetadataLoginUtil {
         String apexClassBody = "SELECT Id, Name FROM APEXCLASS";
 
 
-        List<com.sforce.soap.partner.sobject.SObject> sObjectList = queryRecords(apexClassBody, partnerConnection, null, true, response);
+        List<com.sforce.soap.partner.sobject.SObject> sObjectList = queryRecords(apexClassBody, partnerConnection,
+                null, true, response);
 
         ApexClassWrapper apexClassWrapper = null;
 
@@ -402,13 +417,15 @@ public class MetadataLoginUtil {
     }
 
     public static Map<String, SymbolTable> generateSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies,
-                                                               OutputStream outputStream, Gson gson, HttpServletResponse response) throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
+                                                               OutputStream outputStream, Gson gson,
+                                                               HttpServletResponse response) throws IOException,
+            ConnectionException, com.sforce.ws.ConnectionException {
 
         Map<String, SymbolTable> stringSymbolTableMap = new HashMap<>();
 
         String accessToken = null;
         String instanceUrlForQuery = null;
-        if(cookies == null){
+        if (cookies == null) {
             return stringSymbolTableMap;
         }
         for (Cookie cookie : cookies) {
@@ -427,22 +444,23 @@ public class MetadataLoginUtil {
 
 
         String apexClassBodytooling = "Select+SymbolTable+From+ApexClass";
-        HttpClient httpclient=new HttpClient();
-        GetMethod getMethod=new GetMethod(instanceUrlForQuery+path+apexClassBodytooling);
-        getMethod.setRequestHeader("Authorization", "Bearer " +accessToken);
-        getMethod.setRequestHeader("Sforce-Query-Options","batchSize=200");
+        HttpClient httpclient = new HttpClient();
+        GetMethod getMethod = new GetMethod(instanceUrlForQuery + path + apexClassBodytooling);
+        getMethod.setRequestHeader("Authorization", "Bearer " + accessToken);
+        getMethod.setRequestHeader("Sforce-Query-Options", "batchSize=200");
 
         httpclient.executeMethod(getMethod);
-        if(getMethod.getStatusCode() == HttpStatus.SC_OK ){
-            try{
+        if (getMethod.getStatusCode() == HttpStatus.SC_OK) {
+            try {
                 boolean done = false;
-                JSONObject jsonResponse = new JSONObject(new JSONTokener(new InputStreamReader(getMethod.getResponseBodyAsStream())));
+                JSONObject jsonResponse = new JSONObject(new JSONTokener(new InputStreamReader(getMethod
+                        .getResponseBodyAsStream())));
                 if ((Integer) jsonResponse.get("size") > 0) {
                     while (!done) {
                         for (Object records : ((JSONArray) jsonResponse.get("records"))) {
                             ClassStructure classStructure = new ClassStructure();
                             Object symbolTable = ((JSONObject) records).get("SymbolTable");
-                            if(!JSONObject.NULL.equals(symbolTable)) {
+                            if (!JSONObject.NULL.equals(symbolTable)) {
                                 Object methods = ((JSONObject) symbolTable).get("methods");
                                 Object className = ((JSONObject) symbolTable).get("name");
                                 classStructure.setClassName(className.toString());
@@ -461,23 +479,26 @@ public class MetadataLoginUtil {
                         if ((Boolean) jsonResponse.get("done")) {
                             done = true;
                         } else {
-                            if(!JSONObject.NULL.equals(jsonResponse.get("nextRecordsUrl"))) {
-                                getMethod = new GetMethod(instanceUrlForQuery + jsonResponse.get("nextRecordsUrl").toString());
+                            if (!JSONObject.NULL.equals(jsonResponse.get("nextRecordsUrl"))) {
+                                getMethod = new GetMethod(instanceUrlForQuery + jsonResponse.get("nextRecordsUrl")
+                                        .toString());
                                 getMethod.setRequestHeader("Authorization", "Bearer " + accessToken);
                                 getMethod.setRequestHeader("Sforce-Query-Options", "batchSize=200");
                                 httpclient.executeMethod(getMethod);
-                                jsonResponse = new JSONObject(new JSONTokener(new InputStreamReader(getMethod.getResponseBodyAsStream())));
+                                jsonResponse = new JSONObject(new JSONTokener(new InputStreamReader(getMethod
+                                        .getResponseBodyAsStream())));
                             }
                         }
                     }
                 }
 
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        //List<ApexClass> sObjectListTooling = queryRecords(apexClassBodytooling, partnerConnection, toolingConnection, false, response);
+        //List<ApexClass> sObjectListTooling = queryRecords(apexClassBodytooling, partnerConnection,
+        // toolingConnection, false, response);
 
         /*for (ApexClass apexClasses : sObjectListTooling) {
             SymbolTable symbolTable = apexClasses.getSymbolTable();
@@ -491,7 +512,8 @@ public class MetadataLoginUtil {
         return stringSymbolTableMap;
     }
 
-    public static <T> List<T> queryRecords(String query, PartnerConnection partnerConnection, ToolingConnection toolingConnection, boolean usePartner, HttpServletResponse response)
+    public static <T> List<T> queryRecords(String query, PartnerConnection partnerConnection, ToolingConnection
+            toolingConnection, boolean usePartner, HttpServletResponse response)
             throws com.sforce.ws.ConnectionException {
         if (usePartner) {
             List<T> sObjectList = new ArrayList<>();
@@ -549,7 +571,8 @@ public class MetadataLoginUtil {
         }
     }
 
-    public List<String> returnSymbolTable(OutputStream outputStream, Gson gson) throws IOException, XMLStreamException, JAXBException {
+    public List<String> returnSymbolTable(OutputStream outputStream, Gson gson) throws IOException,
+            XMLStreamException, JAXBException {
         List<String> returnList = new ArrayList<>();
         JAXBContext jc = JAXBContext.newInstance(Completions.class);
         Unmarshaller unmarshaller = jc.createUnmarshaller();

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Salesforce.com, inc. - initial API and implementation
  ******************************************************************************/
@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlElement;
  * first implemented and it used a map data structure, which is good for JSON serialization but not good for XML
  * serialization (at least with our server side serializers). Instead of breaking that API, we left it for JSON response
  * and wrapped it this way for XML response.
- * 
+ *
  * @author nchen
  */
 public class PublicDeclaration {

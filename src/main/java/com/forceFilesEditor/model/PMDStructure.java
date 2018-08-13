@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by Nagendra on 18-06-2017.
  */
-public class PMDStructure implements Serializable{
+public class PMDStructure implements Serializable {
 
     public String name;
 

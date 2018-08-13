@@ -65,7 +65,8 @@ public class PMDController {
         Gson gson = new GsonBuilder().create();
         try {
 
-            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL, cookies, response);
+            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL,
+                    cookies, response);
             List<String> allClassesInString = new ArrayList<>();
 
             for (ApexClassWrapper allApexClass : allApexClasses) {
@@ -90,7 +91,8 @@ public class PMDController {
         Cookie[] cookies = request.getCookies();
         Gson gson = new GsonBuilder().create();
         try {
-            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL, cookies, response);
+            List<ApexClassWrapper> allApexClasses = MetadataLoginUtil.getAllApexClasses(partnerURL, toolingURL,
+                    cookies, response);
             return gson.toJson(allApexClasses);
 
         } catch (Exception e) {
@@ -99,7 +101,8 @@ public class PMDController {
 
     }
 
-    public String getReturnSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies, OutputStream outputStream, Gson gson)
+    public String getReturnSymbolTable(String partnerURL, String toolingURL, Cookie[] cookies, OutputStream
+            outputStream, Gson gson)
             throws IOException, ConnectionException, com.sforce.ws.ConnectionException {
         MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
         List<String> strings = new ArrayList<>();
@@ -115,7 +118,8 @@ public class PMDController {
     }
 
     @RequestMapping(value = "/getApexBody", method = RequestMethod.GET)
-    public String getApexBody(@RequestParam String apexClassName, HttpServletResponse response, HttpServletRequest request) throws IOException {
+    public String getApexBody(@RequestParam String apexClassName, HttpServletResponse response, HttpServletRequest
+            request) throws IOException {
 
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
@@ -134,7 +138,8 @@ public class PMDController {
     }
 
     @RequestMapping(value = "/modifyApexBody", method = RequestMethod.POST)
-    public String modifyApexBody(@RequestBody ApexClassWrapper apexClassWrapper, HttpServletResponse response, HttpServletRequest request) throws Exception {
+    public String modifyApexBody(@RequestBody ApexClassWrapper apexClassWrapper, HttpServletResponse response,
+                                 HttpServletRequest request) throws Exception {
 
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
@@ -143,7 +148,8 @@ public class PMDController {
         try {
             if (apexClassWrapper == null) return null;
             MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
-            ApexClassWrapper modifiedClass = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL, cookies, false);
+            ApexClassWrapper modifiedClass = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL,
+                    toolingURL, cookies, false, ruleSetsDomainMongoRepository);
             if (modifiedClass.isCompilationError()) {
                 return gson.toJson(modifiedClass);
             }
@@ -156,7 +162,8 @@ public class PMDController {
     }
 
     @RequestMapping(value = "/saveModifiedApexBody", method = RequestMethod.POST)
-    public String saveModifiedApexBody(@RequestBody ApexClassWrapper apexClassWrapper, HttpServletResponse response, HttpServletRequest request) throws Exception {
+    public String saveModifiedApexBody(@RequestBody ApexClassWrapper apexClassWrapper, HttpServletResponse response,
+                                       HttpServletRequest request) throws Exception {
 
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
@@ -165,7 +172,8 @@ public class PMDController {
         try {
             if (apexClassWrapper == null) return null;
             MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
-            ApexClassWrapper apexClassWrapper1 = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL, toolingURL, cookies, true);
+            ApexClassWrapper apexClassWrapper1 = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL,
+                    toolingURL, cookies, true, ruleSetsDomainMongoRepository);
             if (apexClassWrapper1.isTimeStampNotMatching()) {
                 return gson.toJson(apexClassWrapper1);
             }
@@ -179,13 +187,15 @@ public class PMDController {
     }
 
     @RequestMapping(value = "/createFile", method = RequestMethod.POST)
-    public String createFile(@RequestBody String apexClassName, HttpServletResponse response, HttpServletRequest request) throws Exception {
+    public String createFile(@RequestBody String apexClassName, HttpServletResponse response, HttpServletRequest
+            request) throws Exception {
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
         Cookie[] cookies = request.getCookies();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         try {
-            ApexClassWrapper modifiedClass = MetadataLoginUtil.createFiles("", apexClassName, partnerURL, toolingURL, cookies);
+            ApexClassWrapper modifiedClass = MetadataLoginUtil.createFiles("", apexClassName, partnerURL, toolingURL,
+                    cookies, ruleSetsDomainMongoRepository);
             return gson.toJson(modifiedClass);
         } catch (DeploymentException e) {
             return gson.toJson(e.getStackTrace());
@@ -194,7 +204,8 @@ public class PMDController {
     }
 
     @RequestMapping(value = "/auth", method = RequestMethod.GET, params = {"code", "state"})
-    public void auth(@RequestParam String code, @RequestParam String state, ServletResponse response, ServletRequest request) throws Exception {
+    public void auth(@RequestParam String code, @RequestParam String state, ServletResponse response, ServletRequest
+            request) throws Exception {
 
         String environment = null;
         if (state.equals("b")) {
@@ -212,7 +223,8 @@ public class PMDController {
         post.addParameter("code", code);
         post.addParameter("grant_type", "authorization_code");
         post.addParameter("redirect_uri", "https://apexeditortooldev.herokuapp.com/auth");
-        post.addParameter("client_id", "3MVG9d8..z.hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz");
+        post.addParameter("client_id", "3MVG9d8..z" +
+                ".hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz");
         post.addParameter("client_secret", "7957205307299792687");
 
         httpClient.executeMethod(post);
@@ -265,7 +277,8 @@ public class PMDController {
     }
 
     @RequestMapping(value = "/auth", method = RequestMethod.GET, params = {"error", "error_description", "state"})
-    public void authErrorHandle(@RequestParam String error, @RequestParam String error_description, @RequestParam String state,
+    public void authErrorHandle(@RequestParam String error, @RequestParam String error_description, @RequestParam
+            String state,
                                 HttpServletResponse response, HttpServletRequest request) throws Exception {
 
         Cookie errorCookie = new Cookie("ERROROAUTH", URLEncoder.encode(error, "UTF-8"));
@@ -370,7 +383,8 @@ public class PMDController {
         };
     }
 
-    private String generateSystemSymbolTable(HttpServletResponse response, HttpServletRequest request, OutputStream outputStream, Gson gson) {
+    private String generateSystemSymbolTable(HttpServletResponse response, HttpServletRequest request, OutputStream
+            outputStream, Gson gson) {
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
         Cookie[] cookies = request.getCookies();
@@ -387,7 +401,8 @@ public class PMDController {
         return "";
     }
 
-    private String generateCustomSymbolTable(HttpServletResponse response, HttpServletRequest request, OutputStream outputStream, Gson gson) {
+    private String generateCustomSymbolTable(HttpServletResponse response, HttpServletRequest request, OutputStream
+            outputStream, Gson gson) {
         String partnerURL = this.partnerURL;
         String toolingURL = this.toolingURL;
         Cookie[] cookies = request.getCookies();
