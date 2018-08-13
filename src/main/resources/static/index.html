@@ -141,7 +141,7 @@ function domainChanger() {
                     instance.hide({
                         transitionOut: 'fadeOut'
                     }, toast, 'button');
-                    window.open('https://' + value + '.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9d8..z.hDcPLDlm9QqJ3hRa..IRUJdGRp4Shjuu01GT.H5KRjos_xlbZEtYGy55M6SzOOELg7sfD4T6Pl&redirect_uri=https://4edcaffb.ngrok.io/auth&state=' + (value === 'test' ? 'a' : value + ',CustomDomain'), '_self');
+                    window.open('https://' + value + '.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9d8..z.hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz&redirect_uri=https://apexeditortooldev.herokuapp.com/auth&state=' + (value === 'test' ? 'a' : value + ',CustomDomain'), '_self');
                 }else{
                     alert('Please enter a domain name');
                 }
@@ -158,7 +158,7 @@ function domainChanger() {
 }
 
 function redirectJS(orgType) {
-    window.open('https://' + orgType + '.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9d8..z.hDcPLDlm9QqJ3hRa..IRUJdGRp4Shjuu01GT.H5KRjos_xlbZEtYGy55M6SzOOELg7sfD4T6Pl&redirect_uri=https://4edcaffb.ngrok.io/auth&state=' + (orgType === 'test' ? 'a' : 'b'), '_self');
+    window.open('https://' + orgType + '.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9d8..z.hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz&redirect_uri=https://apexeditortooldev.herokuapp.com/auth&state=' + (orgType === 'test' ? 'a' : 'b'), '_self');
 }
 
 </script>
