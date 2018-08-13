@@ -642,9 +642,13 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
 
     function getRuleEngineErrorCallback() {};
 
-    function modifyRuleEngineCallBack() {};
+    function modifyRuleEngineCallBack() {
+        $('#ruleEngine').modal('hide');
+    };
 
-    function modifyRuleEngineErrorCallback() {};
+    function modifyRuleEngineErrorCallback() {
+        $('#ruleEngine').modal('hide');
+    };
 
     function logoutCallBack() {
         $window.location.href = "/index.html";
