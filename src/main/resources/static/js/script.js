@@ -439,6 +439,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             name: apexClassWrapper.name,
             body: apexClassWrapper.body,
             id: apexClassWrapper.id,
+            orgId: localStorage.getItem('organization_id'),
             originalBodyFromOrg: apexClassWrapper.originalBodyFromOrg
         };
         $http.post('/modifyApexBody', dataObj).then(modifyCallback, modifyErrorCallback);
@@ -529,7 +530,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             name: apexClassWrapper.name,
             body: apexClassWrapper.body,
             id: apexClassWrapper.id,
-            //originalBodyFromOrg: apexClassWrapper.originalBodyFromOrg
+            orgId: localStorage.getItem('organization_id'),
             originalBodyFromOrg: globalMergeEditor != undefined ? globalMergeEditor.rightOriginal().getValue() : apexClassWrapper.originalBodyFromOrg
         };
         $http.post('/saveModifiedApexBody', dataObj).then(saveCallback, saveErrorCallback);

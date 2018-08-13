@@ -40,6 +40,8 @@ public class ApexClassWrapper {
 
     private List<PMDStructure> pmdStructures;
 
+    private String orgId;
+
     public String getOriginalBodyFromOrg() {
         return originalBodyFromOrg;
     }
@@ -166,5 +168,13 @@ public class ApexClassWrapper {
 
     public void setCurrentUser(String currentUser) {
         this.currentUser = currentUser;
+    }
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 }

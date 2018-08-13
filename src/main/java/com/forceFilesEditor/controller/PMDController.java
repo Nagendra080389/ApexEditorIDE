@@ -278,8 +278,7 @@ public class PMDController {
 
     @RequestMapping(value = "/auth", method = RequestMethod.GET, params = {"error", "error_description", "state"})
     public void authErrorHandle(@RequestParam String error, @RequestParam String error_description, @RequestParam
-            String state,
-                                HttpServletResponse response, HttpServletRequest request) throws Exception {
+            String state,HttpServletResponse response, HttpServletRequest request) throws Exception {
 
         Cookie errorCookie = new Cookie("ERROROAUTH", URLEncoder.encode(error, "UTF-8"));
         Cookie errorDescCookie = new Cookie("ERROROAUTHDESC", URLEncoder.encode(error_description, "UTF-8"));
