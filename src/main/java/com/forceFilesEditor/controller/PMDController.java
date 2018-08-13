@@ -360,7 +360,11 @@ public class PMDController {
         userDomain.setOrgId(orgId);
         userDomain.setUserId(userId);
 
-        userDomainMongoRepository.save(userDomain);
+        UserDomain byUserIdAndOrgId = userDomainMongoRepository.findByUserIdAndOrgId(userId, orgId);
+
+        if(byUserIdAndOrgId == null) {
+            userDomainMongoRepository.save(userDomain);
+        }
 
         return gson.toJson(user);
     }
