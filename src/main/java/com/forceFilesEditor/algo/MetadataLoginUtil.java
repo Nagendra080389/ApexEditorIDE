@@ -24,6 +24,7 @@ import org.apache.coyote.http2.ConnectionException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.slf4j.LoggerFactory;
 import wiremock.org.apache.commons.collections4.trie.PatriciaTrie;
 
 import javax.servlet.http.Cookie;
@@ -35,11 +36,13 @@ import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class MetadataLoginUtil {
 
     static PartnerConnection partnerConnection;
     static MetadataConnection metadataConnection;
+    org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MetadataLoginUtil.class);
 
     public static ApexClassWrapper getApexBody(String className, String partnerURL, String toolingURL, Cookie[]
             cookies) throws Exception {
@@ -203,13 +206,14 @@ public class MetadataLoginUtil {
                     pmdConfiguration.setReportFormat("text");
                     RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByorgId(apexClassWrapper.getOrgId());
                     String ruleSetXML = byorgId.getRuleSetXML();
+                    LOGGER.info("ruleSetXML -> "+ruleSetXML);
                     InputStream stream = new ByteArrayInputStream(ruleSetXML.getBytes(StandardCharsets.UTF_8));
                     String ruleSetFilePath = "";
                     if (stream != null) {
                         File file = stream2file(stream);
                         ruleSetFilePath = file.getPath();
-
                     }
+                    LOGGER.info("ruleSetFilePath -> "+ruleSetFilePath);
                     pmdConfiguration.setRuleSets(ruleSetFilePath);
                     pmdConfiguration.setThreads(4);
                     SourceCodeProcessor sourceCodeProcessor = new SourceCodeProcessor(pmdConfiguration);
@@ -217,7 +221,7 @@ public class MetadataLoginUtil {
                             ResourceLoader());
                     RuleSets ruleSets = RulesetsFactoryUtils.getRuleSetsWithBenchmark(pmdConfiguration.getRuleSets(),
                             ruleSetFactory);
-
+                    LOGGER.info("pmdConfiguration.getRuleSets() -> "+pmdConfiguration.getRuleSets());
                     PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
                     List<RuleViolation> review = pmdReviewService.review(apexClassWrapper.getBody(), apexClassWrapper
                             .getName() + ".cls");
