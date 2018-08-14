@@ -3,6 +3,7 @@ package com.forceFilesEditor.algo;
 import com.forceFilesEditor.dao.RuleSetsDomainMongoRepository;
 import com.forceFilesEditor.model.*;
 import com.forceFilesEditor.pmd.PmdReviewService;
+import com.forceFilesEditor.ruleSets.RuleSetWrapper;
 import com.google.gson.Gson;
 import com.sforce.soap.metadata.MetadataConnection;
 import com.sforce.soap.partner.Connector;
@@ -204,6 +205,21 @@ public class MetadataLoginUtil {
                     PMDConfiguration pmdConfiguration = new PMDConfiguration();
                     pmdConfiguration.setReportFormat("text");
                     RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByOrgId(apexClassWrapper.getOrgId());
+                    List<RuleSetWrapper> ruleSetWrappers = new ArrayList<>();
+                    for (RuleSetWrapper ruleSetWrapper : byorgId.getRuleSetWrappers()) {
+                        if(ruleSetWrapper.getActive()){
+                            ruleSetWrappers.add(ruleSetWrapper);
+                        }
+                    }
+
+                    if(ruleSetWrappers.isEmpty()){
+                        PMDStructure pmdStructure = new PMDStructure();
+                        pmdStructure.setReviewFeedback("No active rule engine detected");
+                        pmdStructures.add(pmdStructure);
+                        apexClassWrapper.setPmdStructures(pmdStructures);
+                        return apexClassWrapper;
+                    }
+
                     String ruleSetXML = byorgId.getRuleSetXML();
                     LOGGER.info("ruleSetXML -> "+ruleSetXML);
                     InputStream stream = new ByteArrayInputStream(ruleSetXML.getBytes(StandardCharsets.UTF_8));
