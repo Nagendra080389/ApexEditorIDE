@@ -89,9 +89,13 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             userId: localStorage.getItem('userId')
         };
         $scope.currentUser = localUser;
-        window.dataLayer = window.dataLayer || [];
-
-        ga('send', 'event', 'User Logged in', 'click', localUser.email);
+        ga('send', 'event', 'EditorPage', 'login', localUser.email);
+        ga('send', {
+            hitType: 'event',
+            eventCategory: 'EditorPage',
+            eventAction: 'login',
+            eventLabel: 'User Logged In : '+localUser.email+' from orgId '+localUser.orgId
+        });
     } else {
         $http.get("/getCurrentUser").then(userCallback, userErrorCallback);
     }
@@ -114,7 +118,13 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 position: 'topCenter',
                 layout: 2,
             });
-            ga('send', 'event', 'User Logged in', 'click', response.data.email);
+            ga('send', 'event', 'EditorPage', 'login', response.data.email);
+            ga('send', {
+                hitType: 'event',
+                eventCategory: 'EditorPage',
+                eventAction: 'login',
+                eventLabel: 'User Logged In : '+response.data.email+' from orgId '+response.data.orgId
+            });
         }
     }
 
@@ -622,7 +632,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             $scope.rulesetType = response.data.rulesetType;
             $scope.rulePriorities = response.data.listOfPriorities;
             $('#ruleEngine').modal('show');
-        }else{
+        } else {
             $('#notAuthorised').modal('show');
         }
     };
