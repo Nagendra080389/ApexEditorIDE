@@ -305,11 +305,7 @@ public class PMDController {
         String customDomain = null;
         String userId = null;
         User user = new User();
-        System.out.println("cookies -> "+cookies);
-        if (cookies == null) {
-            user.setError("No cookies found");
-            return gson.toJson(user);
-        }
+
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("ACCESS_TOKEN")) {
                 accessToken = cookie.getValue();
@@ -318,6 +314,12 @@ public class PMDController {
                 useridURL = cookie.getValue();
             }
         }
+
+        if(accessToken == null){
+            user.setError("No cookies found");
+            return gson.toJson(user);
+        }
+
         HttpClient httpClient = new HttpClient();
 
         GetMethod getMethod = new GetMethod(useridURL);
