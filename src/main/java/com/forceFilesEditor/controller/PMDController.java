@@ -305,6 +305,7 @@ public class PMDController {
         String customDomain = null;
         String userId = null;
         User user = new User();
+        System.out.println("cookies -> "+cookies);
         if (cookies == null) {
             user.setError("No cookies found");
             return gson.toJson(user);
