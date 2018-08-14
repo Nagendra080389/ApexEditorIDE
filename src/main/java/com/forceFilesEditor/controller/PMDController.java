@@ -228,9 +228,8 @@ public class PMDController {
         post.addParameter("code", code);
         post.addParameter("grant_type", "authorization_code");
         post.addParameter("redirect_uri", "https://apexeditortooldev.herokuapp.com/auth");
-        post.addParameter("client_id", "3MVG9d8..z" +
-                ".hDcPLDlm9QqJ3hRZOLrqvRAQajMY8Oxx9oDmHejwyUiK6qG4r4pGjvw6x2ts_8ps125hIMn9Pz");
-        post.addParameter("client_secret", "7957205307299792687");
+        post.addParameter("client_id", "3MVG9d8..z.hDcPLDlm9QqJ3hRfsVqxDxkNuH__5ke7onhRrPniHqH_KRi53jOM_9V_TOQPVsRmEL2McIFJtb");
+        post.addParameter("client_secret", "8493474984808415138");
 
         httpClient.executeMethod(post);
         String responseBody = post.getResponseBodyAsString();
