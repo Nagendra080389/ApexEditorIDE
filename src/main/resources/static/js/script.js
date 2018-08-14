@@ -89,7 +89,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             userId: localStorage.getItem('userId')
         };
         $scope.currentUser = localUser;
-        ga('send', 'event', 'EditorPage', 'login', localUser.email);
         ga('send', {
             hitType: 'event',
             eventCategory: 'EditorPage',
@@ -118,7 +117,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 position: 'topCenter',
                 layout: 2,
             });
-            ga('send', 'event', 'EditorPage', 'login', response.data.email);
             ga('send', {
                 hitType: 'event',
                 eventCategory: 'EditorPage',
