@@ -91,15 +91,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         $scope.currentUser = localUser;
         window.dataLayer = window.dataLayer || [];
 
-        function gtag() {
-            dataLayer.push({
-                'username': localUser.display_name,
-                'userId': localUser.userId,
-                'orgId': localUser.orgId
-            });
-        }
-        gtag('js', new Date());
-        gtag('config', 'UA-123660266-1');
+        ga('send', 'event', 'User Logged in', 'click', localUser.email);
     } else {
         $http.get("/getCurrentUser").then(userCallback, userErrorCallback);
     }
@@ -122,17 +114,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 position: 'topCenter',
                 layout: 2,
             });
-            window.dataLayer = window.dataLayer || [];
-
-            function gtag() {
-                dataLayer.push({
-                    'username': response.data.display_name,
-                    'userId': response.data.userId,
-                    'orgId': response.data.orgId
-                });
-            }
-            gtag('js', new Date());
-            gtag('config', 'UA-123660266-1');
+            ga('send', 'event', 'User Logged in', 'click', response.data.email);
         }
     }
 
