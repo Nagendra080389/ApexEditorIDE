@@ -155,7 +155,7 @@ function domainChanger() {
                     instance.hide({
                         transitionOut: 'fadeOut'
                     }, toast, 'button');
-                    window.open('https://' + value + '.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9d8..z.hDcPLDlm9QqJ3hRfsVqxDxkNuH__5ke7onhRrPniHqH_KRi53jOM_9V_TOQPVsRmEL2McIFJtb&redirect_uri=https://0c4a10e1.ngrok.io/auth&state=' + (value === 'test' ? 'a' : value + ',CustomDomain'), '_self');
+                    window.open('https://' + value + '.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9d8..z.hDcPLDlm9QqJ3hRfsVqxDxkNuH__5ke7onhRrPniHqH_KRi53jOM_9V_TOQPVsRmEL2McIFJtb&redirect_uri=https://apexeditortooldev.herokuapp.com/auth&state=' + (value === 'test' ? 'a' : value + ',CustomDomain'), '_self');
                 }else{
                     alert('Please enter a domain name');
                 }
