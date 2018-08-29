@@ -93,7 +93,19 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             hitType: 'event',
             eventCategory: 'EditorPage',
             eventAction: 'login',
-            eventLabel: 'User Logged In : '+localUser.email+' from orgId '+localUser.orgId
+            eventLabel: 'User Logged In : ' + localUser.email + ' from orgId ' + localUser.orgId
+        });
+        ga('send', {
+            hitType: 'event',
+            eventCategory: localUser.orgId,
+            eventAction: 'Organisation Id',
+            eventLabel: 'User Logged In : ' + localUser.email
+        });
+        ga('send', {
+            hitType: 'event',
+            eventCategory: localUser.email,
+            eventAction: 'User Email',
+            eventLabel: 'User Logged In : ' + localUser.email
         });
     } else {
         $http.get("/getCurrentUser").then(userCallback, userErrorCallback);
@@ -121,7 +133,19 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 hitType: 'event',
                 eventCategory: 'EditorPage',
                 eventAction: 'login',
-                eventLabel: 'User Logged In : '+response.data.email+' from orgId '+response.data.orgId
+                eventLabel: 'User Logged In : ' + response.data.email + ' from orgId ' + response.data.orgId
+            });
+            ga('send', {
+                hitType: 'event',
+                eventCategory: localUser.orgId,
+                eventAction: 'Organisation Id',
+                eventLabel: 'User Logged In : ' + localUser.email
+            });
+            ga('send', {
+                hitType: 'event',
+                eventCategory: localUser.email,
+                eventAction: 'User Email',
+                eventLabel: 'User Logged In : ' + localUser.email
             });
         }
     }
@@ -240,7 +264,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         return;
                     }
                 }
-                if (windowsEvent.event.ctrlKey) {
+                if ($window.event.ctrlKey) {
                     $window.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
                     $scope.selectedName = possibleOldValues[0];
                     return;
@@ -298,7 +322,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     }
                 }
             }
-            if (windowsEvent.event.ctrlKey) {
+            if ($window.event.ctrlKey) {
                 $window.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
                 $scope.selectedName = possibleOldValues[0];
                 return;
@@ -525,6 +549,8 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             body: apexClassWrapper.body,
             id: apexClassWrapper.id,
             orgId: localStorage.getItem('organization_id'),
+            currentUser: localStorage.getItem('userId'),
+            pmdStructures: $scope.errorDetails,
             originalBodyFromOrg: globalMergeEditor != undefined ? globalMergeEditor.rightOriginal().getValue() : apexClassWrapper.originalBodyFromOrg
         };
         $http.post('/saveModifiedApexBody', dataObj).then(saveCallback, saveErrorCallback);
@@ -691,49 +717,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
 function testAnim(x) {
     $('.modal .modal-dialog').attr('class', 'modal-dialog  ' + x + '  animated');
 };
-/*$(document).on('click', '#queryEditor', function(event) {
-    event.preventDefault();
-    $('#queryEditorModal').iziModal('open');
-});
-*/
 $(document).ready(function() {
     $('.code-helper').select2({
         placeholder: 'Select a command to begin'
     });
-    /*$("#queryEditorModal").iziModal({
-        history: true,
-        icon: 'icon-star',
-        timeoutProgressbar: true,
-        timeoutProgressbarColor: 'white',
-        arrowKeys: true,
-        width: 600,
-        padding: 20,
-        restoreDefaultContent: true,
-        loop: true,
-        fullscreen: false,
-    });
-*/
-    /*$("#queryEditorModal").on('click', '.btn-fetch', function(event) {
-        event.preventDefault();
-        $("#queryEditorModal").iziModal('startLoading');
-        fetch('https://api.github.com/repos/dolce/izimodal', {
-            method: 'get' // opcional
-        }).then(function(response) {
-            response.json().then(function(result) {
-                console.log("FullName: " + result.full_name);
-                console.log("URL: " + result.html_url);
-                console.log("Forks: " + result.forks);
-                console.log("Stars: " + result.stargazers_count);
-                $("#queryEditorModal .iziModal-content").html("<li><b>Repository</b>: " + result.full_name + "</li><b><li>URL</b>: <a href='" + result.html_url + "' target='blank'> " + result.html_url + "</a></li><b><li>Forks</b>: " + result.forks + "</li><b><li>Stars</b>: " + result.stargazers_count + "</li><b><li>Watchers</b>: " + result.watchers_count + "</li>");
-                $("#queryEditorModal").iziModal('stopLoading');
-            });
-        }).
-        catch (function(err) {
-            $("#modal-default").iziModal('stopLoading');
-            console.error(err);
-            $("#modal-default .iziModal-content").html(err);
-        });
-    });*/
     /* Instantiating iziModal */
     $("#enterClass").iziModal({
         overlayClose: false,
