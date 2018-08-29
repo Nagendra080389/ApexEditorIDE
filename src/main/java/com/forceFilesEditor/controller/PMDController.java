@@ -4,10 +4,7 @@ import com.forceFilesEditor.algo.MetadataLoginUtil;
 import com.forceFilesEditor.dao.RuleSetsDomainMongoRepository;
 import com.forceFilesEditor.dao.UserDomainMongoRepository;
 import com.forceFilesEditor.exception.DeploymentException;
-import com.forceFilesEditor.model.ApexClassWrapper;
-import com.forceFilesEditor.model.RuleSetsDomain;
-import com.forceFilesEditor.model.User;
-import com.forceFilesEditor.model.UserDomain;
+import com.forceFilesEditor.model.*;
 import com.forceFilesEditor.ruleSets.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,6 +15,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.coyote.http2.ConnectionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -187,6 +185,13 @@ public class PMDController {
             return gson.toJson(e.getStackTrace());
         }
         apexClassWrapper.setTimeStampNotMatching(false);
+        if(!apexClassWrapper.getPmdStructures().isEmpty()) {
+            UserDomain byUserIdAndOrgId = userDomainMongoRepository.findByUserIdAndOrgId(apexClassWrapper.getCurrentUser
+                    (), apexClassWrapper.getOrgId());
+            Map<String, List<PMDStructure>> pmdStructures = byUserIdAndOrgId.getPmdStructures();
+            pmdStructures.put(String.valueOf(System.currentTimeMillis()), apexClassWrapper.getPmdStructures());
+            userDomainMongoRepository.save(byUserIdAndOrgId);
+        }
         return gson.toJson(apexClassWrapper);
 
     }
@@ -357,7 +362,7 @@ public class PMDController {
 
         UserDomain userDomain = new UserDomain();
         userDomain.setAdmin(false);
-        userDomain.setPmdStructures(new ArrayList<>());
+        userDomain.setPmdStructures(new HashMap<>());
         userDomain.setUserName(display_name);
         userDomain.setOrgId(orgId);
         userDomain.setUserId(userId);
@@ -514,6 +519,12 @@ public class PMDController {
         ruleSetsDomain.setRuleSetXML(xmlString);
         ruleSetsDomain.setRuleSetWrappers(modifiedRuleSets.getRuleSetWrapper());
         ruleSetsDomainMongoRepository.save(ruleSetsDomain);
+
+    }
+
+    @RequestMapping(value = "/getDataForDashboard", method = RequestMethod.POST)
+    public void getDataForDashboard(@RequestBody User userFromUI) throws Exception {
+
 
     }
 

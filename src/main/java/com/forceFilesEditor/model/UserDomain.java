@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 @Document(collection = "UserDomain")
 public class UserDomain implements Serializable {
@@ -13,7 +14,7 @@ public class UserDomain implements Serializable {
     private String orgId;
     private String userName;
     private String userId;
-    private List<PMDStructure> pmdStructures;
+    private Map<String, List<PMDStructure>> pmdStructures;
     private Boolean isAdmin;
 
     public String getId() {
@@ -48,11 +49,11 @@ public class UserDomain implements Serializable {
         this.userName = userName;
     }
 
-    public List<PMDStructure> getPmdStructures() {
+    public Map<String, List<PMDStructure>> getPmdStructures() {
         return pmdStructures;
     }
 
-    public void setPmdStructures(List<PMDStructure> pmdStructures) {
+    public void setPmdStructures(Map<String, List<PMDStructure>> pmdStructures) {
         this.pmdStructures = pmdStructures;
     }
 

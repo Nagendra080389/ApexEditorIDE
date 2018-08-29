@@ -169,7 +169,13 @@ public class MetadataLoginUtil {
             com.sforce.soap.tooling.SaveResult[] asyncResultMember = toolingConnection.create(con);
 
             String id = asyncResultMember[0].getId();
-            List<PMDStructure> pmdStructures = new ArrayList<>();
+            List<PMDStructure> pmdStructures = null;
+
+            if(!save){
+                pmdStructures =  new ArrayList<>();
+            }else {
+                pmdStructures =  apexClassWrapper.getPmdStructures();
+            }
 
             while (true) {
 
