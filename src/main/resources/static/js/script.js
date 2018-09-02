@@ -75,7 +75,7 @@ app.config(['$locationProvider', function($locationProvider) {
         requireBase: false
     })
 }])
-app.controller('OrderFormController', function($scope, $http, $filter, $window, $location) {
+app.controller('OrderFormController', function($scope, $http, $filter, $window, $location, $event) {
     document.getElementById('saveBtn').style.visibility = 'hidden';
     var namesFromOption = [];
     var foundTheme = ['3024-day', '3024-night', 'abcdef', 'ambiance', 'ambiance-mobile', 'base16-dark', 'base16-light', 'bespin', 'blackboard', 'cobalt', 'colorforth', 'darcula', 'dracula', 'duotone-dark', 'duotone-light', 'eclipse', 'elegant', 'erlang-dark', 'gruvbox-dark', 'hopscotch', 'icecoder', 'idea', 'isotope', 'lesser-dark', 'liquibyte', 'lucario', 'material', 'mbo', 'mdn-like', 'midnight', 'monokai', 'neat', 'neo', 'night', 'oceanic-next', 'panda-syntax', 'paraiso-dark', 'paraiso-light', 'pastel-on-dark', 'railscasts', 'rubyblue', 'seti', 'shadowfox', 'solarized', 'ssms', 'the-matrix', 'tomorrow-night-bright', 'tomorrow-night-eighties', 'ttcn', 'twilight', 'vibrant-ink', 'xq-dark', 'xq-light', 'yeti', 'zenburn'];
@@ -239,7 +239,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             position: 'topRight',
         });
     }
-    $scope.retrieveSelectedClass = function(newValue, oldValue, event) {
+    $scope.retrieveSelectedClass = function(newValue, oldValue) {
         var windowsEvent = $window;
         if ($scope.selectedName === undefined) {
             return;
