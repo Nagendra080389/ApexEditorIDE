@@ -98,14 +98,14 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         ga('send', {
             hitType: 'event',
             eventCategory: localUser.orgId,
-            eventAction: 'Organisation Id',
-            eventLabel: 'User Logged In : ' + localUser.email
+            eventAction: 'Track user by Organisation Id',
+            eventLabel: 'Org Id'
         });
         ga('send', {
             hitType: 'event',
             eventCategory: localUser.email,
-            eventAction: 'User Email',
-            eventLabel: 'User Logged In : ' + localUser.email
+            eventAction: 'Track user by User Email',
+            eventLabel: 'User Email'
         });
     } else {
         $http.get("/getCurrentUser").then(userCallback, userErrorCallback);
@@ -137,15 +137,15 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             });
             ga('send', {
                 hitType: 'event',
-                eventCategory: localUser.orgId,
-                eventAction: 'Organisation Id',
-                eventLabel: 'User Logged In : ' + localUser.email
+                eventCategory: response.data.orgId,
+                eventAction: 'Track user by Organisation Id',
+                eventLabel: 'Org Id'
             });
             ga('send', {
                 hitType: 'event',
-                eventCategory: localUser.email,
-                eventAction: 'User Email',
-                eventLabel: 'User Logged In : ' + localUser.email
+                eventCategory: response.data.email,
+                eventAction: 'Track user by User Email',
+                eventLabel: 'User Email'
             });
         }
     }
