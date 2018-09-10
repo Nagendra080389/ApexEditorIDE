@@ -175,10 +175,10 @@ public class PMDController {
         try {
             if (apexClassWrapper == null) return null;
             MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
-            ApexClassWrapper apexClassWrapper1 = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL,
+            apexClassWrapper = metadataLoginUtil.modifyApexBody(apexClassWrapper, partnerURL,
                     toolingURL, cookies, true, ruleSetsDomainMongoRepository);
-            if (apexClassWrapper1.isTimeStampNotMatching()) {
-                return gson.toJson(apexClassWrapper1);
+            if (apexClassWrapper.isTimeStampNotMatching()) {
+                return gson.toJson(apexClassWrapper);
             }
 
         } catch (DeploymentException e) {
