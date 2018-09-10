@@ -550,7 +550,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             id: apexClassWrapper.id,
             orgId: localStorage.getItem('organization_id'),
             currentUser: localStorage.getItem('userId'),
-            pmdStructures: $scope.errorDetails,
+            pmdStructures: $scope.errorDetails === 'No errors' ? [] : $scope.errorDetails,
             originalBodyFromOrg: globalMergeEditor != undefined ? globalMergeEditor.rightOriginal().getValue() : apexClassWrapper.originalBodyFromOrg
         };
         $http.post('/saveModifiedApexBody', dataObj).then(saveCallback, saveErrorCallback);
