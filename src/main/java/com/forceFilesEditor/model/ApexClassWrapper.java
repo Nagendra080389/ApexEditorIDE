@@ -40,7 +40,6 @@ public class ApexClassWrapper {
 
     private boolean dataNotMatching;
 
-    @JsonDeserialize(as=ArrayList.class, contentAs=PMDStructure.class)
     private List<PMDStructure> pmdStructures;
 
     private String orgId;
