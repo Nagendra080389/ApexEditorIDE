@@ -212,9 +212,11 @@ public class MetadataLoginUtil {
                     pmdConfiguration.setReportFormat("text");
                     RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByOrgId(apexClassWrapper.getOrgId());
                     List<RuleSetWrapper> ruleSetWrappers = new ArrayList<>();
-                    for (RuleSetWrapper ruleSetWrapper : byorgId.getRuleSetWrappers()) {
-                        if(ruleSetWrapper.getActive()){
-                            ruleSetWrappers.add(ruleSetWrapper);
+                    if(byorgId != null) {
+                        for (RuleSetWrapper ruleSetWrapper : byorgId.getRuleSetWrappers()) {
+                            if (ruleSetWrapper.getActive()) {
+                                ruleSetWrappers.add(ruleSetWrapper);
+                            }
                         }
                     }
 
