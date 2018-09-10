@@ -184,6 +184,7 @@ public class PMDController {
         } catch (DeploymentException e) {
             return gson.toJson(e.getStackTrace());
         }
+        System.out.println("apexClassWrapper -> "+apexClassWrapper);
         apexClassWrapper.setTimeStampNotMatching(false);
         if(!apexClassWrapper.getPmdStructures().isEmpty()) {
             UserDomain byUserIdAndOrgId = userDomainMongoRepository.findByUserIdAndOrgId(apexClassWrapper.getCurrentUser
