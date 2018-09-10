@@ -1,7 +1,9 @@
 package com.forceFilesEditor.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.sforce.soap.tooling.SymbolTable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,7 @@ public class ApexClassWrapper {
 
     private boolean dataNotMatching;
 
+    @JsonDeserialize(as=ArrayList.class, contentAs=PMDStructure.class)
     private List<PMDStructure> pmdStructures;
 
     private String orgId;
