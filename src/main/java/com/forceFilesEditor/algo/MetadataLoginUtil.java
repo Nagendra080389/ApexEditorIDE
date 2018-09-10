@@ -254,6 +254,7 @@ public class MetadataLoginUtil {
 
                         for (RuleViolation ruleViolation : review) {
                             PMDStructure pmdStructure = new PMDStructure();
+                            pmdStructure.setName(apexClassWrapper.getName());
                             pmdStructure.setReviewFeedback(ruleViolation.getDescription());
                             pmdStructure.setLineNumber(ruleViolation.getBeginLine());
                             pmdStructure.setRuleName(ruleViolation.getRule().getName());
