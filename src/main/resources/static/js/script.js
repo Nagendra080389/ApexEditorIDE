@@ -264,10 +264,20 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         return;
                     }
                 }
-                if (windowsEvent.event.ctrlKey) {
-                    windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
-                    $scope.selectedName = possibleOldValues[0];
-                    return;
+                if (navigator.userAgent.indexOf("Firefox") != -1) {
+                    windowsEvent.keydown(function(event) {
+                        if (event.ctrlKey) {
+                            windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
+                            $scope.selectedName = possibleOldValues[0];
+                            return;
+                        };
+                    })
+                } else {
+                    if (windowsEvent.event.ctrlKey) {
+                        windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
+                        $scope.selectedName = possibleOldValues[0];
+                        return;
+                    }
                 }
             }
             $('#enterClass').iziModal('open');
