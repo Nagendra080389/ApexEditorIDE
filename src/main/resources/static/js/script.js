@@ -4,6 +4,7 @@ var widgets = [];
 var timeout;
 var app = angular.module('myApp', []);
 var previousValue;
+var fromNgChange = false;
 var ExcludedIntelliSenseTriggerKeys = {
     "8": "backspace",
     "9": "tab",
@@ -240,6 +241,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         });
     }
     $scope.retrieveSelectedClass = function(newValue, oldValue) {
+        fromNgChange = true;
         var windowsEvent = $window;
         if ($scope.selectedName === undefined) {
             return;
@@ -266,9 +268,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 }
                 if (navigator.userAgent.indexOf("Firefox") != -1) {
                     $(window).keydown(function(event) {
-                        if (event.ctrlKey) {
+                        if (event.ctrlKey && fromNgChange) {
                             windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
                             $scope.selectedName = possibleOldValues[0];
+                            fromNgChange = false;
                             return;
                         };
                     })
@@ -334,9 +337,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             }
             if (navigator.userAgent.indexOf("Firefox") != -1) {
                 $(window).keydown(function(event) {
-                    if (event.ctrlKey) {
+                    if (event.ctrlKey && fromNgChange) {
                         windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
                         $scope.selectedName = possibleOldValues[0];
+                        fromNgChange = false;
                         return;
                     };
                 })
