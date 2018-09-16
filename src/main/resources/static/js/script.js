@@ -267,6 +267,9 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     }
                 }
                 if (navigator.userAgent.indexOf("Firefox") != -1) {
+                    $(window).click(function(event)){
+
+                    }
                     $(window).keydown(function(event) {
                         if (event.ctrlKey && fromNgChange) {
                             windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
@@ -336,6 +339,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 }
             }
             if (navigator.userAgent.indexOf("Firefox") != -1) {
+                $(window).click(function(event)){
+                    console.log(event.ctrlKey);
+                    console.log(event.type);
+                }
                 $(window).keydown(function(event) {
                     if (event.ctrlKey && fromNgChange) {
                         windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
