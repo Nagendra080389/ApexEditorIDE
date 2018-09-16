@@ -265,7 +265,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     }
                 }
                 if (navigator.userAgent.indexOf("Firefox") != -1) {
-                    windowsEvent.onkeydown(function(event) {
+                    $(window).keydown(function(event) {
                         if (event.ctrlKey) {
                             windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
                             $scope.selectedName = possibleOldValues[0];
@@ -333,7 +333,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 }
             }
             if (navigator.userAgent.indexOf("Firefox") != -1) {
-                windowsEvent.onkeydown(function(event) {
+                $(window).keydown(function(event) {
                     if (event.ctrlKey) {
                         windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
                         $scope.selectedName = possibleOldValues[0];
