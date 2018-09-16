@@ -359,6 +359,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             };
             $http.get("/getApexBody", config).then(getApexBodyCallback, getApexBodyErrorCallback);
         }
+        fromNgChange = false;
     }
 
     function createFileCallback(response) {
