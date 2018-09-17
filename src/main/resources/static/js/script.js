@@ -249,7 +249,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
       event = $event;
     };
 
-    $scope.retrieveSelectedClass = function(newValue, oldValue) {
+    $scope.retrieveSelectedClass = function(newValue, oldValue, $event) {
         var windowsEvent = $window;
         if ($scope.selectedName === undefined) {
             return;
@@ -338,8 +338,8 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 }
             }
             if (navigator.userAgent.indexOf("Firefox") != -1) {
-
-                    if (event.ctrlKey) {
+                    console.log($event);
+                    if (event !== null && event.ctrlKey) {
                         windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
                         $scope.selectedName = possibleOldValues[0];
                         //clickedClassName = '';
