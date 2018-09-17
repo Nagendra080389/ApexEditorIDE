@@ -4,7 +4,7 @@ var widgets = [];
 var timeout;
 var app = angular.module('myApp', []);
 var previousValue;
-var clickedClassName = '';
+var event = null;
 var ExcludedIntelliSenseTriggerKeys = {
     "8": "backspace",
     "9": "tab",
@@ -240,8 +240,16 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             position: 'topRight',
         });
     }
+
+    $scope.focusCallback = function($event) {
+      if($event === null) {
+        return;
+      }
+
+      event = $event;
+    };
+
     $scope.retrieveSelectedClass = function(newValue, oldValue) {
-        clickedClassName = newValue.name;
         var windowsEvent = $window;
         if ($scope.selectedName === undefined) {
             return;
@@ -267,7 +275,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     }
                 }
                 if (navigator.userAgent.indexOf("Firefox") != -1) {
-                    $(window).click(function(event) {});
+                    //$window.click(function(event) {});
 
                 } else {
                     if (windowsEvent.event.ctrlKey) {
@@ -330,14 +338,14 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                 }
             }
             if (navigator.userAgent.indexOf("Firefox") != -1) {
-                $(window).click(function(event) {
-                    if (event.ctrlKey && clickedClassName === newValue.name) {
+
+                    if (event.ctrlKey) {
                         windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
                         $scope.selectedName = possibleOldValues[0];
-                        clickedClassName = '';
+                        //clickedClassName = '';
                         return;
                     }
-                });
+
             } else {
                 if (windowsEvent.event.ctrlKey) {
                     windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
@@ -353,7 +361,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             };
             $http.get("/getApexBody", config).then(getApexBodyCallback, getApexBodyErrorCallback);
         }
-        clickedClassName = '';
+        //clickedClassName = '';
     }
 
     function createFileCallback(response) {
