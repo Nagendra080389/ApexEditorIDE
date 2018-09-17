@@ -300,7 +300,7 @@
 
 
 <nav class="navbar navbar-default navbar-fixed-top bg">
-    <div id="container">
+    <div id="container" ng-click="event = $event">
         <select ng-model="selectedName" ng-click="event = $event" ng-change="retrieveSelectedClass(selectedName, '{{selectedName}}', {{event}})"
                 ng-options="(item.name||item) group by item.groupName for item in names"
                 class="code-helper" id="code-helperId">
