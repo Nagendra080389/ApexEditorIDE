@@ -249,7 +249,7 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
       event = $event;
     };
 
-    $scope.retrieveSelectedClass = function(newValue, oldValue, $event) {
+    $scope.retrieveSelectedClass = function(newValue, oldValue) {
         var windowsEvent = $window;
         if ($scope.selectedName === undefined) {
             return;
