@@ -300,8 +300,8 @@
 
 
 <nav class="navbar navbar-default navbar-fixed-top bg">
-    <div id="container" ng-click="event = $event" ng-keydown="keyPressed = $event">
-        <select ng-model="selectedName" ng-change="retrieveSelectedClass(selectedName, '{{selectedName}}', {{event}}, {{keyPressed}})"
+    <div id="container" ng-keydown="event = $event">
+        <select ng-model="selectedName" ng-change="retrieveSelectedClass(selectedName, '{{selectedName}}', {{event}})"
                 ng-options="(item.name||item) group by item.groupName for item in names"
                 class="code-helper" id="code-helperId">
             <option value="">Select Option</option>
