@@ -4,7 +4,6 @@ var widgets = [];
 var timeout;
 var app = angular.module('myApp', []);
 var previousValue;
-var event = null;
 var ExcludedIntelliSenseTriggerKeys = {
     "8": "backspace",
     "9": "tab",
@@ -265,8 +264,8 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                         return;
                     }
                 }
-                if ($window.event.ctrlKey) {
-                    $window.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
+                if (windowsEvent.event.ctrlKey) {
+                    windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
                     $scope.selectedName = possibleOldValues[0];
                     return;
                 }
@@ -323,8 +322,8 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
                     }
                 }
             }
-            if ($window.event.ctrlKey) {
-                $window.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
+            if (windowsEvent.event.ctrlKey) {
+                windowsEvent.open('/html/apexEditor.html?name=' + newValue.name, '_blank');
                 $scope.selectedName = possibleOldValues[0];
                 return;
             }
@@ -336,7 +335,6 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             };
             $http.get("/getApexBody", config).then(getApexBodyCallback, getApexBodyErrorCallback);
         }
-        //clickedClassName = '';
     }
 
     function createFileCallback(response) {
