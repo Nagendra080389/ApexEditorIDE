@@ -239,12 +239,12 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
             position: 'topRight',
         });
     }
-    $scope.catchEvntValFun = function(event){
-	 $scope.captureEvntOnSel = event;
+    $scope.catchEvntValFun = function(event) {
+        $scope.captureEvntOnSel = event;
     }
     $scope.retrieveSelectedClass = function(newValue, oldValue) {
         var windowsEvent = $window;
-		var ee = event;
+        var ee = event;
         if ($scope.selectedName === undefined) {
             return;
         }
@@ -636,6 +636,9 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
     $scope.logout = function() {
         localStorage.clear();
         $http.get("/logout").then(logoutCallBack, logoutErrorCallback);
+    }
+    $scope.reviewFullOrg = function() {
+         $window.location.href = "/html/pmdReview.html";
     }
     $scope.getRuleEngine = function() {
         var userObject = {
