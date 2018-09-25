@@ -26,7 +26,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import wiremock.org.apache.commons.collections4.trie.PatriciaTrie;
 
 import javax.servlet.http.Cookie;
@@ -44,8 +43,6 @@ public class MetadataLoginUtil {
     static PartnerConnection partnerConnection;
     static MetadataConnection metadataConnection;
     org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MetadataLoginUtil.class);
-    @Autowired
-    Gson gson;
 
 
     public static ApexClassWrapper getApexBody(String className, String partnerURL, String toolingURL, Cookie[]
@@ -99,10 +96,9 @@ public class MetadataLoginUtil {
     }
 
     public List<PMDStructure> startReviewer(String partnerURL, String toolingURL, Cookie[] cookies, OutputStream outputStream, RuleSetsDomainMongoRepository
-            ruleSetsDomainMongoRepository, String organizationId) throws Exception {
+            ruleSetsDomainMongoRepository, String organizationId, Gson gson) throws Exception {
         String instanceUrl = null;
         String accessToken = null;
-        String orgId = null;
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("ACCESS_TOKEN")) {
                 accessToken = cookie.getValue();
@@ -167,7 +163,7 @@ public class MetadataLoginUtil {
             apexClasses.parallelStream().forEachOrdered(aClass -> {
                 try {
                     createViolationsForAll(pmdStructure, pmdStructures, (String) aClass.getChild("Body").getValue(),
-                            (String) aClass.getChild("Name").getValue(), ".cls", pmdReviewService, outputStream);
+                            (String) aClass.getChild("Name").getValue(), ".cls", pmdReviewService, outputStream, gson);
                 } catch (IOException e) {
                     LOGGER.error("Exception while creating violation for classes: " + e.getMessage());
                 }
@@ -176,7 +172,7 @@ public class MetadataLoginUtil {
             apexTriggers.parallelStream().forEachOrdered(aTrigger -> {
                 try {
                     createViolationsForAll(pmdStructure, pmdStructures, (String) aTrigger.getChild("Body").getValue(),
-                            (String) aTrigger.getChild("Name").getValue(), ".trigger", pmdReviewService, outputStream);
+                            (String) aTrigger.getChild("Name").getValue(), ".trigger", pmdReviewService, outputStream, gson);
                 } catch (IOException e) {
                     LOGGER.error("Exception while creating violation for triggers: " + e.getMessage());
                 }
@@ -185,7 +181,7 @@ public class MetadataLoginUtil {
             apexPages.parallelStream().forEachOrdered(aPage -> {
                 try {
                     createViolationsForAll(pmdStructure, pmdStructures, (String) aPage.getChild("Markup").getValue(),
-                            (String) aPage.getChild("Name").getValue(), ".page", pmdReviewService, outputStream);
+                            (String) aPage.getChild("Name").getValue(), ".page", pmdReviewService, outputStream, gson);
                 } catch (IOException e) {
                     LOGGER.error("Exception while creating violation for pages: " + e.getMessage());
                 }
@@ -205,17 +201,17 @@ public class MetadataLoginUtil {
 
     private void createViolationsForAll(PMDStructure pmdStructure, List<PMDStructure> pmdStructures, String body,
                                         String name, String extension,
-                                        PmdReviewService pmdReviewService, OutputStream outputStream) throws IOException {
+                                        PmdReviewService pmdReviewService, OutputStream outputStream, Gson gson) throws IOException {
         List<RuleViolation> ruleViolations = reviewResult(body, name, extension, pmdReviewService);
 
-        createViolations(pmdStructure, pmdStructures, name, ruleViolations, extension, outputStream);
+        createViolations(pmdStructure, pmdStructures, name, ruleViolations, extension, outputStream, gson);
     }
 
     private List<RuleViolation> reviewResult(String body, String fileName, String extension, PmdReviewService pmdReviewService) throws IOException {
         return pmdReviewService.review(body, fileName + extension);
     }
 
-    private void createViolations(PMDStructure pmdStructure, List<PMDStructure> pmdStructures, String name, List<RuleViolation> ruleViolations, String extension, OutputStream outputStream) throws IOException {
+    private void createViolations(PMDStructure pmdStructure, List<PMDStructure> pmdStructures, String name, List<RuleViolation> ruleViolations, String extension, OutputStream outputStream, Gson gson) throws IOException {
         int ruleViolationsSize = ruleViolations.size();
         try {
             List<PMDStructure> pmdStructureList = new ArrayList<>();
