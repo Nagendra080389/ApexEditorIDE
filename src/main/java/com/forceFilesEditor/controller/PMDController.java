@@ -17,6 +17,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.coyote.http2.ConnectionException;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,9 @@ import java.util.*;
  */
 @RestController
 public class PMDController {
+
+    public static final String LAST_BYTE = "LastByte";
+    org.slf4j.Logger LOGGER = LoggerFactory.getLogger(PMDController.class);
 
     @Autowired
     private ConvertXmlToObjects convertXmlToObjects;
@@ -389,7 +393,8 @@ public class PMDController {
                 try {
                     PMDController.this.generateCustomSymbolTable(response, request, outputStream, gson);
                 } finally {
-                    outputStream.write(gson.toJson("LastByte").getBytes());
+                    LOGGER.info("Entered finally block");
+                    outputStream.write(gson.toJson(LAST_BYTE).getBytes());
                     IOUtils.closeQuietly(outputStream);
                 }
             }
@@ -406,7 +411,7 @@ public class PMDController {
                 try {
                     PMDController.this.generateSystemSymbolTable(response, request, outputStream, gson);
                 } finally {
-                    outputStream.write(gson.toJson("LastByte").getBytes());
+                    outputStream.write(gson.toJson(LAST_BYTE).getBytes());
                     IOUtils.closeQuietly(outputStream);
                 }
             }
@@ -541,7 +546,7 @@ public class PMDController {
                 try {
                     PMDController.this.callURL(response, request, outputStream, ruleSetsDomainMongoRepository, organizationId, gson);
                 }finally {
-                    outputStream.write(PMDController.this.gson.toJson("LastByte").getBytes());
+                    outputStream.write(PMDController.this.gson.toJson(LAST_BYTE).getBytes());
                     IOUtils.closeQuietly(outputStream);
                 }
             }

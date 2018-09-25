@@ -878,5 +878,44 @@ input:checked + .slider:before {
   animation-fill-mode: both;
 }
 
+.panel-body {
+	background-color: white;
+	border-radius: 2px;
+	box-shadow: 0 1px 1px #ccc;
+/*	width: 400px;*/
+/*
+	padding: 35px 60px;
+	margin: 80px auto;
+*/
+}
+
+.panel-body ul{
+	list-style:none;
+	color:#fff;
+	font-size:20px;
+	font-weight:bold;
+	text-align: left;
+/*	margin:20px 35px 15px;*/
+}
+
+.panel-body ul li{
+	padding:20px 30px;
+	background-color:#9c8787;
+	margin-bottom:8px;
+	box-shadow:0 1px 1px rgba(0,0,0,0.1);
+	cursor:pointer;
+}
+
+.panel-body ul li span{
+	float:right;
+}
+
+.panel-body ul .eachClassCell {
+    max-width: 30%;
+}
+.panel-body ul li.active{
+	background-color:#8ec16d;
+}
+
 
 
