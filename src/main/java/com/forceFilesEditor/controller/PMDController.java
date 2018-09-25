@@ -532,7 +532,8 @@ public class PMDController {
     }
 
     @RequestMapping("/utilities/longProcessStream")
-    public StreamingResponseBody asyncLongProcessStream(HttpServletResponse response, HttpServletRequest request) {
+    public StreamingResponseBody asyncLongProcessStream(HttpServletResponse response, HttpServletRequest request, @RequestParam String organizationId) {
+        System.out.println("organizationId will be "+organizationId);
         response.addHeader("Content-Type", MediaType.APPLICATION_JSON);
         return new StreamingResponseBody() {
             @Override
