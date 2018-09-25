@@ -185,8 +185,12 @@ footer{
 }
 
 #detailsWrapper{
-     float:center;
-     width: 300px;
+     text-align: center;
+}
+
+.bodyHeading{
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
 .navbar {
