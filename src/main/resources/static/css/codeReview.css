@@ -186,6 +186,9 @@ footer{
 
 #detailsWrapper{
      text-align: center;
+     font-family: initial;
+     font-weight: bold;
+     font-size: x-large;
 }
 
 .bodyHeading{
