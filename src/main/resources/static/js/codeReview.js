@@ -24,7 +24,7 @@ function orderFromCodeReviewController($scope, $http, $q) {
             $scope.$apply();
             $('#loaderImage').hide();
         })
-        .fail(function() {
+        .fail(function(error) {
             console.log('error');
         });
 
