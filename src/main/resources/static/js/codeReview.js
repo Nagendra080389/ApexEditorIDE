@@ -10,6 +10,7 @@ function orderFromCodeReviewController($scope, $http, $q) {
             if (data == 'LastByte') {
                 localStorage.setItem('apexReview', JSON.stringify($scope.sampleJSONClass));
                 localStorage.setItem('triggerReview', JSON.stringify($scope.sampleJSONTrigger));
+                return;
             }
             var dataFromServer = data.pmdStructureWrapper;
             if (Object.keys(dataFromServer)[0].endsWith('.cls')) {
