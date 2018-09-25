@@ -254,7 +254,7 @@ public class PMDController {
         JsonParser parser = new JsonParser();
 
         JsonObject jsonObject = parser.parse(responseBody).getAsJsonObject();
-
+        System.out.println("jsonObject is now "+jsonObject);
 
         try {
 
