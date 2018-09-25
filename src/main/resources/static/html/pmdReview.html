@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <title>Review Result</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.29/angular.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Cookie|Open+Sans:400,700" rel="stylesheet"/>
+    <!-- The main CSS file -->
+    <link href="../css/style.css" rel="stylesheet"/>
+    <link href="../css/codeReview.css" rel="stylesheet"/>
+    <link rel="stylesheet prefetch" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.1/animate.min.css">
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="../js/codeReview.js"></script>
+    <script src="../js/oboe-browser.min.js"></script>
+</head>
+
+<body ng-app ng-controller="orderFromCodeReviewController">
+<header>
+    <div class="container">
+        <div id="branding">
+            <h1><span class="highlight">Review  </span> Result</h1>
+            <form class="form-logout" role="form" action="/logout">
+                <input type="submit" value="Logout" id="logout" class="btn btn-primary btn-lg pull-right">
+            </form>
+        </div>
+
+    </div>
+</header>
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" onclick="resetSearchContent()">&times;</button>
+                <h4 class="modal-title">{{selectedClassName}}</h4>
+            </div>
+            <div class="modal-body errorDetailPannel">
+                <table class="table table-sm table-inverse table-responsive table-striped">
+                    <thead>
+                    <tr>
+                        <th>Begin Line</th>
+                        <th>End Line</th>
+                        <th>Review Feedback</th>
+                        <th>Severity Level</th>
+                        <th>Ruleset</th>
+                    </tr>
+                    <input type="text" id="searchBar" class="form-control search-box" placeholder="Search"
+                           onkeyup="searchFunction()">
+                    </thead>
+                    <tbody id="errorTable">
+                    <tr ng-repeat="eachClass in selectedClassErrDetails">
+                        <td>{{eachClass.lineNumber}}</td>
+                        <td>{{eachClass.lineNumber}}</td>
+                        <td><a target="_blank" href="{{eachClass.ruleUrl}}">{{eachClass.reviewFeedback}}</a></td>
+                        <td>{{eachClass.rulePriority}}</td>
+                        <td>{{eachClass.ruleName}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <!--<button type="button" class="btn btn-default" ng-click="logThisDefect()">Create Ticket</button>-->
+
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="resetSearchContent()">
+                    Close
+                </button>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="myModalDuplicates" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <!--<h4 class="modal-title">{{selectedClassName}}</h4>-->
+            </div>
+            <div class="modal-body errorDetailPannel">
+                <table class="table table-sm table-inverse table-responsive table-striped">
+                    <thead>
+                    <tr>
+                        <th>Duplication File Name</th>
+                        <th>Apex Code</th>
+                    </tr>
+                    </thead>
+                    <tr>
+                        <td ng-repeat="eachData in selectedClassDupErrDetails.fileLineAndPath">
+                            {{eachData.path}}
+                        </td>
+                        <td>
+                            <pre>
+                                <code class="java">{{selectedClassDupErrDetails.codeFragment}}</code>
+                            </pre>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="logThisDefect()">Create Ticket</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<img src="../img/spinner.gif" id="loaderImage" style='display:none'>
+<div class="col-md-12 col-lg-12" ng-cloak="">
+    <div class="panel with-nav-tabs panel-default">
+        <div class="panel-heading">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab1default" data-toggle="tab">Classes</a></li>
+                <li><a href="#tab2default" data-toggle="tab">Triggers</a></li>
+                <li><a href="#tab3default" data-toggle="tab">Visualforce pages</a></li>
+                <li><a href="#tab4default" data-toggle="tab">Duplicate Codes</a></li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="tab-content">
+                <div class="tab-pane fade in active" id="tab1default">
+                    <ul class="col-md-12 col-lg-12">
+                        <li ng-click="showErrorDetailsClass(key)" class="col-sm-12 col-md-4 col-lg-4 eachClassCell"
+                            ng-repeat='(key,value) in sampleJSONClass'>
+                                <div title="{{key}}" class="classNameLabel">{{key}}</div>
+                                <div title="Error count" class="errorContainer">
+                                    <span class="errorCount">{{value.pmdStructures.length}}</span>
+                                    <span class="errorMeter"
+                                          ng-repeat="eachClass in value.pmdStructures | limitTo: 10"></span>
+                                </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-pane fade" id="tab2default">
+                    <ul class="col-md-12 col-lg-12">
+                        <li ng-click="showErrorDetailsTrigger(key)" class="col-sm-12 col-md-4 col-lg-4 eachClassCell"
+                            ng-repeat='(key,value) in sampleJSONTrigger'>
+                                <div title="{{key}}" class="classNameLabel">{{key}}</div>
+                                <div title="Error count" class="errorContainer">
+                                    <span class="errorCount">{{value.pmdStructures.length}}</span>
+                                    <span class="errorMeter"
+                                          ng-repeat="eachClass in value.pmdStructures | limitTo: 10"></span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-pane fade" id="tab3default">
+                    <ul class="col-md-12 col-lg-12">
+                        <li ng-click="showErrorDetailsPage(key)" class="col-sm-12 col-md-4 col-lg-4 eachClassCell"
+                            ng-repeat='(key,value) in sampleJSONPages'>
+                                <div title="{{key}}" class="classNameLabel">{{key}}</div>
+                                <div title="Error count" class="errorContainer">
+                                    <span class="errorCount">{{value.pmdStructures.length}}</span>
+                                    <span class="errorMeter"
+                                          ng-repeat="eachClass in value.pmdStructures | limitTo: 10"></span>
+                                </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-pane fade" id="tab4default">
+                    <ul class="col-md-12 col-lg-12">
+                        <li ng-click="showDuplicateDetails(eachValue)" class="col-sm-12 col-md-4 col-lg-4 eachClassCell"
+                            ng-repeat='eachValue in sampleJSONDuplicates'>
+                            <div title="{{eachValue.duplicationInFile}}" class="classNameLabel">
+                                {{eachValue.duplicationInFile}}
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form>
+
+
+</form>
+<footer>
+    <p>Salesforce Free Code Review, Copyright &copy; 2017</p>
+    <p>Contact Us : <a href="mailto: nagesingh@deloitte.com">Mail Us</a>
+    </p>
+</footer>
+<script type="application/javascript">
+
+
+</script>
+</body>
+
+</html>

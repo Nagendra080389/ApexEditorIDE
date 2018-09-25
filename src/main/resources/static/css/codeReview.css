@@ -1,11 +1,22 @@
-/*
-header{
-    color: #FFFFFF;
-    padding-top: 10px;
-    min-height: 20px;
-    */
-/*border-bottom: #e8491d 3px solid;*//*
+body{
+    font: 15px/1.5 Arial, Helvetica,sans-serif;
+    padding: 0;
+    margin: 0;
+    background-color: #f4f4f4;
+}
 
+.container{
+    width: 90%;
+    margin: auto;
+    overflow: hidden;
+}
+
+header{
+    background-color: #35424a;
+    color: #FFFFFF;
+    padding-top: 30px;
+    min-height: 70px;
+    border-bottom: #e8491d 3px solid;
 }
 
 
@@ -20,11 +31,10 @@ header #branding{
 }
 header #branding h1{
     margin: 0;
-    font-size : 15px;
 }
 
 header .highlight, header .current a{
-    color: #86bc25;
+    color: #e8491d;
     font-weight: bold;
 }
 
@@ -86,136 +96,3 @@ footer{
 .componentWrapper div {
     margin-top: -1.2em;
 }
-
-
-*/
-/* The side navigation menu *//*
-
-.sidenav {
-    height: 100%; */
-/* 100% Full-height *//*
-
-    width: 0; */
-/* 0 width - change this with JavaScript *//*
-
-    position: fixed; */
-/* Stay in place *//*
-
-    z-index: 1; */
-/* Stay on top *//*
-
-    top: 0; */
-/* Stay at the top *//*
-
-    left: 0;
-    background-color: #111; */
-/* Black*//*
-
-    overflow-x: hidden; */
-/* Disable horizontal scroll *//*
-
-    padding-top: 60px; */
-/* Place content 60px from the top *//*
-
-    transition: 0.5s; */
-/* 0.5 second transition effect to slide in the sidenav *//*
-
-}
-
-*/
-/* The navigation menu links *//*
-
-.sidenav a {
-    padding: 8px 8px 8px 32px;
-    text-decoration: none;
-    font-size: 25px;
-    color: #818181;
-    display: block;
-    transition: 0.3s;
-}
-
-*/
-/* When you mouse over the navigation links, change their color *//*
-
-.sidenav a:hover {
-    color: #f1f1f1;
-}
-
-*/
-/* Position and style the close button (top right corner) *//*
-
-.sidenav .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
-}
-
-*/
-/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) *//*
-
-@media screen and (max-height: 450px) {
-    .sidenav {padding-top: 15px;}
-    .sidenav a {font-size: 18px;}
-}
-
-*/
-/* Dropdown Button *//*
-
-.dropbtn {
-    background-color: #3498DB;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-}
-
-*/
-/* Dropdown button on hover & focus *//*
-
-.dropbtn:hover, .dropbtn:focus {
-    background-color: #2980B9;
-}
-
-*/
-/* The container <div> - needed to position the dropdown content *//*
-
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-*/
-/* Dropdown Content (Hidden by Default) *//*
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f1f1f1;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-}
-
-*/
-/* Links inside the dropdown *//*
-
-.dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-}
-
-*/
-/* Change color of dropdown links on hover *//*
-
-.dropdown-content a:hover {background-color: #ddd}
-
-*/
-/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) *//*
-
-.show {display:block;}
-*/
