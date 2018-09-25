@@ -26,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import wiremock.org.apache.commons.collections4.trie.PatriciaTrie;
 
 import javax.servlet.http.Cookie;
@@ -43,6 +44,9 @@ public class MetadataLoginUtil {
     static PartnerConnection partnerConnection;
     static MetadataConnection metadataConnection;
     org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MetadataLoginUtil.class);
+    @Autowired
+    Gson gson;
+
 
     public static ApexClassWrapper getApexBody(String className, String partnerURL, String toolingURL, Cookie[]
             cookies) throws Exception {
@@ -92,6 +96,158 @@ public class MetadataLoginUtil {
             throw new com.sforce.ws.ConnectionException(e.getMessage());
         }
 
+    }
+
+    public List<PMDStructure> startReviewer(String partnerURL, String toolingURL, Cookie[] cookies, OutputStream outputStream, RuleSetsDomainMongoRepository
+            ruleSetsDomainMongoRepository) throws Exception {
+        String instanceUrl = null;
+        String accessToken = null;
+        String orgId = null;
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("ACCESS_TOKEN")) {
+                accessToken = cookie.getValue();
+            }
+            if (cookie.getName().equals("INSTANCE_URL")) {
+                instanceUrl = cookie.getValue();
+                instanceUrl = instanceUrl + partnerURL;
+            }
+            if(cookie.getName().equals("ORG_ID")){
+                orgId = cookie.getValue();
+            }
+        }
+
+        ConnectorConfig config = new ConnectorConfig();
+        config.setSessionId(accessToken);
+        config.setServiceEndpoint(instanceUrl);
+        try {
+            try {
+                partnerConnection = Connector.newConnection(config);
+            } catch (Exception e) {
+                throw new com.sforce.ws.ConnectionException("Cannot connect to Org");
+            }
+            String apexClass = "SELECT NAME, BODY FROM APEXCLASS WHERE NamespacePrefix = NULL";
+            String apexTrigger = "SELECT NAME, BODY FROM APEXTRIGGER WHERE NamespacePrefix = NULL";
+            String apexPage = "SELECT NAME, markup FROM APEXPAGE WHERE NamespacePrefix = NULL";
+
+            List<com.sforce.soap.partner.sobject.SObject> apexClasses = queryRecords(apexClass, partnerConnection, null, true);
+            List<com.sforce.soap.partner.sobject.SObject> apexTriggers = queryRecords(apexTrigger, partnerConnection, null, true);
+            List<com.sforce.soap.partner.sobject.SObject> apexPages = queryRecords(apexPage, partnerConnection, null, true);
+
+            PMDConfiguration pmdConfiguration = new PMDConfiguration();
+            pmdConfiguration.setReportFormat("text");
+            RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByOrgId(orgId);
+            List<RuleSetWrapper> ruleSetWrappers = new ArrayList<>();
+            if(byorgId != null) {
+                for (RuleSetWrapper ruleSetWrapper : byorgId.getRuleSetWrappers()) {
+                    if (ruleSetWrapper.getActive()) {
+                        ruleSetWrappers.add(ruleSetWrapper);
+                    }
+                }
+            }
+
+            String ruleSetXML = byorgId.getRuleSetXML();
+            LOGGER.info("ruleSetXML -> "+ruleSetXML);
+            InputStream stream = new ByteArrayInputStream(ruleSetXML.getBytes(StandardCharsets.UTF_8));
+            String ruleSetFilePath = "";
+            if (stream != null) {
+                File file = stream2file(stream);
+                ruleSetFilePath = file.getPath();
+            }
+            pmdConfiguration.setRuleSets(ruleSetFilePath);
+            pmdConfiguration.setThreads(4);
+
+
+            SourceCodeProcessor sourceCodeProcessor = new SourceCodeProcessor(pmdConfiguration);
+            RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(pmdConfiguration, new ResourceLoader());
+            RuleSets ruleSets = RulesetsFactoryUtils.getRuleSetsWithBenchmark(pmdConfiguration.getRuleSets(), ruleSetFactory);
+
+            PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
+
+            List<PMDStructure> pmdStructures = new ArrayList<>();
+            PMDStructure pmdStructure = null;
+
+            long start = System.currentTimeMillis();
+            apexClasses.parallelStream().forEachOrdered(aClass -> {
+                try {
+                    createViolationsForAll(pmdStructure, pmdStructures, (String) aClass.getChild("Body").getValue(),
+                            (String) aClass.getChild("Name").getValue(), ".cls", pmdReviewService, outputStream);
+                } catch (IOException e) {
+                    LOGGER.error("Exception while creating violation for classes: " + e.getMessage());
+                }
+            });
+
+            apexTriggers.parallelStream().forEachOrdered(aTrigger -> {
+                try {
+                    createViolationsForAll(pmdStructure, pmdStructures, (String) aTrigger.getChild("Body").getValue(),
+                            (String) aTrigger.getChild("Name").getValue(), ".trigger", pmdReviewService, outputStream);
+                } catch (IOException e) {
+                    LOGGER.error("Exception while creating violation for triggers: " + e.getMessage());
+                }
+            });
+
+            apexPages.parallelStream().forEachOrdered(aPage -> {
+                try {
+                    createViolationsForAll(pmdStructure, pmdStructures, (String) aPage.getChild("Markup").getValue(),
+                            (String) aPage.getChild("Name").getValue(), ".page", pmdReviewService, outputStream);
+                } catch (IOException e) {
+                    LOGGER.error("Exception while creating violation for pages: " + e.getMessage());
+                }
+            });
+
+            long stop = System.currentTimeMillis();
+            LOGGER.info("Total Time Taken " + String.valueOf(stop - start));
+
+            return pmdStructures;
+
+
+        } catch (Exception e) {
+            LOGGER.error("Exception in startReviewer " + e.getMessage());
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+    private void createViolationsForAll(PMDStructure pmdStructure, List<PMDStructure> pmdStructures, String body,
+                                        String name, String extension,
+                                        PmdReviewService pmdReviewService, OutputStream outputStream) throws IOException {
+        List<RuleViolation> ruleViolations = reviewResult(body, name, extension, pmdReviewService);
+
+        createViolations(pmdStructure, pmdStructures, name, ruleViolations, extension, outputStream);
+    }
+
+    private List<RuleViolation> reviewResult(String body, String fileName, String extension, PmdReviewService pmdReviewService) throws IOException {
+        return pmdReviewService.review(body, fileName + extension);
+    }
+
+    private void createViolations(PMDStructure pmdStructure, List<PMDStructure> pmdStructures, String name, List<RuleViolation> ruleViolations, String extension, OutputStream outputStream) throws IOException {
+        int ruleViolationsSize = ruleViolations.size();
+        try {
+            List<PMDStructure> pmdStructureList = new ArrayList<>();
+
+            for (int i = 0; i < ruleViolationsSize; i++) {
+                pmdStructure = new PMDStructure();
+                pmdStructure.setReviewFeedback(ruleViolations.get(i).getDescription());
+                pmdStructure.setLineNumber(ruleViolations.get(i).getBeginLine());
+                pmdStructure.setName(name + extension);
+                pmdStructure.setRuleName(ruleViolations.get(i).getRule().getName());
+                pmdStructure.setRuleUrl(ruleViolations.get(i).getRule().getExternalInfoUrl());
+                pmdStructure.setRulePriority(ruleViolations.get(i).getRule().getPriority().getPriority());
+                pmdStructures.add(pmdStructure);
+                pmdStructureList.add(pmdStructure);
+            }
+
+            if (outputStream != null && !pmdStructureList.isEmpty()) {
+                Map<String, PMDStructureWrapper> codeReviewByClass = new HashMap<>();
+                PMDStructureWrapper pmdStructureWrapper = new PMDStructureWrapper();
+                pmdStructureWrapper.setPmdStructures(pmdStructureList);
+                codeReviewByClass.put(name+extension, pmdStructureWrapper);
+                PMDMainWrapper pmdMainWrapper = new PMDMainWrapper();
+                pmdMainWrapper.setPmdStructureWrapper(codeReviewByClass);
+                outputStream.write(gson.toJson(pmdMainWrapper).getBytes());
+                outputStream.flush();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public ApexClassWrapper modifyApexBody(ApexClassWrapper apexClassWrapper, String partnerURL, String toolingURL,
@@ -236,7 +392,6 @@ public class MetadataLoginUtil {
                         File file = stream2file(stream);
                         ruleSetFilePath = file.getPath();
                     }
-                    LOGGER.info("ruleSetFilePath -> "+ruleSetFilePath);
                     pmdConfiguration.setRuleSets(ruleSetFilePath);
                     pmdConfiguration.setThreads(4);
                     SourceCodeProcessor sourceCodeProcessor = new SourceCodeProcessor(pmdConfiguration);
@@ -246,7 +401,6 @@ public class MetadataLoginUtil {
                         RuleSets ruleSets = RulesetsFactoryUtils.getRuleSetsWithBenchmark(pmdConfiguration.getRuleSets(),
 
                                 ruleSetFactory);
-                        LOGGER.info("pmdConfiguration.getRuleSets() -> " + pmdConfiguration.getRuleSets());
                         PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
                         List<RuleViolation> review = pmdReviewService.review(apexClassWrapper.getBody(),
                                 apexClassWrapper
@@ -430,7 +584,7 @@ public class MetadataLoginUtil {
 
 
         List<com.sforce.soap.partner.sobject.SObject> sObjectList = queryRecords(apexClassBody, partnerConnection,
-                null, true, response);
+                null, true);
 
         ApexClassWrapper apexClassWrapper = null;
 
@@ -549,7 +703,7 @@ public class MetadataLoginUtil {
     }
 
     public static <T> List<T> queryRecords(String query, PartnerConnection partnerConnection, ToolingConnection
-            toolingConnection, boolean usePartner, HttpServletResponse response)
+            toolingConnection, boolean usePartner)
             throws com.sforce.ws.ConnectionException {
         if (usePartner) {
             List<T> sObjectList = new ArrayList<>();

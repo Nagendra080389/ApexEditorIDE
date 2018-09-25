@@ -51,7 +51,9 @@ public class PMDController {
     private UserDomainMongoRepository userDomainMongoRepository;
 
     private Map<String, List<String>> stringListHashMap = new HashMap<>();
-    private volatile Map<String, SymbolTable> symbolTableMap = new HashMap<>();
+
+    @Autowired
+    Gson gson;
 
     @Value("${partnerURL}")
     volatile String partnerURL;
@@ -527,6 +529,72 @@ public class PMDController {
     public void getDataForDashboard(@RequestBody User userFromUI) throws Exception {
 
 
+    }
+
+    @RequestMapping("/utilities/longProcessStream")
+    public StreamingResponseBody asyncLongProcessStream(HttpServletResponse response, HttpServletRequest request) {
+        response.addHeader("Content-Type", MediaType.APPLICATION_JSON);
+        return new StreamingResponseBody() {
+            @Override
+            public void writeTo(OutputStream outputStream) throws IOException {
+                try {
+                    PMDController.this.callURL(response, request, outputStream, ruleSetsDomainMongoRepository);
+                }finally {
+                    outputStream.write(gson.toJson("LastByte").getBytes());
+                    IOUtils.closeQuietly(outputStream);
+                }
+            }
+        };
+    }
+
+    private String callURL(HttpServletResponse response, HttpServletRequest request, OutputStream outputStream, RuleSetsDomainMongoRepository ruleSetsDomainMongoRepository) {
+        PMDMainWrapper pmdMainWrapper = new PMDMainWrapper();
+        Map<String, PMDStructureWrapper>  codeReviewByClass = new HashMap<>();
+        String partnerURL = this.partnerURL;
+        String toolingURL = this.toolingURL;
+        Cookie[] cookies = request.getCookies();
+        List<PMDStructure> violationStructure = null;
+        try {
+            MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
+            violationStructure = metadataLoginUtil.startReviewer(partnerURL, toolingURL, cookies, outputStream, ruleSetsDomainMongoRepository);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(outputStream == null) {
+            PMDStructureWrapper pmdStructureWrapper = null;
+            List<PMDStructure> pmdStructureList = null;
+            List<PMDStructure> pmdDuplicatesList = new ArrayList<>();
+            int size = violationStructure.size();
+
+            long start = System.currentTimeMillis();
+            for (int i = 0; i < size; i++) {
+                if (codeReviewByClass.containsKey(violationStructure.get(i).getName())) {
+                    PMDStructureWrapper pmdStructureWrapper1 = codeReviewByClass.get(violationStructure.get(i).getName());
+                    List<PMDStructure> pmdStructures = pmdStructureWrapper1.getPmdStructures();
+                    pmdStructures.add(violationStructure.get(i));
+                    pmdStructureWrapper1.setPmdStructures(pmdStructures);
+
+                } else {
+                    pmdStructureList = new ArrayList<>();
+                    pmdStructureList.add(violationStructure.get(i));
+                    pmdStructureWrapper = new PMDStructureWrapper();
+                    pmdStructureWrapper.setPmdStructures(pmdStructureList);
+                    codeReviewByClass.put(violationStructure.get(i).getName(), pmdStructureWrapper);
+                }
+            }
+
+            long stop = System.currentTimeMillis();
+
+            if (!codeReviewByClass.isEmpty()) {
+                pmdMainWrapper.setPmdStructureWrapper(codeReviewByClass);
+                pmdMainWrapper.setPmdDuplicates(pmdDuplicatesList);
+
+                return gson.toJson(pmdMainWrapper);
+            }
+
+        }
+        return "";
     }
 
 
