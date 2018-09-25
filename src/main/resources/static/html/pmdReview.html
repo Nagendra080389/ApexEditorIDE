@@ -25,11 +25,17 @@
 </head>
 
 <body ng-app ng-controller="orderFromCodeReviewController">
-<!--<nav class="navbar navbar-default navbar-fixed-top bg">
-    <div id="detailsWrapper">
-        <div id="nameContainer"></div>
+<header>
+    <div class="container">
+        <div id="branding">
+            <h1><span class="highlight">Review  </span> Result</h1>
+            <form class="form-logout" role="form" action="/logout">
+                <input type="submit" value="Logout" id="logout" class="btn btn-primary btn-lg pull-right">
+            </form>
+        </div>
+
     </div>
-</nav>-->
+</header>
 <!-- Modal -->
 <div id="myModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
@@ -180,9 +186,11 @@
     </div>
 </div>
 
-<!--<nav class="navbar navbar-default navbar-fixed-bottom bg">
-
-</nav>-->
+<footer>
+    <p>Salesforce Free Code Review, Copyright &copy; 2017</p>
+    <p>Contact Us : <a href="mailto: nagesingh@deloitte.com">Mail Us</a>
+    </p>
+</footer>
 
 </body>
 
