@@ -139,7 +139,6 @@ public class MetadataLoginUtil {
             }
 
             String ruleSetXML = byorgId.getRuleSetXML();
-            LOGGER.info("ruleSetXML -> "+ruleSetXML);
             InputStream stream = new ByteArrayInputStream(ruleSetXML.getBytes(StandardCharsets.UTF_8));
             String ruleSetFilePath = "";
             if (stream != null) {
@@ -157,34 +156,19 @@ public class MetadataLoginUtil {
             PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
 
             List<PMDStructure> pmdStructures = new ArrayList<>();
-            PMDStructure pmdStructure = null;
 
-            long start = System.currentTimeMillis();
-            apexClasses.parallelStream().forEachOrdered(aClass -> {
-                try {
-                    createViolationsForAll(pmdStructure, pmdStructures, (String) aClass.getChild("Body").getValue(),
-                            (String) aClass.getChild("Name").getValue(), ".cls", pmdReviewService, outputStream, gson);
-                } catch (IOException e) {
-                    LOGGER.error("Exception while creating violation for classes: " + e.getMessage());
-                }
-            });
+            for (com.sforce.soap.partner.sobject.SObject aClass : apexClasses) {
+                createViolationsForAll(pmdStructures, (String) aClass.getChild("Body").getValue(),
+                        (String) aClass.getChild("Name").getValue(), ".cls", pmdReviewService, outputStream, gson);
+            }
+            LOGGER.info("Apex classes finished");
 
-            apexTriggers.parallelStream().forEachOrdered(aTrigger -> {
-                try {
-                    createViolationsForAll(pmdStructure, pmdStructures, (String) aTrigger.getChild("Body").getValue(),
-                            (String) aTrigger.getChild("Name").getValue(), ".trigger", pmdReviewService, outputStream, gson);
-                } catch (IOException e) {
-                    LOGGER.error("Exception while creating violation for triggers: " + e.getMessage());
-                }
-            });
+            for (com.sforce.soap.partner.sobject.SObject aTrigger : apexTriggers) {
+                createViolationsForAll(pmdStructures, (String) aTrigger.getChild("Body").getValue(),
+                        (String) aTrigger.getChild("Name").getValue(), ".trigger", pmdReviewService, outputStream, gson);
+            }
 
-            apexPages.parallelStream().forEachOrdered(aPage -> {
-                /*createViolationsForAll(pmdStructure, pmdStructures, (String) aPage.getChild("Markup").getValue(),
-                        (String) aPage.getChild("Name").getValue(), ".page", pmdReviewService, outputStream, gson);*/
-            });
-
-            long stop = System.currentTimeMillis();
-            LOGGER.info("Total Time Taken " + String.valueOf(stop - start));
+            LOGGER.info("Apex Triggers finished");
 
             return pmdStructures;
 
@@ -195,25 +179,25 @@ public class MetadataLoginUtil {
         return Collections.EMPTY_LIST;
     }
 
-    private void createViolationsForAll(PMDStructure pmdStructure, List<PMDStructure> pmdStructures, String body,
+    private void createViolationsForAll(List<PMDStructure> pmdStructures, String body,
                                         String name, String extension,
                                         PmdReviewService pmdReviewService, OutputStream outputStream, Gson gson) throws IOException {
         List<RuleViolation> ruleViolations = reviewResult(body, name, extension, pmdReviewService);
 
-        createViolations(pmdStructure, pmdStructures, name, ruleViolations, extension, outputStream, gson);
+        createViolations(pmdStructures, name, ruleViolations, extension, outputStream, gson);
     }
 
     private List<RuleViolation> reviewResult(String body, String fileName, String extension, PmdReviewService pmdReviewService) throws IOException {
         return pmdReviewService.review(body, fileName + extension);
     }
 
-    private void createViolations(PMDStructure pmdStructure, List<PMDStructure> pmdStructures, String name, List<RuleViolation> ruleViolations, String extension, OutputStream outputStream, Gson gson) throws IOException {
+    private void createViolations(List<PMDStructure> pmdStructures, String name, List<RuleViolation> ruleViolations, String extension, OutputStream outputStream, Gson gson) throws IOException {
         int ruleViolationsSize = ruleViolations.size();
         try {
             List<PMDStructure> pmdStructureList = new ArrayList<>();
 
             for (int i = 0; i < ruleViolationsSize; i++) {
-                pmdStructure = new PMDStructure();
+                PMDStructure pmdStructure = new PMDStructure();
                 pmdStructure.setReviewFeedback(ruleViolations.get(i).getDescription());
                 pmdStructure.setLineNumber(ruleViolations.get(i).getBeginLine());
                 pmdStructure.setName(name + extension);
@@ -701,8 +685,7 @@ public class MetadataLoginUtil {
             qResult = partnerConnection.query(query);
             boolean done = false;
             if (qResult.getSize() > 0) {
-                System.out.println("Logged-in user can see a total of "
-                        + qResult.getSize() + " contact records.");
+                System.out.println("Logged-in user can see a total of "+ qResult.getSize() + " contact records.");
                 while (!done) {
                     com.sforce.soap.partner.sobject.SObject[] records = qResult.getRecords();
                     for (com.sforce.soap.partner.sobject.SObject record : records) {
