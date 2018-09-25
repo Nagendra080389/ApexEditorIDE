@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8"/>
-    <title>Review Result</title>
+    <title>Full Org Review Result</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.29/angular.min.js"></script>
@@ -25,17 +25,11 @@
 </head>
 
 <body ng-app ng-controller="orderFromCodeReviewController">
-<header>
-    <div class="container">
-        <div id="branding">
-            <h1><span class="highlight">Review  </span> Result</h1>
-            <form class="form-logout" role="form" action="/logout">
-                <input type="submit" value="Logout" id="logout" class="btn btn-primary btn-lg pull-right">
-            </form>
-        </div>
-
+<nav class="navbar navbar-default navbar-fixed-top bg">
+    <div id="detailsWrapper">
+        <div id="nameContainer"></div>
     </div>
-</header>
+</nav>
 <!-- Modal -->
 <div id="myModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
@@ -120,7 +114,6 @@
     </div>
 </div>
 
-<img src="../img/spinner.gif" id="loaderImage" style='display:none'>
 <div class="col-md-12 col-lg-12" ng-cloak="">
     <div class="panel with-nav-tabs panel-default">
         <div class="panel-heading">
@@ -190,15 +183,10 @@
 
 
 </form>
-<footer>
-    <p>Salesforce Free Code Review, Copyright &copy; 2017</p>
-    <p>Contact Us : <a href="mailto: nagesingh@deloitte.com">Mail Us</a>
-    </p>
-</footer>
-<script type="application/javascript">
+<nav class="navbar navbar-default navbar-fixed-bottom bg">
 
+</nav>
 
-</script>
 </body>
 
 </html>

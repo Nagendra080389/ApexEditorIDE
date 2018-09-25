@@ -638,7 +638,10 @@ app.controller('OrderFormController', function($scope, $http, $filter, $window, 
         $http.get("/logout").then(logoutCallBack, logoutErrorCallback);
     }
     $scope.reviewFullOrg = function() {
-         $window.location.href = "/html/pmdReview.html";
+        $window.open(
+          '/html/pmdReview.html',
+          '_blank' // <- This is what makes it open in a new window.
+        );
     }
     $scope.getRuleEngine = function() {
         var userObject = {
