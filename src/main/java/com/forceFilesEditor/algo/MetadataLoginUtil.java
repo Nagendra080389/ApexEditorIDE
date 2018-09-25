@@ -99,7 +99,7 @@ public class MetadataLoginUtil {
     }
 
     public List<PMDStructure> startReviewer(String partnerURL, String toolingURL, Cookie[] cookies, OutputStream outputStream, RuleSetsDomainMongoRepository
-            ruleSetsDomainMongoRepository) throws Exception {
+            ruleSetsDomainMongoRepository, String organizationId) throws Exception {
         String instanceUrl = null;
         String accessToken = null;
         String orgId = null;
@@ -110,9 +110,6 @@ public class MetadataLoginUtil {
             if (cookie.getName().equals("INSTANCE_URL")) {
                 instanceUrl = cookie.getValue();
                 instanceUrl = instanceUrl + partnerURL;
-            }
-            if(cookie.getName().equals("ORG_ID")){
-                orgId = cookie.getValue();
             }
         }
 
@@ -135,7 +132,7 @@ public class MetadataLoginUtil {
 
             PMDConfiguration pmdConfiguration = new PMDConfiguration();
             pmdConfiguration.setReportFormat("text");
-            RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByOrgId(orgId);
+            RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByOrgId(organizationId);
             List<RuleSetWrapper> ruleSetWrappers = new ArrayList<>();
             if(byorgId != null) {
                 for (RuleSetWrapper ruleSetWrapper : byorgId.getRuleSetWrappers()) {

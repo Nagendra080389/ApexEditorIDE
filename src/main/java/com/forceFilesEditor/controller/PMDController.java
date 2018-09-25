@@ -533,13 +533,12 @@ public class PMDController {
 
     @RequestMapping("/utilities/longProcessStream")
     public StreamingResponseBody asyncLongProcessStream(HttpServletResponse response, HttpServletRequest request, @RequestParam String organizationId) {
-        System.out.println("organizationId will be "+organizationId);
         response.addHeader("Content-Type", MediaType.APPLICATION_JSON);
         return new StreamingResponseBody() {
             @Override
             public void writeTo(OutputStream outputStream) throws IOException {
                 try {
-                    PMDController.this.callURL(response, request, outputStream, ruleSetsDomainMongoRepository);
+                    PMDController.this.callURL(response, request, outputStream, ruleSetsDomainMongoRepository, organizationId);
                 }finally {
                     outputStream.write(gson.toJson("LastByte").getBytes());
                     IOUtils.closeQuietly(outputStream);
@@ -548,7 +547,8 @@ public class PMDController {
         };
     }
 
-    private String callURL(HttpServletResponse response, HttpServletRequest request, OutputStream outputStream, RuleSetsDomainMongoRepository ruleSetsDomainMongoRepository) {
+    private String callURL(HttpServletResponse response, HttpServletRequest request, OutputStream outputStream, RuleSetsDomainMongoRepository ruleSetsDomainMongoRepository,
+                           String organizationId) {
         PMDMainWrapper pmdMainWrapper = new PMDMainWrapper();
         Map<String, PMDStructureWrapper>  codeReviewByClass = new HashMap<>();
         String partnerURL = this.partnerURL;
@@ -557,7 +557,7 @@ public class PMDController {
         List<PMDStructure> violationStructure = null;
         try {
             MetadataLoginUtil metadataLoginUtil = new MetadataLoginUtil();
-            violationStructure = metadataLoginUtil.startReviewer(partnerURL, toolingURL, cookies, outputStream, ruleSetsDomainMongoRepository);
+            violationStructure = metadataLoginUtil.startReviewer(partnerURL, toolingURL, cookies, outputStream, ruleSetsDomainMongoRepository, organizationId);
         } catch (Exception e) {
             e.printStackTrace();
         }
