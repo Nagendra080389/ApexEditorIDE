@@ -5,7 +5,7 @@ function orderFromCodeReviewController($scope, $http, $q) {
     $scope.sampleJSONClass = {};
     $scope.sampleJSONTrigger = {};
     $scope.sampleJSONPages = {};
-    oboe('/utilities/longProcessStream'+"?"+"organizationId="localStorage.getItem('organization_id'))
+    oboe('/utilities/longProcessStream'+"?"+"organizationId="+localStorage.getItem('organization_id'))
         .done(function(data) {
             if (data == 'LastByte') {
                 localStorage.setItem('apexReview', JSON.stringify($scope.sampleJSONClass));
