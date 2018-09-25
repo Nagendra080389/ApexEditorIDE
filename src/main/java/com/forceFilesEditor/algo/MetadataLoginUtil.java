@@ -179,12 +179,8 @@ public class MetadataLoginUtil {
             });
 
             apexPages.parallelStream().forEachOrdered(aPage -> {
-                try {
-                    createViolationsForAll(pmdStructure, pmdStructures, (String) aPage.getChild("Markup").getValue(),
-                            (String) aPage.getChild("Name").getValue(), ".page", pmdReviewService, outputStream, gson);
-                } catch (IOException e) {
-                    LOGGER.error("Exception while creating violation for pages: " + e.getMessage());
-                }
+                /*createViolationsForAll(pmdStructure, pmdStructures, (String) aPage.getChild("Markup").getValue(),
+                        (String) aPage.getChild("Name").getValue(), ".page", pmdReviewService, outputStream, gson);*/
             });
 
             long stop = System.currentTimeMillis();
