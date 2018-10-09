@@ -152,13 +152,6 @@ footer{
      overflow: hidden;
      text-overflow: ellipsis;
 }
- .errorMeter{
-     display: inline-block;
-     width: 30px;
-     height: 30px;
-     color: red;
-     background-color: #d51818;
-}
  .modal-dialog{
      position: relative;
      display: table;
@@ -169,12 +162,32 @@ footer{
      min-width: 300px;
 }
  .errorContainer{
-     float: left;
+     display: inline-block;
      position: relative;
 }
- .errorCount{
-     position: absolute;
-     left: 10px;
+
+ .highErrorCount{
+     display: inline-block;
+     width: 30px;
+     height: 30px;
+     color: red;
+     background-color: #d51818;
+}
+
+ .mediumErrorCount{
+     display: inline-block;
+     width: 30px;
+     height: 30px;
+     color: orangered;
+     background-color: #d51818;
+}
+
+ .lowErrorCount{
+     display: inline-block;
+     width: 30px;
+     height: 30px;
+     color: yellow;
+     background-color: #d51818;
 }
  .errorDetailPannel{
      color: #ca3939;
