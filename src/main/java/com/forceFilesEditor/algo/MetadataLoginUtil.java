@@ -69,6 +69,7 @@ public class MetadataLoginUtil {
             try {
                 partnerConnection = Connector.newConnection(config);
                 metadataConnection = com.sforce.soap.metadata.Connector.newConnection(config);
+
             } catch (Exception e) {
                 throw new com.sforce.ws.ConnectionException("Cannot connect to Org");
             }
@@ -130,7 +131,7 @@ public class MetadataLoginUtil {
             pmdConfiguration.setReportFormat("text");
             RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByOrgId(organizationId);
             List<RuleSetWrapper> ruleSetWrappers = new ArrayList<>();
-            if(byorgId != null) {
+            if (byorgId != null) {
                 for (RuleSetWrapper ruleSetWrapper : byorgId.getRuleSetWrappers()) {
                     if (ruleSetWrapper.getActive()) {
                         ruleSetWrappers.add(ruleSetWrapper);
@@ -191,7 +192,8 @@ public class MetadataLoginUtil {
         return pmdReviewService.review(body, fileName + extension);
     }
 
-    private void createViolations(List<PMDStructure> pmdStructures, String name, List<RuleViolation> ruleViolations, String extension, OutputStream outputStream, Gson gson) throws IOException {
+    private void createViolations(List<PMDStructure> pmdStructures, String name, List<RuleViolation> ruleViolations, String extension, OutputStream outputStream, Gson gson)
+            throws IOException {
         int ruleViolationsSize = ruleViolations.size();
         try {
             List<PMDStructure> pmdStructureList = new ArrayList<>();
@@ -209,10 +211,27 @@ public class MetadataLoginUtil {
             }
 
             if (outputStream != null && !pmdStructureList.isEmpty()) {
+                Integer highError = 0;
+                Integer mediumError = 0;
+                Integer lowError = 0;
+                for (PMDStructure pmdStructure : pmdStructureList) {
+                    System.out.println("pmdStructure rule -> "+pmdStructure.getRulePriority());
+                    if (pmdStructure.getRulePriority().equals(Integer.valueOf("1"))) {
+                        highError++;
+                    } else if ((pmdStructure.getRulePriority() > (Integer.valueOf("1"))) || pmdStructure.getRulePriority() < (Integer.valueOf("3"))) {
+                        mediumError++;
+                    } else if (pmdStructure.getRulePriority() > (Integer.valueOf("3"))) {
+                        lowError++;
+                    }
+                }
+
                 Map<String, PMDStructureWrapper> codeReviewByClass = new HashMap<>();
                 PMDStructureWrapper pmdStructureWrapper = new PMDStructureWrapper();
                 pmdStructureWrapper.setPmdStructures(pmdStructureList);
-                codeReviewByClass.put(name+extension, pmdStructureWrapper);
+                pmdStructureWrapper.setTotalHighErrors(highError);
+                pmdStructureWrapper.setTotalMediumErrors(mediumError);
+                pmdStructureWrapper.setTotalLowErrors(lowError);
+                codeReviewByClass.put(name + extension, pmdStructureWrapper);
                 PMDMainWrapper pmdMainWrapper = new PMDMainWrapper();
                 pmdMainWrapper.setPmdStructureWrapper(codeReviewByClass);
                 outputStream.write(gson.toJson(pmdMainWrapper).getBytes());
@@ -300,10 +319,10 @@ public class MetadataLoginUtil {
             String id = asyncResultMember[0].getId();
             List<PMDStructure> pmdStructures = null;
 
-            if(!save){
-                pmdStructures =  new ArrayList<>();
-            }else {
-                pmdStructures =  apexClassWrapper.getPmdStructures();
+            if (!save) {
+                pmdStructures = new ArrayList<>();
+            } else {
+                pmdStructures = apexClassWrapper.getPmdStructures();
             }
 
             while (true) {
@@ -341,7 +360,7 @@ public class MetadataLoginUtil {
                     pmdConfiguration.setReportFormat("text");
                     RuleSetsDomain byorgId = ruleSetsDomainMongoRepository.findByOrgId(apexClassWrapper.getOrgId());
                     List<RuleSetWrapper> ruleSetWrappers = new ArrayList<>();
-                    if(byorgId != null) {
+                    if (byorgId != null) {
                         for (RuleSetWrapper ruleSetWrapper : byorgId.getRuleSetWrappers()) {
                             if (ruleSetWrapper.getActive()) {
                                 ruleSetWrappers.add(ruleSetWrapper);
@@ -349,7 +368,7 @@ public class MetadataLoginUtil {
                         }
                     }
 
-                    if(ruleSetWrappers.isEmpty()){
+                    if (ruleSetWrappers.isEmpty()) {
                         PMDStructure pmdStructure = new PMDStructure();
                         pmdStructure.setReviewFeedback("No active rule engine detected");
                         pmdStructures.add(pmdStructure);
@@ -358,7 +377,7 @@ public class MetadataLoginUtil {
                     }
 
                     String ruleSetXML = byorgId.getRuleSetXML();
-                    LOGGER.info("ruleSetXML -> "+ruleSetXML);
+                    LOGGER.info("ruleSetXML -> " + ruleSetXML);
                     InputStream stream = new ByteArrayInputStream(ruleSetXML.getBytes(StandardCharsets.UTF_8));
                     String ruleSetFilePath = "";
                     if (stream != null) {
@@ -377,7 +396,7 @@ public class MetadataLoginUtil {
                         PmdReviewService pmdReviewService = new PmdReviewService(sourceCodeProcessor, ruleSets);
                         List<RuleViolation> review = pmdReviewService.review(apexClassWrapper.getBody(),
                                 apexClassWrapper
-                                .getName() + ".cls");
+                                        .getName() + ".cls");
 
                         for (RuleViolation ruleViolation : review) {
                             PMDStructure pmdStructure = new PMDStructure();
@@ -389,7 +408,7 @@ public class MetadataLoginUtil {
                             pmdStructure.setRulePriority(ruleViolation.getRule().getPriority().getPriority());
                             pmdStructures.add(pmdStructure);
                         }
-                    }catch (IllegalArgumentException e){
+                    } catch (IllegalArgumentException e) {
                         LOGGER.error(e.getMessage());
                     }
                 }
@@ -685,7 +704,7 @@ public class MetadataLoginUtil {
             qResult = partnerConnection.query(query);
             boolean done = false;
             if (qResult.getSize() > 0) {
-                System.out.println("Logged-in user can see a total of "+ qResult.getSize() + " contact records.");
+                System.out.println("Logged-in user can see a total of " + qResult.getSize() + " contact records.");
                 while (!done) {
                     com.sforce.soap.partner.sobject.SObject[] records = qResult.getRecords();
                     for (com.sforce.soap.partner.sobject.SObject record : records) {
