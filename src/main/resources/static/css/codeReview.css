@@ -170,18 +170,20 @@ footer{
      display: inline-block;
      width: 30px;
      height: 30px;
-     color: white;
+     color: black;
      background-color: red;
      margin-left: 10px;
+     padding-left: 10px;
 }
 
  .mediumErrorCount{
      display: inline-block;
      width: 30px;
      height: 30px;
-     color: white;
-     background-color: orangered;
+     color: black;
+     background-color: #ff9900;
      margin-left: 10px;
+     padding-left: 10px;
 
 }
 
@@ -189,9 +191,22 @@ footer{
      display: inline-block;
      width: 30px;
      height: 30px;
-     color: white;
-     background-color: yellow;
+     color: black;
+     background-color: #ffff00;
+     margin-left: 10px;
+     padding-left: 10px;
 }
+
+/* Safari 6.1+ */
+div.highErrorCount   {-webkit-order: 1;}
+div.mediumErrorCount {-webkit-order: 2;}
+div.lowErrorCount {-webkit-order: 3;}
+
+/* Standard syntax */
+div.highErrorCount   {order: 1;}
+div.mediumErrorCount {order: 2;}
+div.lowErrorCount {order: 3;}
+
  .errorDetailPannel{
      color: #ca3939;
      font-size: 15px;
