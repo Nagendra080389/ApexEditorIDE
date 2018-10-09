@@ -170,24 +170,24 @@ footer{
      display: inline-block;
      width: 30px;
      height: 30px;
-     color: red;
-     background-color: #d51818;
+     color: white;
+     background-color: red;
 }
 
  .mediumErrorCount{
      display: inline-block;
      width: 30px;
      height: 30px;
-     color: orangered;
-     background-color: #d51818;
+     color: white;
+     background-color: orangered;
 }
 
  .lowErrorCount{
      display: inline-block;
      width: 30px;
      height: 30px;
-     color: yellow;
-     background-color: #d51818;
+     color: white;
+     background-color: yellow;
 }
  .errorDetailPannel{
      color: #ca3939;
