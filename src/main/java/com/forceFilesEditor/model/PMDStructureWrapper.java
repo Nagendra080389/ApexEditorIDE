@@ -5,13 +5,13 @@ import java.util.List;
 /**
  * Created by Nagendra on 12-08-2017.
  */
-public class PMDStructureWrapper {
+public class PMDStructureWrapper implements Comparable<PMDStructureWrapper>{
 
     private List<PMDStructure> pmdStructures;
     private boolean soqlInForLoop;
-    private Integer totalHighErrors;
-    private Integer totalMediumErrors;
-    private Integer totalLowErrors;
+    private Integer totalHighErrors = 0;
+    private Integer totalMediumErrors = 0;
+    private Integer totalLowErrors = 0;
 
     public List<PMDStructure> getPmdStructures() {
         return pmdStructures;
@@ -51,5 +51,10 @@ public class PMDStructureWrapper {
 
     public void setTotalLowErrors(Integer totalLowErrors) {
         this.totalLowErrors = totalLowErrors;
+    }
+
+    @Override
+    public int compareTo(PMDStructureWrapper pmdStructureWrapper) {
+        return Integer.compare(this.totalHighErrors, pmdStructureWrapper.totalHighErrors);
     }
 }
