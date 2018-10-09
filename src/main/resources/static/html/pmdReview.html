@@ -135,9 +135,9 @@
                             ng-repeat='(key,value) in sampleJSONClass'>
                                 <div title="{{key}}" class="classNameLabel">{{key}}</div>
                                 <div title="Error count" class="errorContainer">
-                                    <span class="highErrorCount">{{value.pmdStructures.totalHighErrors}}</span>
-                                    <span class="mediumErrorCount">{{value.pmdStructures.totalMediumErrors}}</span>
-                                    <span class="lowErrorCount">{{value.pmdStructures.totalLowErrors}}</span>
+                                    <span class="highErrorCount">{{value.totalHighErrors}}</span>
+                                    <span class="mediumErrorCount">{{value.totalMediumErrors}}</span>
+                                    <span class="lowErrorCount">{{value.totalLowErrors}}</span>
                                     <!--<span class="errorMeter"
                                           ng-repeat="eachClass in value.pmdStructures | limitTo: 10"></span>-->
                                 </div>
