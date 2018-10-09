@@ -129,9 +129,6 @@ footer{
 	cursor:pointer;
 }
 
-.panel-body ul li span{
-	float:right;
-}
 
 .panel-body ul .eachClassCell {
     max-width: 30%;
@@ -168,7 +165,7 @@ footer{
 
  .highErrorCount{
      display: inline-block;
-     width: 30px;
+     width: 50px;
      height: 30px;
      color: black;
      background-color: red;
@@ -178,7 +175,7 @@ footer{
 
  .mediumErrorCount{
      display: inline-block;
-     width: 30px;
+     width: 50px;
      height: 30px;
      color: black;
      background-color: #ff9900;
@@ -189,7 +186,7 @@ footer{
 
  .lowErrorCount{
      display: inline-block;
-     width: 30px;
+     width: 50px;
      height: 30px;
      color: black;
      background-color: #ffff00;
@@ -197,15 +194,6 @@ footer{
      padding-left: 10px;
 }
 
-/* Safari 6.1+ */
-div.highErrorCount   {-webkit-order: 1;}
-div.mediumErrorCount {-webkit-order: 2;}
-div.lowErrorCount {-webkit-order: 3;}
-
-/* Standard syntax */
-div.highErrorCount   {order: 1;}
-div.mediumErrorCount {order: 2;}
-div.lowErrorCount {order: 3;}
 
  .errorDetailPannel{
      color: #ca3939;
