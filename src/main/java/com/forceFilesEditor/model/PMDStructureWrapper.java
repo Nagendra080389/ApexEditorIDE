@@ -9,6 +9,9 @@ public class PMDStructureWrapper {
 
     private List<PMDStructure> pmdStructures;
     private boolean soqlInForLoop;
+    private Integer totalHighErrors;
+    private Integer totalMediumErrors;
+    private Integer totalLowErrors;
 
     public List<PMDStructure> getPmdStructures() {
         return pmdStructures;
@@ -24,5 +27,29 @@ public class PMDStructureWrapper {
 
     public void setSoqlInForLoop(boolean soqlInForLoop) {
         this.soqlInForLoop = soqlInForLoop;
+    }
+
+    public Integer getTotalHighErrors() {
+        return totalHighErrors;
+    }
+
+    public void setTotalHighErrors(Integer totalHighErrors) {
+        this.totalHighErrors = totalHighErrors;
+    }
+
+    public Integer getTotalMediumErrors() {
+        return totalMediumErrors;
+    }
+
+    public void setTotalMediumErrors(Integer totalMediumErrors) {
+        this.totalMediumErrors = totalMediumErrors;
+    }
+
+    public Integer getTotalLowErrors() {
+        return totalLowErrors;
+    }
+
+    public void setTotalLowErrors(Integer totalLowErrors) {
+        this.totalLowErrors = totalLowErrors;
     }
 }
