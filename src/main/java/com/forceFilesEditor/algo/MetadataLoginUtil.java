@@ -263,7 +263,6 @@ public class MetadataLoginUtil {
         config.setServiceEndpoint(instanceUrl);
 
         ConnectorConfig toolConfig = new ConnectorConfig();
-
         toolConfig.setServiceEndpoint(instanceUrl);
         toolConfig.setSessionId(accessToken);
 
